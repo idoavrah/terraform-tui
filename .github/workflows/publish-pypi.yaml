@@ -31,7 +31,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: dist
-          path: dist/*
+          path: ./dist/
 
   publish-test:
     runs-on: ubuntu-latest
@@ -46,6 +46,11 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dist
+
+      - name: ls
+        run: |
+          pwd
+          ls -lR
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
