@@ -46,11 +46,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dist
-
-      - name: ls
-        run: |
-          pwd
-          ls -lR
+          path: ./dist/
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
