@@ -19,8 +19,11 @@ jobs:
           python-version: "3.x"
 
       - name: fix version
+        env:
+          GITHUB_REF: ${{ github.ref }}
         run: |
-          sed -i 's/x.x.x/${{ github.ref:1 }}/' pyproject.toml
+          sed -i "s/x.x.x/${GITHUB_REF:1}/" pyproject.toml
+          cat pyproject.toml
 
       - name: Install dependencies
         run: |
