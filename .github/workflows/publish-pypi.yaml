@@ -41,7 +41,6 @@ jobs:
     needs: build
 
     steps:
-
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with:
@@ -53,13 +52,19 @@ jobs:
         with:
           repository-url: https://test.pypi.org/legacy/
 
-  # publish-production:
-  #   runs-on: ubuntu-latest
-  #   environment: production
-  #   permissions:
-  #     id-token: write
-  #   needs: publish-test
+  publish-production:
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      id-token: write
+    needs: publish-test
 
-  #   steps:
-  #     - name: Publish package distributions to PyPI
-  #       uses: pypa/gh-action-pypi-publish@release/v1
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+          path: ./dist/
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
