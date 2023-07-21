@@ -1,0 +1,28 @@
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tftui"
+version = "0.1.0"
+description = "Terraform Textual User Interface"
+readme = "README.md"
+authors = [{ name = "Ido Avraham" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["terraform", "tui"]
+dependencies = [
+    "textual",
+    "textual-dev",
+]
+requires-python = ">=3.9"
+
+[project.urls]
+Homepage = "https://github.com/idoavrah/terraform-tui"
+
+[project.scripts]
+tftui = "tftui.__main__:main"
