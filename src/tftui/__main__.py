@@ -39,6 +39,11 @@ class TerraformTUI(App):
         data = ""
 
         status = self.get_widget_by_id("status")
+        result = subprocess.run(["terraform", "init", "-no-color"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        if result.returncode != 0:
+            status.update(f"{result.stderr} {result.stdout}")
+            return
+        
         status.update("Loading state...")
         result = subprocess.run(["terraform", "show", "-no-color"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
