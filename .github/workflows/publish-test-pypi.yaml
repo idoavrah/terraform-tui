@@ -12,13 +12,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-
       - uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.x'
+          python-version: "3.x"
 
       - name: Install dependencies
         run: |
@@ -32,9 +31,11 @@ jobs:
     runs-on: ubuntu-latest
     environment: test
     permissions:
-        id-token: write
+      id-token: write
+    needs: build
 
     steps:
-
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
