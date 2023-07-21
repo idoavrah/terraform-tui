@@ -8,17 +8,11 @@
 
 ## Preview
 
-
+![](https://link.to.image "preview")
 
 ## Installation
 
-### macOS
-
-`gh` is available via [Homebrew][], [MacPorts][], [Conda][], [Spack][], and as a downloadable binary from the [releases page][].
-
-#### pipx
-
-| Install:          | Upgrade:          |
-| ----------------- | ----------------- |
-| `pipx install tftui` | `pipx upgrade tftui` |
+| Tool            | Install             | Upgrade                       |
+|-----------------| ------------------- | ----------------------------- |
+| PIP             | `pip install tftui` | `pip install --upgrade tftui` |
 
