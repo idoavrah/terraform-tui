@@ -1,11 +1,6 @@
 name: Upload Python Package to PyPI
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - dev
-      - main
   release:
     types: [released]
 
