@@ -18,16 +18,15 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-
       - name: fix version
         env:
           GITHUB_REF: ${{ github.ref }}
         run: |
           sed -i 's/x.x.x/${{GITHUB_REF:1}}/' pyproject.toml
-          cat pyproject.toml
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
 
       - name: Build package
         run: python -m build
