@@ -2,6 +2,9 @@ name: Upload Python Package to PyPI
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - dev
   release:
     types: [published]
 
@@ -28,7 +31,7 @@ jobs:
         run: python -m build
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: dist
           path: ./dist/
@@ -42,7 +45,7 @@ jobs:
 
     steps:
       - name: Download Artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: dist
           path: ./dist/
@@ -61,7 +64,7 @@ jobs:
 
     steps:
       - name: Download Artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: dist
           path: ./dist/
