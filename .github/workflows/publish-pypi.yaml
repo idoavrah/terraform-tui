@@ -54,6 +54,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
+            
 
   publish-production:
     runs-on: ubuntu-latest
@@ -61,6 +62,8 @@ jobs:
     permissions:
       id-token: write
     needs: publish-test
+    if:
+      github.ref == 'refs/heads/main'
 
     steps:
       - name: Download Artifact
