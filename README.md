@@ -19,9 +19,10 @@ Whether you're a seasoned Terraform expert or a beginner, TFTUI is the perfect c
 
 ## Installation
 
-| Tool | Install             | Upgrade                       |
-| ---- | ------------------- | ----------------------------- |
-| PIP  | `pip install tftui` | `pip install --upgrade tftui` |
+| Tool | Install              | Upgrade                       | Run                                      |
+| ---- | -------------------- | ----------------------------- | ---------------------------------------- |
+| PIP  | `pip install tftui`  | `pip install --upgrade tftui` | `cd /path/to/terraform/project && tftui` |
+| PIPX | `pipx install tftui` | `pipx upgrade tftui`          | `cd /path/to/terraform/project && tftui` |
 
 ## Contributing Guidelines
 
