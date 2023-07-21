@@ -22,7 +22,7 @@ jobs:
         env:
           GITHUB_REF: ${{ github.ref }}
         run: |
-          sed -i "s/x.x.x/${GITHUB_REF:1}/" pyproject.toml
+          sed -i "s/x.x.x/${GITHUB_REF#refs/tags/v}/" pyproject.toml
           cat pyproject.toml
 
       - name: Install dependencies
