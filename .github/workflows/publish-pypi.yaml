@@ -1,4 +1,4 @@
-name: Upload Python Package (Test PyPiI)
+name: Upload Python Package to PyPI
 
 on:
   workflow_dispatch:
@@ -40,6 +40,12 @@ jobs:
     needs: build
 
     steps:
+
+      - name: ls
+        run: |
+          pwd
+          ls -lR
+
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
