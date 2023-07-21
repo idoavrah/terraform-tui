@@ -24,8 +24,10 @@ jobs:
           pip install poetry
 
       - name: fix version
+        env:
+          GITHUB_REF: ${{ github.ref }}
         run: |
-          sed -i '' 's/x.x.x/${GITHUB_REF#refs/tags/v}/' pyproject.toml
+          sed -i 's/x.x.x/${GITHUB_REF:1}/' pyproject.toml
           cat pyproject.toml
 
       - name: Build package
@@ -55,7 +57,6 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
-            
 
   publish-production:
     runs-on: ubuntu-latest
@@ -63,8 +64,7 @@ jobs:
     permissions:
       id-token: write
     needs: publish-test
-    if:
-      github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Download Artifact
