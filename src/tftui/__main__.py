@@ -1,9 +1,17 @@
 from textual.app import App, ComposeResult, Binding
-from textual.widgets import Header, Footer, Tree, TextLog, LoadingIndicator, ContentSwitcher, Static
-import subprocess, time
+from textual.widgets import (
+    Header,
+    Footer,
+    Tree,
+    TextLog,
+    LoadingIndicator,
+    ContentSwitcher,
+    Static,
+)
+import subprocess
+
 
 class TerraformTUI(App):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.state = {}
@@ -21,7 +29,7 @@ class TerraformTUI(App):
         # ("u", "untaint", "Untaint"),
         # ("r", "refresh", "Refresh"),
         ("m", "toggle_dark", "Toggle dark mode"),
-        ("q", "quit", "Quit")
+        ("q", "quit", "Quit"),
     ]
 
     def compose(self) -> ComposeResult:
@@ -29,7 +37,14 @@ class TerraformTUI(App):
         with ContentSwitcher(id="switcher", initial="loading"):
             yield LoadingIndicator(id="loading")
             yield Tree("State", id="tree", classes="tree")
-            yield TextLog(id="pretty", highlight=True, markup=True, wrap=True, classes="pretty", auto_scroll=False)
+            yield TextLog(
+                id="pretty",
+                highlight=True,
+                markup=True,
+                wrap=True,
+                classes="pretty",
+                auto_scroll=False,
+            )
         yield Static(id="status", classes="status")
         yield Footer()
 
@@ -39,34 +54,41 @@ class TerraformTUI(App):
         data = ""
 
         status = self.get_widget_by_id("status")
-        result = subprocess.run(["terraform", "init", "-no-color"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        result = subprocess.run(
+            ["terraform", "init", "-no-color"],
+            capture_output=True,
+            text=True,
+        )
         if result.returncode != 0:
             status.update(f"{result.stderr} {result.stdout}")
             return
-        
+
         status.update("Loading state...")
-        result = subprocess.run(["terraform", "show", "-no-color"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        result = subprocess.run(
+            ["terraform", "show", "-no-color"],
+            capture_output=True,
+            text=True,
+        )
 
         if result.returncode != 0:
             status.update(f"{result.stderr} {result.stdout}")
             return
-        elif not result.stdout.startswith('#'):
+        elif not result.stdout.startswith("#"):
             status.update(f"{result.stderr} {result.stdout}")
             return
         status.update("")
-        
-        for line in result.stdout.splitlines():
 
+        for line in result.stdout.splitlines():
             # regular resource
-            if line.startswith('#') and not line.startswith('# module'):
+            if line.startswith("#") and not line.startswith("# module"):
                 leaf = tree.root.add_leaf(line[2:-1])
-            
-            # module                
-            elif line.startswith('# module'):
+
+            # module
+            elif line.startswith("# module"):
                 node = tree.root
                 items = []
                 leaf = ""
-                parts = line[2:-1].split('.')
+                parts = line[2:-1].split(".")
                 for part in parts:
                     if part == "module":
                         isModule = True
@@ -102,8 +124,8 @@ class TerraformTUI(App):
                 data = ""
 
         tree.root.expand_all()
-        self.get_widget_by_id("switcher").current = "tree"        
-    
+        self.get_widget_by_id("switcher").current = "tree"
+
     def on_tree_node_highlighted(self, node) -> None:
         self.currentNode = node.node
         pretty = self.get_widget_by_id("pretty")
@@ -115,7 +137,7 @@ class TerraformTUI(App):
             self.currentNode = None
 
     def on_tree_node_selected(self) -> None:
-        if (self.currentNode is None):
+        if self.currentNode is None:
             return
         self.get_widget_by_id("switcher").current = "pretty"
 
@@ -140,11 +162,11 @@ class TerraformTUI(App):
     def action_refresh(self) -> None:
         if not self.get_widget_by_id("switcher").current == "tree":
             return
-        
+
     def action_toggle_dark(self) -> None:
         self.dark = not self.dark
+
 
 def main() -> None:
     app = TerraformTUI()
     app.run()
-
