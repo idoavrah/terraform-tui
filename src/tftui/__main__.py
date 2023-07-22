@@ -8,17 +8,6 @@ from shutil import which
 import asyncio
 
 
-class NodeType:
-    type = None
-    name = None
-    data = None
-
-    def __init__(self, type: str, name: str, data: str):
-        self.type = type
-        self.name = name
-        self.data = data
-
-
 class StateTree(Tree):
 
     state = {}
@@ -33,17 +22,18 @@ class StateTree(Tree):
         self.currentNode = node.node
 
     def on_tree_node_selected(self) -> None:
-        if (self.currentNode is None): 
+        if self.currentNode is None or self.currentNode.data is None:
             return
-        if (self.currentNode.data is None):
+        if self.currentNode.data.startswith('module'):
             return
         self.app.resource.clear()
         self.app.resource.write(self.currentNode.data)
         self.app.switcher.current = "resource"
 
     def select_current_node(self) -> None:
-        if self.currentNode.data is None:
+        if self.currentNode.data.startswith('module'):
             return
+
         if self.currentNode in self.selectedNodes:
             self.selectedNodes.remove(self.currentNode)
         else:
@@ -56,75 +46,80 @@ class StateTree(Tree):
     @work(exclusive=True)
     async def refresh_state(self) -> None:
         data = ""
-        self.app.status.update("Terraform init...")
+        self.app.status.update("Executing Terraform init")
 
         returncode, stdout = await execute_async("terraform", "init", "-no-color")
 
         if returncode != 0:
-            self.exit(message=stdout)
+            self.app.exit(message=stdout)
             return
 
-        self.app.status.update("Terraform show...")
+        self.app.status.update("Executing Terraform show")
 
         returncode, stdout = await execute_async("terraform", "show", "-no-color")
 
-        if returncode != 0:
-            self.exit(message=stdout)
-            return
-        elif not stdout.startswith('#'):
-            self.exit(message=stdout)
+        if returncode != 0 or not stdout.startswith('#'):
+            self.app.exit(message=stdout)
             return
 
-        self.app.status.update("")
+        self.app.status.update("Building state tree")
 
-        for line in stdout.splitlines():
+        lines = stdout.splitlines()
+        line_index = 0
+        node = self.root
 
-            # regular resource
-            if line.startswith('#') and not line.startswith('# module'):
-                leaf = self.root.add_leaf(line[2:-1])
+        # build module tree
+        modules = set()
+        for line in lines:
+            if not line.startswith('# module'):
+                continue
+            parts = line[2:-1].split('.')
+            i = 0
+            module = ""
+            while parts[i] == 'module':
+                module += f"{parts[i]}.{parts[i+1]}."
+                modules.add(module[:-1])
+                i += 2
 
-            # module
-            elif line.startswith('# module'):
-                node = self.root
-                items = []
-                leaf = ""
+        module_nodes = {}
+        for module_fullname in sorted(modules):
+            parts = module_fullname.split('.')
+            qualifier = ""
+            i = 0
+            while i < len(parts):
+                qualifier = f"{parts[i]}.{parts[i+1]}."
+                if qualifier[:-1] not in module_nodes:
+                    node = self.root.add(qualifier[:-1], data=module_fullname)
+                    module_nodes[qualifier[:-1]] = node
+                i += 2
+
+        # parse objects
+        name = ""
+        for line in lines:
+            if line.startswith('#'):
                 parts = line[2:-1].split('.')
-                for part in parts:
-                    if part == "module":
-                        isModule = True
-                        continue
-                    elif isModule:
-                        isModule = False
-                        items.append(f"module.{part}")
-                        continue
-                    leaf = f"{leaf}.{part}"
-                items.append(leaf[1:])
-
-                key = ""
-                for item in items:
-                    isModule = False
-                    key = f"{key}.{item}"
-                    if item.startswith("module"):
-                        isModule = True
-                    if self.state.get(key) is None:
-                        if isModule:
-                            node = node.add(item)
-                        else:
-                            leaf = node.add_leaf(item)
-                        self.state[key] = node
-                    else:
-                        node = self.state[key]
-
-            # data portion of resource
+                i = 0
+                qualifier = ""
+                while parts[i] == 'module':
+                    qualifier = f"{parts[i]}.{parts[i+1]}."
+                    i += 2
+                name = '.'.join(parts[i:])
+                data = ""
+                if qualifier[:-1] in module_nodes:
+                    module_node = module_nodes[qualifier[:-1]]
+                else:
+                    module_node = self.root
+            elif line == "}":
+                data += line + "\n"
+                module_node.add_leaf(name, data=data.strip())
             else:
                 data += line + "\n"
 
-            if len(line) == 1:
-                leaf.data = data.strip()
-                data = ""
-
         self.root.expand_all()
         self.app.switcher.current = "tree"
+        self.app.status.update("")
+
+        return
 
 
 class TerraformTUI(App):
