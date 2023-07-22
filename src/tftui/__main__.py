@@ -11,45 +11,45 @@ import asyncio
 class StateTree(Tree):
 
     state = {}
-    currentNode = None
-    selectedNodes = []
+    current_node = None
+    selected_nodes = []
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.guide_depth = 3
+        self.root.data = "root"
 
     def on_tree_node_highlighted(self, node) -> None:
-        self.currentNode = node.node
+        self.current_node = node.node
 
     def on_tree_node_selected(self) -> None:
-        if self.currentNode is None or self.currentNode.data is None:
+        if self.current_node is None:
             return
-        if self.currentNode.data.startswith('module'):
+        if self.current_node.data.startswith('module') or self.current_node.data.startswith('root'):
             return
         self.app.resource.clear()
-        self.app.resource.write(self.currentNode.data)
+        self.app.resource.write(self.current_node.data)
         self.app.switcher.current = "resource"
 
     def select_current_node(self) -> None:
-        if self.currentNode.data.startswith('module'):
+        if self.current_node is None:
             return
-
-        if self.currentNode in self.selectedNodes:
-            self.selectedNodes.remove(self.currentNode)
+        if self.current_node.data.startswith('module') or self.current_node.data.startswith('root'):
+            return
+        if self.current_node in self.selected_nodes:
+            self.selected_nodes.remove(self.current_node)
+            label = self.current_node.label
+            label.right_crop(4)
+            self.current_node.set_label(label)
         else:
-            self.selectedNodes.append(self.currentNode)
-
-    def render_label(self, node: TreeNode, base_style: Style, style: Style) -> Text:
-        label = super().render_label(node, base_style, style)
-        return label
+            self.selected_nodes.append(self.current_node)
+            self.current_node.set_label(self.current_node.label.append(" [X]"))
 
     @work(exclusive=True)
     async def refresh_state(self) -> None:
-        data = ""
         self.app.status.update("Executing Terraform init")
 
         returncode, stdout = await execute_async("terraform", "init", "-no-color")
-
         if returncode != 0:
             self.app.exit(message=stdout)
             return
@@ -57,19 +57,16 @@ class StateTree(Tree):
         self.app.status.update("Executing Terraform show")
 
         returncode, stdout = await execute_async("terraform", "show", "-no-color")
-
         if returncode != 0 or not stdout.startswith('#'):
             self.app.exit(message=stdout)
             return
 
         self.app.status.update("Building state tree")
-
         lines = stdout.splitlines()
-        line_index = 0
-        node = self.root
 
         # build module tree
         modules = set()
+        module_nodes = {}
         for line in lines:
             if not line.startswith('# module'):
                 continue
@@ -80,8 +77,6 @@ class StateTree(Tree):
                 module += f"{parts[i]}.{parts[i+1]}."
                 modules.add(module[:-1])
                 i += 2
-
-        module_nodes = {}
         for module_fullname in sorted(modules):
             parts = module_fullname.split('.')
             qualifier = ""
@@ -118,8 +113,6 @@ class StateTree(Tree):
         self.root.expand_all()
         self.app.switcher.current = "tree"
         self.app.status.update("")
-
-        return
 
 
 class TerraformTUI(App):
