@@ -8,7 +8,7 @@
 
 ## Preview
 
-![](preview/preview.gif "preview")
+![](https://github.com/idoavrah/terraform-tui/raw/main/preview/preview.gif "preview")
 
 ## Installation
 

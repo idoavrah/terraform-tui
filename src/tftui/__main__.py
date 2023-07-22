@@ -1,6 +1,22 @@
+from typing import List
+from textual import work
 from textual.app import App, ComposeResult, Binding
 from textual.widgets import Header, Footer, Tree, TextLog, LoadingIndicator, ContentSwitcher, Static
-import subprocess, time
+from shutil import which
+import subprocess
+import asyncio
+
+
+async def execute_async(*command: str) -> tuple[str, str]:
+    proc = await asyncio.create_subprocess_exec(*command,
+                                                stdout=asyncio.subprocess.PIPE,
+                                                stderr=asyncio.subprocess.STDOUT)
+
+    stdout, strerr = await proc.communicate()
+    response = stdout.decode('utf-8')
+
+    return (proc.returncode, response)
+
 
 class TerraformTUI(App):
 
@@ -36,32 +52,46 @@ class TerraformTUI(App):
     def on_mount(self) -> None:
         tree = self.get_widget_by_id("tree")
         tree.guide_depth = 3
+        status = self.get_widget_by_id("status")
+        status.update("Loading state...")
+
+    async def on_ready(self) -> None:
+        self.load_state()
+
+    @work(exclusive=True)
+    async def load_state(self) -> None:
+        tree = self.get_widget_by_id("tree")
+        status = self.get_widget_by_id("status")
         data = ""
 
-        status = self.get_widget_by_id("status")
-        result = subprocess.run(["terraform", "init", "-no-color"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-        if result.returncode != 0:
-            status.update(f"{result.stderr} {result.stdout}")
-            return
-        
-        status.update("Loading state...")
-        result = subprocess.run(["terraform", "show", "-no-color"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        status.update("Terraform init...")
 
-        if result.returncode != 0:
-            status.update(f"{result.stderr} {result.stdout}")
+        returncode, stdout = await execute_async("terraform", "init", "-no-color")
+
+        if returncode != 0:
+            self.exit(message=stdout)
             return
-        elif not result.stdout.startswith('#'):
-            status.update(f"{result.stderr} {result.stdout}")
+
+        status.update("Terraform show...")
+
+        returncode, stdout = await execute_async("terraform", "show", "-no-color")
+
+        if returncode != 0:
+            self.exit(message=stdout)
             return
+        elif not stdout.startswith('#'):
+            self.exit(message=stdout)
+            return
+
         status.update("")
-        
-        for line in result.stdout.splitlines():
+
+        for line in stdout.splitlines():
 
             # regular resource
             if line.startswith('#') and not line.startswith('# module'):
                 leaf = tree.root.add_leaf(line[2:-1])
-            
-            # module                
+
+            # module
             elif line.startswith('# module'):
                 node = tree.root
                 items = []
@@ -102,8 +132,8 @@ class TerraformTUI(App):
                 data = ""
 
         tree.root.expand_all()
-        self.get_widget_by_id("switcher").current = "tree"        
-    
+        self.get_widget_by_id("switcher").current = "tree"
+
     def on_tree_node_highlighted(self, node) -> None:
         self.currentNode = node.node
         pretty = self.get_widget_by_id("pretty")
@@ -140,11 +170,22 @@ class TerraformTUI(App):
     def action_refresh(self) -> None:
         if not self.get_widget_by_id("switcher").current == "tree":
             return
-        
+
     def action_toggle_dark(self) -> None:
         self.dark = not self.dark
 
-def main() -> None:
-    app = TerraformTUI()
-    app.run()
 
+def main() -> None:
+
+    if which("terraform") is None:
+        print("Terraform not found. Please install Terraform and try again.")
+        return
+
+    app = TerraformTUI()
+    result = app.run()
+    if result is not None:
+        print(result)
+
+
+if __name__ == "__main__":
+    main()
