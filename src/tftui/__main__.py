@@ -176,6 +176,8 @@ class TerraformTUI(App):
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "yes":
             await self.perform_action()
+        elif event.button.id == "no":
+            self.action_no()
 
     async def perform_taint_untaint(self, what_to_do: str) -> None:
         resources = [
