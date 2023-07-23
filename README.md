@@ -6,6 +6,8 @@
 ### version 0.3
 - [x] Added loading screen and status bar
 - [x] Added selection of resources
+- [x] Added refresh state functionality
+- [x] Added taint/untaint functionality
 - [x] Refactoring
 
 ### version 0.2
@@ -22,3 +24,4 @@
 |-----------------| ------------------- | ----------------------------- |
 | PIP             | `pip install tftui` | `pip install --upgrade tftui` |
 | PIPX            | `pipx install tftui`| `pipx upgrade tftui`          |
+
