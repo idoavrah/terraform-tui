@@ -10,5 +10,3 @@ resource "random_integer" "random_number" {
 variable "input_number" {
   description = "Input number for the module"
 }
-
-
