@@ -1,13 +1,21 @@
 from textual import work
 from textual.app import App, ComposeResult, Binding
-from textual.widgets import Header, Footer, Tree, TextLog, LoadingIndicator, ContentSwitcher, Static, Button
+from textual.widgets import (
+    Header,
+    Footer,
+    Tree,
+    TextLog,
+    LoadingIndicator,
+    ContentSwitcher,
+    Static,
+    Button,
+)
 from textual.containers import Vertical, Horizontal
 from shutil import which
 import asyncio
 
 
 class StateTree(Tree):
-
     current_node = None
     selected_nodes = []
 
@@ -22,7 +30,7 @@ class StateTree(Tree):
     def on_tree_node_selected(self) -> None:
         if self.current_node is None:
             return
-        if self.current_node.data.startswith('module') or self.current_node.is_root:
+        if self.current_node.data.startswith("module") or self.current_node.is_root:
             return
         self.app.resource.clear()
         self.app.resource.write(self.current_node.data)
@@ -31,7 +39,11 @@ class StateTree(Tree):
     def select_current_node(self) -> None:
         if self.current_node is None:
             return
-        if self.current_node.data.startswith('module') or self.current_node.data.startswith('data') or self.current_node.is_root:
+        if (
+            self.current_node.data.startswith("module")
+            or self.current_node.data.startswith("data")
+            or self.current_node.is_root
+        ):
             return
         if self.current_node in self.selected_nodes:
             self.selected_nodes.remove(self.current_node)
@@ -44,7 +56,6 @@ class StateTree(Tree):
 
     @work(exclusive=True)
     async def refresh_state(self) -> None:
-
         self.app.switcher.current = "loading"
         self.selected_nodes = []
         self.current_node = None
@@ -59,7 +70,7 @@ class StateTree(Tree):
         self.app.status.update("Executing Terraform show")
 
         returncode, stdout = await execute_async("terraform", "show", "-no-color")
-        if returncode != 0 or not stdout.startswith('#'):
+        if returncode != 0 or not stdout.startswith("#"):
             self.app.exit(message=stdout)
             return
 
@@ -70,17 +81,17 @@ class StateTree(Tree):
         modules = set()
         module_nodes = {}
         for line in lines:
-            if not line.startswith('# module'):
+            if not line.startswith("# module"):
                 continue
-            parts = line[2:-1].split('.')
+            parts = line[2:-1].split(".")
             i = 0
             module = ""
-            while parts[i] == 'module':
+            while parts[i] == "module":
                 module += f"{parts[i]}.{parts[i+1]}."
                 modules.add(module[:-1])
                 i += 2
         for module_fullname in sorted(modules):
-            parts = module_fullname.split('.')
+            parts = module_fullname.split(".")
             qualifier = ""
             i = 0
             while i < len(parts):
@@ -93,14 +104,14 @@ class StateTree(Tree):
         # parse objects
         name = ""
         for line in lines:
-            if line.startswith('#'):
-                parts = line[2:].split('.')
+            if line.startswith("#"):
+                parts = line[2:].split(".")
                 i = 0
                 qualifier = ""
-                while parts[i] == 'module':
+                while parts[i] == "module":
                     qualifier = f"{parts[i]}.{parts[i+1]}."
                     i += 2
-                name = '.'.join(parts[i:]).replace(':', '')
+                name = ".".join(parts[i:]).replace(":", "")
                 data = ""
                 if qualifier[:-1] in module_nodes:
                     module_node = module_nodes[qualifier[:-1]]
@@ -119,7 +130,6 @@ class StateTree(Tree):
 
 
 class TerraformTUI(App):
-
     status = None
     switcher = None
     tree = None
@@ -145,7 +155,7 @@ class TerraformTUI(App):
         ("m", "toggle_dark", "Toggle dark mode"),
         Binding("y", "yes", "Yes", show=False),
         Binding("n", "no", "No", show=False),
-        ("q", "quit", "Quit")
+        ("q", "quit", "Quit"),
     ]
 
     def compose(self) -> ComposeResult:
@@ -153,7 +163,14 @@ class TerraformTUI(App):
         with ContentSwitcher(id="switcher", initial="loading"):
             yield LoadingIndicator(id="loading")
             yield StateTree("State", id="tree")
-            yield TextLog(id="resource", highlight=True, markup=True, wrap=True, classes="resource", auto_scroll=False)
+            yield TextLog(
+                id="resource",
+                highlight=True,
+                markup=True,
+                wrap=True,
+                classes="resource",
+                auto_scroll=False,
+            )
             with Vertical(id="action"):
                 yield TextLog(id="question", auto_scroll=False)
                 with Horizontal():
@@ -181,7 +198,11 @@ class TerraformTUI(App):
 
     async def perform_taint_untaint(self, what_to_do: str) -> None:
         resources = [
-            f"{node.parent.data}.{node.label.plain[:-4]}".lstrip(".").replace(' (tainted)', '') for node in self.tree.selected_nodes]
+            f"{node.parent.data}.{node.label.plain[:-4]}".lstrip(".").replace(
+                " (tainted)", ""
+            )
+            for node in self.tree.selected_nodes
+        ]
         for resource in resources:
             await execute_async("terraform", what_to_do, resource)
 
@@ -201,7 +222,10 @@ class TerraformTUI(App):
         self.action_back()
 
     def action_back(self) -> None:
-        if not self.switcher.current == "resource" and not self.switcher.current == "action":
+        if (
+            not self.switcher.current == "resource"
+            and not self.switcher.current == "action"
+        ):
             return
         self.switcher.current = "tree"
         self.tree.focus()
@@ -222,9 +246,14 @@ class TerraformTUI(App):
             return
         self.selected_action = what_to_do
         self.question.clear()
-        resources = [f"{node.parent.data}.{node.label.plain[:-4]}".lstrip('.') for node in self.tree.selected_nodes]
-        self.question.write(f"Are you sure you wish to {what_to_do} the selected resources?\n\n - " +
-                            "\n - ".join(resources))
+        resources = [
+            f"{node.parent.data}.{node.label.plain[:-4]}".lstrip(".")
+            for node in self.tree.selected_nodes
+        ]
+        self.question.write(
+            f"Are you sure you wish to {what_to_do} the selected resources?\n\n - "
+            + "\n - ".join(resources)
+        )
         self.switcher.current = "action"
 
     def action_taint(self) -> None:
@@ -243,18 +272,17 @@ class TerraformTUI(App):
 
 
 async def execute_async(*command: str) -> tuple[str, str]:
-    proc = await asyncio.create_subprocess_exec(*command,
-                                                stdout=asyncio.subprocess.PIPE,
-                                                stderr=asyncio.subprocess.STDOUT)
+    proc = await asyncio.create_subprocess_exec(
+        *command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT
+    )
 
     stdout, strerr = await proc.communicate()
-    response = stdout.decode('utf-8')
+    response = stdout.decode("utf-8")
 
     return (proc.returncode, response)
 
 
 def main() -> None:
-
     if which("terraform") is None:
         print("Terraform not found. Please install Terraform and try again.")
         return
