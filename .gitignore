@@ -162,3 +162,5 @@ cython_debug/
 state.txt
 
 .terraform/
+
+.vscode/**
