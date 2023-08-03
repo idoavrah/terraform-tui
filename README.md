@@ -27,3 +27,7 @@ With its latest version [0.3.0](https://github.com/idoavrah/terraform-tui/releas
 |-----------------| ------------------- | ----------------------------- | ---------------------------------------- |
 | PIP             | `pip install tftui` | `pip install --upgrade tftui` | `cd /path/to/terraform/project && tftui` |
 | PIPX            | `pipx install tftui`| `pipx upgrade tftui`          | `cd /path/to/terraform/project && tftui` |
+
+## Stargazers over time
+[![Stargazers over time](https://starchart.cc/idoavrah/terraform-tui.svg)](https://starchart.cc/idoavrah/terraform-tui)
+
