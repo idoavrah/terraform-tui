@@ -4,7 +4,7 @@ from textual.widgets import (
     Header,
     Footer,
     Tree,
-    TextLog,
+    RichLog as TextLog,
     LoadingIndicator,
     ContentSwitcher,
     Static,
