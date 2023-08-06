@@ -45,7 +45,7 @@ pygments==2.15.1
     # via rich
 rich==13.4.2
     # via textual
-textual==0.31.0
+textual==0.32.0
     # via
     #   textual-dev
     #   tftui (pyproject.toml)
