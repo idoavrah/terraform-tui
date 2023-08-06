@@ -16,7 +16,7 @@ classifiers = [
 ]
 keywords = ["terraform", "tui"]
 dependencies = [
-    "textual",
+    "textual>=0.32.0",
     "textual-dev",
 ]
 requires-python = ">=3.9"
