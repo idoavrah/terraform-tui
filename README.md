@@ -1,8 +1,12 @@
 # TFTUI - The Terraform textual UI
 
+[![PyPI version](https://badge.fury.io/py/tftui.svg)](https://badge.fury.io/py/tftui)
+![GitHub](https://img.shields.io/github/license/idoavrah/terraform-tui)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/tftui)
+
 `TFTUI` is a powerful textual GUI that empowers users to effortlessly view and interact with their Terraform state.
 
-With its latest version [0.3.0](https://github.com/idoavrah/terraform-tui/releases/tag/v0.3.0) you can easily visualize the complete state tree, gaining deeper insights into your infrastructure's current configuration. Additionally, the ability to inspect individual resource states allows you to focus on specific details for better analysis and management. Lastly, it's now possible to select resources and perform actions such as tainting and untainting.
+With its latest version you can easily visualize the complete state tree, gaining deeper insights into your infrastructure's current configuration. Additionally, the ability to inspect individual resource states allows you to focus on specific details for better analysis and management. Lastly, it's now possible to select resources and perform actions such as tainting and untainting.
 
 ## Key Features
 
