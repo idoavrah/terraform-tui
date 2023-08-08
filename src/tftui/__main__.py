@@ -90,15 +90,22 @@ class StateTree(Tree):
                 module += f"{parts[i]}.{parts[i+1]}."
                 modules.add(module[:-1])
                 i += 2
+
         for module_fullname in sorted(modules):
             parts = module_fullname.split(".")
-            qualifier = ""
+            sub_module = ""
             i = 0
             while i < len(parts):
-                qualifier = f"{parts[i]}.{parts[i+1]}."
-                if qualifier[:-1] not in module_nodes:
-                    node = self.root.add(qualifier[:-1], data=module_fullname)
-                    module_nodes[qualifier[:-1]] = node
+                parent = sub_module
+                short_name = f"{parts[i]}.{parts[i+1]}."
+                sub_module += short_name
+                if sub_module[:-1] not in module_nodes:
+                    if module_nodes.get(parent[:-1]) is None:
+                        parent_node = self.root
+                    else:
+                        parent_node = module_nodes[parent[:-1]]
+                    node = parent_node.add(short_name[:-1], data=sub_module[:-1])
+                    module_nodes[sub_module[:-1]] = node
                 i += 2
 
         # parse objects
@@ -109,7 +116,7 @@ class StateTree(Tree):
                 i = 0
                 qualifier = ""
                 while parts[i] == "module":
-                    qualifier = f"{parts[i]}.{parts[i+1]}."
+                    qualifier += f"{parts[i]}.{parts[i+1]}."
                     i += 2
                 name = ".".join(parts[i:]).replace(":", "")
                 data = ""

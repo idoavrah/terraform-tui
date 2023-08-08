@@ -34,4 +34,3 @@ With its latest version you can easily visualize the complete state tree, gainin
 
 ## Stargazers over time
 [![Stargazers over time](https://starchart.cc/idoavrah/terraform-tui.svg)](https://starchart.cc/idoavrah/terraform-tui)
-
