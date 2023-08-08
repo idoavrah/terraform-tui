@@ -7,10 +7,3 @@ resource "random_integer" "random_number" {
 variable "input_number" {
   description = "Input number for the module"
 }
-
-
-module "module2" {
-  source = "../module2"
-  count = 5
-  input_number = var.input_number
-}

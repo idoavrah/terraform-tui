@@ -90,15 +90,22 @@ class StateTree(Tree):
                 module += f"{parts[i]}.{parts[i+1]}."
                 modules.add(module[:-1])
                 i += 2
+
         for module_fullname in sorted(modules):
             parts = module_fullname.split(".")
-            qualifier = ""
+            sub_module = ""
             i = 0
             while i < len(parts):
-                qualifier = f"{parts[i]}.{parts[i+1]}."
-                if qualifier[:-1] not in module_nodes:
-                    node = self.root.add(qualifier[:-1], data=module_fullname)
-                    module_nodes[qualifier[:-1]] = node
+                parent = sub_module
+                short_name = f"{parts[i]}.{parts[i+1]}."
+                sub_module += short_name
+                if sub_module[:-1] not in module_nodes:
+                    if module_nodes.get(parent[:-1]) is None:
+                        parent_node = self.root
+                    else:
+                        parent_node = module_nodes[parent[:-1]]
+                    node = parent_node.add(short_name[:-1], data=sub_module[:-1])
+                    module_nodes[sub_module[:-1]] = node
                 i += 2
 
         # parse objects
@@ -109,7 +116,7 @@ class StateTree(Tree):
                 i = 0
                 qualifier = ""
                 while parts[i] == "module":
-                    qualifier = f"{parts[i]}.{parts[i+1]}."
+                    qualifier += f"{parts[i]}.{parts[i+1]}."
                     i += 2
                 name = ".".join(parts[i:]).replace(":", "")
                 data = ""
@@ -152,11 +159,12 @@ class TerraformTUI(App):
         ("t", "taint", "Taint"),
         ("u", "untaint", "Untaint"),
         ("r", "refresh", "Refresh state"),
+        ("1-9", "collapse", "Collapse level"),
         ("m", "toggle_dark", "Toggle dark mode"),
         Binding("y", "yes", "Yes", show=False),
         Binding("n", "no", "No", show=False),
         ("q", "quit", "Quit"),
-    ]
+    ] + [Binding(f"{i}", f"collapse({i})", show=False) for i in range(10)]
 
     def compose(self) -> ComposeResult:
         yield Header(classes="header")
@@ -269,6 +277,27 @@ class TerraformTUI(App):
 
     def action_toggle_dark(self) -> None:
         self.dark = not self.dark
+
+    def expand_node(self, level, node) -> None:
+        if not node.allow_expand:
+            return
+        cnt = node.data.count(".module.") + 1
+        if level <= cnt:
+            return
+        for child in node.children:
+            self.expand_node(level, child)
+        node.expand()
+
+    def action_collapse(self, level=0) -> None:
+        if not self.switcher.current == "tree":
+            return
+        if level == 0:
+            self.tree.root.expand_all()
+            return
+        self.tree.root.collapse_all()
+        for node in self.tree.root.children:
+            self.expand_node(level, node)
+        self.tree.root.expand()
 
 
 async def execute_async(*command: str) -> tuple[str, str]:

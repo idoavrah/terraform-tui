@@ -10,6 +10,10 @@ With its latest version you can easily visualize the complete state tree, gainin
 
 ## Key Features
 
+### version 0.4
+- [x] Fixed the erroneous flattening of submodules
+- [x] Added collapse levels for the state tree
+
 ### version 0.3
 - [x] Added loading screen and status bar
 - [x] Added selection of resources
@@ -34,4 +38,3 @@ With its latest version you can easily visualize the complete state tree, gainin
 
 ## Stargazers over time
 [![Stargazers over time](https://starchart.cc/idoavrah/terraform-tui.svg)](https://starchart.cc/idoavrah/terraform-tui)
-

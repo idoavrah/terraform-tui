@@ -9,8 +9,8 @@ variable "input_number" {
 }
 
 
-module "module2" {
-  source = "../module2"
-  count = 5
+module "module3" {
+  source = "../module3"
+  count = 7
   input_number = var.input_number
 }
