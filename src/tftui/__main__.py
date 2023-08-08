@@ -312,7 +312,7 @@ async def execute_async(*command: str) -> tuple[str, str]:
 
 
 def main() -> None:
-    if which("terraform") is None:
+    if which("terraform") is None and which("terraform.exe") is None:
         print("Terraform not found. Please install Terraform and try again.")
         return
 
