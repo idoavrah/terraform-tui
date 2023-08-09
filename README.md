@@ -27,7 +27,7 @@ With its latest version you can easily visualize the complete state tree, gainin
 
 ## Demo
 
-![](https://github.com/idoavrah/terraform-tui/raw/main/demo/demo.gif "demo")
+![](https://github.com/idoavrah/terraform-tui/raw/main/demo/demo.gif? "demo")
 
 ## Installation
 
