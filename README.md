@@ -13,6 +13,7 @@ With its latest version you can easily visualize the complete state tree, gainin
 ### version 0.4
 - [x] Fixed the erroneous flattening of submodules
 - [x] Added collapse levels for the state tree
+- [x] Added command line options
 
 ### version 0.3
 - [x] Added loading screen and status bar
