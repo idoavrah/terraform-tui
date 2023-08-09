@@ -1,6 +1,6 @@
 # TFTUI - The Terraform textual UI
 
-[![PyPI version](https://badge.fury.io/py/tftui.svg)](https://badge.fury.io/py/tftui?)
+[![PyPI version](https://badge.fury.io/py/tftui.svg?)](https://badge.fury.io/py/tftui?)
 ![GitHub](https://img.shields.io/github/license/idoavrah/terraform-tui?)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/tftui?)
 
