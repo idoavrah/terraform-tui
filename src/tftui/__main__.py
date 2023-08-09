@@ -1,3 +1,5 @@
+import asyncio
+import argparse
 from textual import work
 from textual.app import App, ComposeResult, Binding
 from textual.widgets import (
@@ -12,7 +14,9 @@ from textual.widgets import (
 )
 from textual.containers import Vertical, Horizontal
 from shutil import which
-import asyncio
+import importlib.metadata
+
+global_no_init = False
 
 
 class StateTree(Tree):
@@ -60,12 +64,13 @@ class StateTree(Tree):
         self.selected_nodes = []
         self.current_node = None
         self.clear()
-        self.app.status.update("Executing Terraform init")
 
-        returncode, stdout = await execute_async("terraform", "init", "-no-color")
-        if returncode != 0:
-            self.app.exit(message=stdout)
-            return
+        if not global_no_init:
+            self.app.status.update("Executing Terraform init")
+            returncode, stdout = await execute_async("terraform", "init", "-no-color")
+            if returncode != 0:
+                self.app.exit(message=stdout)
+                return
 
         self.app.status.update("Executing Terraform show")
 
@@ -311,10 +316,38 @@ async def execute_async(*command: str) -> tuple[str, str]:
     return (proc.returncode, response)
 
 
-def main() -> None:
+def parse_command_line() -> None:
+    global global_no_init
+
+    parser = argparse.ArgumentParser(
+        prog="tftui", description="TFTUI - the terraform terminal UI", epilog="Enjoy!"
+    )
+    parser.add_argument(
+        "-n",
+        "--no-init",
+        help="do not run terraform init on startup",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-v", "--version", help="show version information", action="store_true"
+    )
+
+    args = parser.parse_args()
+
+    if args.version:
+        version = importlib.metadata.version("tftui")
+        print(f"tftui v{version}")
+        exit(0)
+    if args.no_init:
+        global_no_init = True
+
     if which("terraform") is None and which("terraform.exe") is None:
         print("Terraform not found. Please install Terraform and try again.")
-        return
+        exit(1)
+
+
+def main() -> None:
+    parse_command_line()
 
     app = TerraformTUI()
     result = app.run()
