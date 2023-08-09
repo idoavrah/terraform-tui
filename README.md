@@ -27,7 +27,7 @@ With its latest version you can easily visualize the complete state tree, gainin
 
 ## Demo
 
-![](https://github.com/idoavrah/terraform-tui/raw/main/demo/demo.gif? "demo")
+![](https://github.com/idoavrah/terraform-tui/raw/main/demo/demo.gif "demo")
 
 ## Installation
 
@@ -37,4 +37,4 @@ With its latest version you can easily visualize the complete state tree, gainin
 | PIPX            | `pipx install tftui`| `pipx upgrade tftui`          | `cd /path/to/terraform/project && tftui` |
 
 ## Stargazers over time
-[![Stargazers over time](https://starchart.cc/idoavrah/terraform-tui.svg)](https://starchart.cc/idoavrah/terraform-tui)
+[![Stargazers over time](https://starchart.cc/idoavrah/terraform-tui.svg?)](https://starchart.cc/idoavrah/terraform-tui)
