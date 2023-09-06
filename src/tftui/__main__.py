@@ -17,6 +17,7 @@ from shutil import which
 import importlib.metadata
 
 global_no_init = False
+global_executable = "terraform"
 
 
 class StateTree(Tree):
@@ -66,15 +67,15 @@ class StateTree(Tree):
         self.clear()
 
         if not global_no_init:
-            self.app.status.update("Executing Terraform init")
-            returncode, stdout = await execute_async("terraform", "init", "-no-color")
+            self.app.status.update(f"Executing {global_executable.capitalize()} init")
+            returncode, stdout = await execute_async(global_executable, "init", "-no-color")
             if returncode != 0:
                 self.app.exit(message=stdout)
                 return
 
-        self.app.status.update("Executing Terraform show")
+        self.app.status.update(f"Executing {global_executable.capitalize()} show")
 
-        returncode, stdout = await execute_async("terraform", "show", "-no-color")
+        returncode, stdout = await execute_async(global_executable, "show", "-no-color")
         if returncode != 0 or not stdout.startswith("#"):
             self.app.exit(message=stdout)
             return
@@ -217,13 +218,13 @@ class TerraformTUI(App):
             for node in self.tree.selected_nodes
         ]
         for resource in resources:
-            await execute_async("terraform", what_to_do, resource)
+            await execute_async(global_executable, what_to_do, resource)
 
     async def perform_action(self) -> None:
         if self.switcher.current != "action":
             return
         if self.selected_action == "taint" or self.selected_action == "untaint":
-            self.status.update(f"Executing Terraform {self.selected_action}")
+            self.status.update(f"Executing {global_executable.capitalize()} {self.selected_action}")
             self.switcher.current = "loading"
             await self.perform_taint_untaint(self.selected_action)
         self.tree.refresh_state()
@@ -318,9 +319,15 @@ async def execute_async(*command: str) -> tuple[str, str]:
 
 def parse_command_line() -> None:
     global global_no_init
+    global global_executable
 
     parser = argparse.ArgumentParser(
-        prog="tftui", description="TFTUI - the terraform terminal UI", epilog="Enjoy!"
+        prog="tftui", description="TFTUI - the Terraform terminal UI", epilog="Enjoy!"
+    )
+    parser.add_argument(
+        "-e",
+        "--executable",
+        help="set executable command (default 'terraform')"
     )
     parser.add_argument(
         "-n",
@@ -340,9 +347,11 @@ def parse_command_line() -> None:
         exit(0)
     if args.no_init:
         global_no_init = True
+    if args.executable:
+        global_executable = args.executable
 
-    if which("terraform") is None and which("terraform.exe") is None:
-        print("Terraform not found. Please install Terraform and try again.")
+    if which(global_executable) is None and which(f"{global_executable}.exe") is None:
+        print(f"Executable '{global_executable}' not found. Please install and try again.")
         exit(1)
 
 
