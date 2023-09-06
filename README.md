@@ -10,6 +10,9 @@ With its latest version you can easily visualize the complete state tree, gainin
 
 ## Key Features
 
+### version 0.5
+- [x] Added support for terragrunt (and other Terraform wrappers); courtesy of [@jonwtech](https://github.com/jonwtech)
+
 ### version 0.4
 - [x] Fixed the erroneous flattening of submodules
 - [x] Added collapse levels for the state tree
