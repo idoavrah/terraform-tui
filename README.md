@@ -40,5 +40,5 @@ With its latest version you can easily visualize the complete state tree, gainin
 | PIP             | `pip install tftui` | `pip install --upgrade tftui` | `cd /path/to/terraform/project && tftui` |
 | PIPX            | `pipx install tftui`| `pipx upgrade tftui`          | `cd /path/to/terraform/project && tftui` |
 
-## Stargazers over time
-[![Stargazers over time](https://starchart.cc/idoavrah/terraform-tui.svg?)](https://starchart.cc/idoavrah/terraform-tui)
+## Star History
+[![Star History Chart](https://api.star-history.com/svg?repos=idoavrah/terraform-tui&type=Date)](https://star-history.com/#idoavrah/terraform-tui&Date)
