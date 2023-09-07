@@ -1,8 +1,8 @@
 # TFTUI - The Terraform textual UI
 
-[![PyPI version](https://badge.fury.io/py/tftui.svg?)](https://badge.fury.io/py/tftui?)
-![GitHub](https://img.shields.io/github/license/idoavrah/terraform-tui?)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/tftui?)
+[![PyPI version](https://badge.fury.io/py/tftui.svg?random=stuff)](https://badge.fury.io/py/tftui?)
+![GitHub](https://img.shields.io/github/license/idoavrah/terraform-tui?random=stuff)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/tftui?random=stuff)
 
 `TFTUI` is a powerful textual GUI that empowers users to effortlessly view and interact with their Terraform state.
 
