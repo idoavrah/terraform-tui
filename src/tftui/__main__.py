@@ -1,7 +1,13 @@
 import asyncio
 import argparse
+import uuid
+import importlib.metadata
+import requests
 from textual import work
 from textual.app import App, ComposeResult, Binding
+from textual.containers import Vertical, Horizontal
+from shutil import which
+from posthog import Posthog
 from textual.widgets import (
     Header,
     Footer,
@@ -12,12 +18,39 @@ from textual.widgets import (
     Static,
     Button,
 )
-from textual.containers import Vertical, Horizontal
-from shutil import which
-import importlib.metadata
 
+version = importlib.metadata.version("tftui")
 global_no_init = False
 global_executable = "terraform"
+global_successful_termination = True
+
+
+class OutboundAPIs:
+    is_new_version_available = False
+    is_usage_tracking_enabled = True
+    session_id = uuid.uuid4()
+    posthog = Posthog(
+        project_api_key="phc_tjGzx7V6Y85JdNfOFWxQLXo5wtUs6MeVLvoVfybqz09",
+        host="https://app.posthog.com",
+        disable_geoip=False,
+    )
+
+    response = requests.get("https://pypi.org/pypi/tftui/json")
+    if response.status_code == 200:
+        ver = response.json()["info"]["version"]
+        if ver != version:
+            is_new_version_available = True
+
+    @staticmethod
+    def post_usage(message: str) -> None:
+        if OutboundAPIs.is_usage_tracking_enabled:
+            OutboundAPIs.posthog.capture(
+                OutboundAPIs.session_id, message, {"tftui_version": version}
+            )
+
+    @staticmethod
+    def disable_usage_tracking() -> None:
+        OutboundAPIs.is_usage_tracking_enabled = False
 
 
 class StateTree(Tree):
@@ -61,6 +94,8 @@ class StateTree(Tree):
 
     @work(exclusive=True)
     async def refresh_state(self) -> None:
+        global global_successful_termination
+
         self.app.switcher.current = "loading"
         self.selected_nodes = []
         self.current_node = None
@@ -68,9 +103,12 @@ class StateTree(Tree):
 
         if not global_no_init:
             self.app.status.update(f"Executing {global_executable.capitalize()} init")
-            returncode, stdout = await execute_async(global_executable, "init", "-no-color")
+            returncode, stdout = await execute_async(
+                global_executable, "init", "-no-color"
+            )
             if returncode != 0:
                 self.app.exit(message=stdout)
+                global_successful_termination = False
                 return
 
         self.app.status.update(f"Executing {global_executable.capitalize()} show")
@@ -78,6 +116,7 @@ class StateTree(Tree):
         returncode, stdout = await execute_async(global_executable, "show", "-no-color")
         if returncode != 0 or not stdout.startswith("#"):
             self.app.exit(message=stdout)
+            global_successful_termination = False
             return
 
         self.app.status.update("Building state tree")
@@ -140,6 +179,7 @@ class StateTree(Tree):
         self.app.status.update("")
         self.app.switcher.current = "tree"
         self.app.tree.focus()
+        OutboundAPIs.post_usage("refreshed state")
 
 
 class TerraformTUI(App):
@@ -154,8 +194,8 @@ class TerraformTUI(App):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    TITLE = "Terraform TUI"
-    SUB_TITLE = "The textual UI for Terraform"
+    TITLE = f"Terraform TUI v{version}"
+    SUB_TITLE = f"The textual UI for Terraform{' (new version available)' if OutboundAPIs.is_new_version_available else ''}"
     CSS_PATH = "ui.css"
 
     BINDINGS = [
@@ -224,7 +264,9 @@ class TerraformTUI(App):
         if self.switcher.current != "action":
             return
         if self.selected_action == "taint" or self.selected_action == "untaint":
-            self.status.update(f"Executing {global_executable.capitalize()} {self.selected_action}")
+            self.status.update(
+                f"Executing {global_executable.capitalize()} {self.selected_action}"
+            )
             self.switcher.current = "loading"
             await self.perform_taint_untaint(self.selected_action)
         self.tree.refresh_state()
@@ -272,14 +314,17 @@ class TerraformTUI(App):
 
     def action_taint(self) -> None:
         self.action_taint_untaint("taint")
+        OutboundAPIs.post_usage("applied taint")
 
     def action_untaint(self) -> None:
         self.action_taint_untaint("untaint")
+        OutboundAPIs.post_usage("applied untaint")
 
     def action_refresh(self) -> None:
         if not self.switcher.current == "tree":
             return
         self.tree.refresh_state()
+        OutboundAPIs.post_usage("refreshed state")
 
     def action_toggle_dark(self) -> None:
         self.dark = not self.dark
@@ -325,14 +370,18 @@ def parse_command_line() -> None:
         prog="tftui", description="TFTUI - the Terraform terminal UI", epilog="Enjoy!"
     )
     parser.add_argument(
-        "-e",
-        "--executable",
-        help="set executable command (default 'terraform')"
+        "-e", "--executable", help="set executable command (default 'terraform')"
     )
     parser.add_argument(
         "-n",
         "--no-init",
-        help="do not run terraform init on startup",
+        help="do not run terraform init on startup (default run)",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-d",
+        "--disable-usage-tracking",
+        help="disable usage tracking (default enabled)",
         action="store_true",
     )
     parser.add_argument(
@@ -342,26 +391,42 @@ def parse_command_line() -> None:
     args = parser.parse_args()
 
     if args.version:
-        version = importlib.metadata.version("tftui")
-        print(f"tftui v{version}")
+        print(
+            f"\ntftui v{version}{' (new version available)' if OutboundAPIs.is_new_version_available else ''}\n"
+        )
         exit(0)
     if args.no_init:
         global_no_init = True
+    if args.disable_usage_tracking:
+        OutboundAPIs.disable_usage_tracking()
     if args.executable:
         global_executable = args.executable
 
     if which(global_executable) is None and which(f"{global_executable}.exe") is None:
-        print(f"Executable '{global_executable}' not found. Please install and try again.")
+        print(
+            f"Executable '{global_executable}' not found. Please install and try again."
+        )
         exit(1)
 
 
 def main() -> None:
+    global global_successful_termination
+
     parse_command_line()
+    OutboundAPIs.post_usage("started application")
 
     app = TerraformTUI()
     result = app.run()
     if result is not None:
         print(result)
+    if global_successful_termination:
+        OutboundAPIs.post_usage("exited successfully")
+    else:
+        OutboundAPIs.post_usage("exited unsuccessfully")
+
+    print(
+        f"\nBye!{' Also, new version available.' if OutboundAPIs.is_new_version_available else ''}\n"
+    )
 
 
 if __name__ == "__main__":

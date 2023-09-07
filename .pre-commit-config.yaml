@@ -29,6 +29,7 @@ repos:
       - id: ruff
         args:
           - --fix
+          - --line-length=130
   - repo: https://github.com/psf/black
     rev: 23.7.0
     hooks:
