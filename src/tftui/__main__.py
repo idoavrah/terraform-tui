@@ -44,7 +44,9 @@ class OutboundAPIs:
     @staticmethod
     def post_usage(message: str) -> None:
         if OutboundAPIs.is_usage_tracking_enabled:
-            OutboundAPIs.posthog.capture(OutboundAPIs.session_id, message)
+            OutboundAPIs.posthog.capture(
+                OutboundAPIs.session_id, message, {"tftui_version": version}
+            )
 
     @staticmethod
     def disable_usage_tracking() -> None:
