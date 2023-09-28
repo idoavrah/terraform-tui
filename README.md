@@ -44,10 +44,11 @@ With its latest version you can easily visualize the complete state tree, gainin
 
 ## Installation
 
-| Tool | Install              | Upgrade                       | Run                                      |
-| ---- | -------------------- | ----------------------------- | ---------------------------------------- |
-| PIP  | `pip install tftui`  | `pip install --upgrade tftui` | `cd /path/to/terraform/project && tftui` |
-| PIPX | `pipx install tftui` | `pipx upgrade tftui`          | `cd /path/to/terraform/project && tftui` |
+| Tool | Install                                | Upgrade                       | Run                                      |
+| ---- | -------------------------------------- | ----------------------------- | ---------------------------------------- |
+| Brew | `brew install idoavrah/homebrew/tftui` | `brew upgrade tftui`          | `cd /path/to/terraform/project && tftui` |
+| PIP  | `pip install tftui`                    | `pip install --upgrade tftui` | `cd /path/to/terraform/project && tftui` |
+| PIPX | `pipx install tftui`                   | `pipx upgrade tftui`          | `cd /path/to/terraform/project && tftui` |
 
 ## Usage Tracking
 
