@@ -165,4 +165,4 @@ state.txt
 
 .vscode/**
 
-test/terraform.tfstate
+test/terraform.tfstate*

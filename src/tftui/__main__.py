@@ -12,6 +12,7 @@ from textual.widgets import (
     Header,
     Footer,
     Tree,
+    Input,
     RichLog as TextLog,
     LoadingIndicator,
     ContentSwitcher,
@@ -85,12 +86,10 @@ class StateTree(Tree):
             return
         if self.current_node in self.selected_nodes:
             self.selected_nodes.remove(self.current_node)
-            label = self.current_node.label
-            label.right_crop(4)
-            self.current_node.set_label(label)
+            self.current_node.label = self.current_node.label.plain
         else:
             self.selected_nodes.append(self.current_node)
-            self.current_node.set_label(self.current_node.label.append(" [X]"))
+            self.current_node.label.stylize("red bold italic reverse")
 
     @work(exclusive=True)
     async def refresh_state(self) -> None:
@@ -189,6 +188,7 @@ class TerraformTUI(App):
     resource = None
     question = None
     action = None
+    search = None
     selected_action = None
 
     def __init__(self, *args, **kwargs):
@@ -205,6 +205,7 @@ class TerraformTUI(App):
         ("t", "taint", "Taint"),
         ("u", "untaint", "Untaint"),
         ("r", "refresh", "Refresh state"),
+        ("/", "search", "Search"),
         ("1-9", "collapse", "Collapse level"),
         ("m", "toggle_dark", "Toggle dark mode"),
         Binding("y", "yes", "Yes", show=False),
@@ -214,6 +215,7 @@ class TerraformTUI(App):
 
     def compose(self) -> ComposeResult:
         yield Header(classes="header")
+        yield Input(id="search", placeholder="Search text...")
         with ContentSwitcher(id="switcher", initial="loading"):
             yield LoadingIndicator(id="loading")
             yield StateTree("State", id="tree")
@@ -240,6 +242,7 @@ class TerraformTUI(App):
         self.switcher = self.get_widget_by_id("switcher")
         self.question = self.get_widget_by_id("question")
         self.action = self.get_widget_by_id("action")
+        self.search = self.get_widget_by_id("search")
 
     async def on_ready(self) -> None:
         self.tree.refresh_state()
@@ -250,9 +253,21 @@ class TerraformTUI(App):
         elif event.button.id == "no":
             self.action_no()
 
+    def on_input_changed(self, event: Input.Changed) -> None:
+        if event.input.id == "search":
+            search_string = event.value.strip()
+            if search_string == "":
+                self.clear_selected_and_styling()
+                self.tree.root.expand_all()
+            else:
+                self.perform_search(search_string)
+
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        self.tree.focus()
+
     async def perform_taint_untaint(self, what_to_do: str) -> None:
         resources = [
-            f"{node.parent.data}.{node.label.plain[:-4]}".lstrip(".").replace(
+            f"{node.parent.data}.{node.label.plain}".lstrip(".").replace(
                 " (tainted)", ""
             )
             for node in self.tree.selected_nodes
@@ -270,6 +285,17 @@ class TerraformTUI(App):
             self.switcher.current = "loading"
             await self.perform_taint_untaint(self.selected_action)
         self.tree.refresh_state()
+
+    def perform_search(self, search_string: str) -> None:
+        if search_string == "":
+            self.tree.root.expand_all()
+            return
+        if not self.switcher.current == "tree":
+            return
+        self.tree.root.collapse_all()
+        for node in self.tree.root.children:
+            self.find_string_in_node(node, search_string)
+        self.tree.root.expand()
 
     async def action_yes(self) -> None:
         await self.perform_action()
@@ -303,7 +329,7 @@ class TerraformTUI(App):
         self.selected_action = what_to_do
         self.question.clear()
         resources = [
-            f"{node.parent.data}.{node.label.plain[:-4]}".lstrip(".")
+            f"{node.parent.data}.{node.label.plain}".lstrip(".")
             for node in self.tree.selected_nodes
         ]
         self.question.write(
@@ -349,6 +375,35 @@ class TerraformTUI(App):
         for node in self.tree.root.children:
             self.expand_node(level, node)
         self.tree.root.expand()
+
+    def action_search(self) -> None:
+        self.clear_selected_and_styling()
+        self.search.focus()
+
+    def clear_selected_and_styling(self, node=None) -> None:
+        if node is None:
+            self.tree.selected_nodes = []
+            node = self.tree.root
+        else:
+            node.label = node.label.plain
+        for child in node.children:
+            self.clear_selected_and_styling(child)
+
+    def find_string_in_node(self, node, search_string: str) -> None:
+        search_string = search_string.lower()
+        if node.data.startswith("module"):
+            for child in node.children:
+                self.find_string_in_node(child, search_string)
+        elif (
+            search_string in node.data.lower()
+            or search_string in node.label.plain.lower()
+        ):
+            node.label.stylize("bold blue reverse")
+            while node.parent is not None:
+                node.expand()
+                node = node.parent
+        else:
+            node.label = node.label.plain
 
 
 async def execute_async(*command: str) -> tuple[str, str]:
