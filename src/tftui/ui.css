@@ -4,13 +4,20 @@
   color: white;
 }
 
+#search {
+  margin: 0 0;
+  border: blue;
+  height: 1;
+}
+
 Tree {
   margin: 0 0;
   border: blue;
+  height: 75vh;
 }
 
 .status {
-  height: 3;
+  height: 1;
   margin: 0;
   color: red;
   text-align: center;
@@ -18,7 +25,8 @@ Tree {
 
 .resource {
   border: blue;
-  margin: 1;
+  margin: 0 0;
+  height: 75vh;
 }
 
 #action {
@@ -45,9 +53,4 @@ Horizontal {
 
 Button {
   width: 20%;
-}
-
-#search {
-  margin: 0 0;
-  border: blue;
 }
