@@ -10,6 +10,11 @@ With its latest version you can easily visualize the complete state tree, gainin
 
 ## Key Features
 
+### version 0.7
+
+- [x] Added a search option (press `/` to search)
+- [x] New styl∏ing for selected resources
+
 ### version 0.6
 
 - [x] Added usage tracking with [PostHog](https://posthog.com)
