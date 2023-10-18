@@ -85,12 +85,10 @@ class StateTree(Tree):
             return
         if self.current_node in self.selected_nodes:
             self.selected_nodes.remove(self.current_node)
-            label = self.current_node.label
-            label.right_crop(4)
-            self.current_node.set_label(label)
+            self.current_node.label = self.current_node.label.plain
         else:
             self.selected_nodes.append(self.current_node)
-            self.current_node.set_label(self.current_node.label.append(" [X]"))
+            self.current_node.label.stylize("red bold italic reverse")
 
     @work(exclusive=True)
     async def refresh_state(self) -> None:
@@ -252,7 +250,7 @@ class TerraformTUI(App):
 
     async def perform_taint_untaint(self, what_to_do: str) -> None:
         resources = [
-            f"{node.parent.data}.{node.label.plain[:-4]}".lstrip(".").replace(
+            f"{node.parent.data}.{node.label.plain}".lstrip(".").replace(
                 " (tainted)", ""
             )
             for node in self.tree.selected_nodes
@@ -303,7 +301,7 @@ class TerraformTUI(App):
         self.selected_action = what_to_do
         self.question.clear()
         resources = [
-            f"{node.parent.data}.{node.label.plain[:-4]}".lstrip(".")
+            f"{node.parent.data}.{node.label.plain}".lstrip(".")
             for node in self.tree.selected_nodes
         ]
         self.question.write(
