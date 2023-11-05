@@ -10,6 +10,10 @@ With its latest version you can easily visualize the complete state tree, gainin
 
 ## Key Features
 
+### version 0.8
+
+- [x] Added a delete resource option
+
 ### version 0.7
 
 - [x] Added a search option (press `/` to search)
@@ -45,7 +49,7 @@ With its latest version you can easily visualize the complete state tree, gainin
 
 ## Demo
 
-![](https://github.com/idoavrah/terraform-tui/raw/main/demo/demo.gif "demo")
+![](demo/demo.gif "demo")
 
 ## Installation
 

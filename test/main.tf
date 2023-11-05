@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     random = {
-      source = "hashicorp/random"
+      source  = "hashicorp/random"
       version = "3.5.1"
     }
   }
@@ -18,4 +18,8 @@ module "random_module" {
 resource "random_integer" "random_number" {
   min = 1
   max = 100
+}
+
+module "aws" {
+  source = "./aws"
 }
