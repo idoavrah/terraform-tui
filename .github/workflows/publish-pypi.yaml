@@ -2,7 +2,7 @@ name: Upload Python Package to PyPI
 
 on:
   release:
-    types: [released, edited]
+    types: [released]
 
 permissions:
   contents: read
