@@ -103,7 +103,7 @@ class StateTree(Tree):
         if not global_no_init:
             self.app.status.update(f"Executing {global_executable.capitalize()} init")
             returncode, stdout = await execute_async(
-                global_executable, "init", "-no-color"
+                global_executable, "init -no-color"
             )
             if returncode != 0:
                 self.app.exit(message=stdout)
@@ -112,7 +112,7 @@ class StateTree(Tree):
 
         self.app.status.update(f"Executing {global_executable.capitalize()} show")
 
-        returncode, stdout = await execute_async(global_executable, "show", "-no-color")
+        returncode, stdout = await execute_async(global_executable, "show -no-color")
         if returncode != 0 or not stdout.startswith("#"):
             self.app.exit(message=stdout)
             global_successful_termination = False
@@ -202,6 +202,7 @@ class TerraformTUI(App):
         ("Enter", "", "View state"),
         Binding("escape", "back", "Back"),
         ("s", "select", "Select"),
+        ("d", "delete", "Delete"),
         ("t", "taint", "Taint"),
         ("u", "untaint", "Untaint"),
         ("r", "refresh", "Refresh state"),
@@ -265,7 +266,7 @@ class TerraformTUI(App):
     def on_input_submitted(self, event: Input.Submitted) -> None:
         self.tree.focus()
 
-    async def perform_taint_untaint(self, what_to_do: str) -> None:
+    async def manipulate_resources(self, what_to_do: str) -> None:
         resources = [
             f"{node.parent.data}.{node.label.plain}".lstrip(".").replace(
                 " (tainted)", ""
@@ -273,17 +274,21 @@ class TerraformTUI(App):
             for node in self.tree.selected_nodes
         ]
         for resource in resources:
-            await execute_async(global_executable, what_to_do, resource)
+            await execute_async(
+                global_executable,
+                (what_to_do if what_to_do != "delete" else "state rm"),
+                resource,
+            )
 
     async def perform_action(self) -> None:
         if self.switcher.current != "action":
             return
-        if self.selected_action == "taint" or self.selected_action == "untaint":
+        if self.selected_action in ["taint", "untaint", "delete"]:
             self.status.update(
                 f"Executing {global_executable.capitalize()} {self.selected_action}"
             )
             self.switcher.current = "loading"
-            await self.perform_taint_untaint(self.selected_action)
+            await self.manipulate_resources(self.selected_action)
         self.tree.refresh_state()
 
     def perform_search(self, search_string: str) -> None:
@@ -321,7 +326,7 @@ class TerraformTUI(App):
         if not self.switcher.current == "tree":
             return
 
-    def action_taint_untaint(self, what_to_do: str) -> None:
+    def action_manipulate_resources(self, what_to_do: str) -> None:
         if not self.switcher.current == "tree":
             return
         if not self.tree.selected_nodes:
@@ -338,12 +343,16 @@ class TerraformTUI(App):
         )
         self.switcher.current = "action"
 
+    def action_delete(self) -> None:
+        self.action_manipulate_resources("delete")
+        OutboundAPIs.post_usage("removed resources from state")
+
     def action_taint(self) -> None:
-        self.action_taint_untaint("taint")
+        self.action_manipulate_resources("taint")
         OutboundAPIs.post_usage("applied taint")
 
     def action_untaint(self) -> None:
-        self.action_taint_untaint("untaint")
+        self.action_manipulate_resources("untaint")
         OutboundAPIs.post_usage("applied untaint")
 
     def action_refresh(self) -> None:
@@ -407,6 +416,8 @@ class TerraformTUI(App):
 
 
 async def execute_async(*command: str) -> tuple[str, str]:
+    command = [word for phrase in command for word in phrase.split()]
+
     proc = await asyncio.create_subprocess_exec(
         *command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT
     )
