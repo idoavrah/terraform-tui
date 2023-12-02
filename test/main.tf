@@ -20,6 +20,11 @@ resource "random_integer" "random_number" {
   max = 100
 }
 
-module "aws" {
-  source = "./aws"
+data "local_file" "foo" {
+  count    = 4
+  filename = "${path.module}/1.txt"
 }
+
+#module "aws" {
+#  source = "./aws"
+#}
