@@ -1,6 +1,7 @@
 import argparse
-from apis import OutboundAPIs
-from state import State, Block, execute_async
+import pyperclip
+from tftui.apis import OutboundAPIs
+from tftui.state import State, Block, execute_async
 from shutil import which
 from textual import work
 from textual.app import App, Binding
@@ -25,10 +26,11 @@ global_successful_termination = True
 class StateTree(Tree):
     current_node = None
     selected_nodes = []
-    current_state = State(executable=global_executable, no_init=global_no_init)
+    current_state = []
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.current_state = State(executable=global_executable, no_init=global_no_init)
         self.guide_depth = 3
         self.root.data = ""
 
@@ -105,6 +107,8 @@ class StateTree(Tree):
         self.current_node = node.node
 
     def on_tree_node_selected(self) -> None:
+        if not self.current_node:
+            return
         if not self.current_node.allow_expand:
             self.app.resource.clear()
             self.app.resource.write(self.current_node.data.contents)
@@ -152,6 +156,7 @@ class TerraformTUI(App):
         ("d", "delete", "Delete"),
         ("t", "taint", "Taint"),
         ("u", "untaint", "Untaint"),
+        ("c", "copy", "Copy"),
         ("r", "refresh", "Refresh"),
         ("/", "search", "Search"),
         ("1-9", "collapse", "Collapse"),
@@ -286,6 +291,11 @@ class TerraformTUI(App):
     def action_untaint(self) -> None:
         self.action_manipulate_resources("untaint")
 
+    def action_copy(self) -> None:
+        if self.switcher.current != "resource":
+            return
+        pyperclip.copy(self.app.tree.current_node.data.contents)
+
     def action_refresh(self) -> None:
         if not self.switcher.current == "tree":
             return
@@ -383,8 +393,16 @@ def main() -> None:
     else:
         OutboundAPIs.post_usage("exited unsuccessfully")
 
+    if OutboundAPIs.is_new_version_available:
+        print("\n*** New version available. ***")
+
     print(
-        f"\nBye!{' Also, new version available.' if OutboundAPIs.is_new_version_available else ''}\n"
+        """
+For questions and suggestions, please visit https://github.com/idoavrah/terraform-tui/discussions
+For issues and bugs, please visit https://github.com/idoavrah/terraform-tui/issues
+
+Bye!
+"""
     )
 
 
