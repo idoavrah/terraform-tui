@@ -12,8 +12,14 @@ async-timeout==4.0.2
     # via aiohttp
 attrs==23.1.0
     # via aiohttp
+backoff==2.2.1
+    # via posthog
+certifi==2023.11.17
+    # via requests
 charset-normalizer==3.2.0
-    # via aiohttp
+    # via
+    #   aiohttp
+    #   requests
 click==8.1.6
     # via textual-dev
 frozenlist==1.4.0
@@ -21,13 +27,16 @@ frozenlist==1.4.0
     #   aiohttp
     #   aiosignal
 idna==3.4
-    # via yarl
+    # via
+    #   requests
+    #   yarl
 importlib-metadata==6.8.0
     # via textual
 linkify-it-py==2.0.2
     # via markdown-it-py
 markdown-it-py[linkify,plugins]==3.0.0
     # via
+    #   markdown-it-py
     #   mdit-py-plugins
     #   rich
     #   textual
@@ -35,16 +44,32 @@ mdit-py-plugins==0.4.0
     # via markdown-it-py
 mdurl==0.1.2
     # via markdown-it-py
+monotonic==1.6
+    # via posthog
 msgpack==1.0.5
     # via textual-dev
 multidict==6.0.4
     # via
     #   aiohttp
     #   yarl
+posthog==3.0.2
+    # via tftui (pyproject.toml)
 pygments==2.15.1
     # via rich
+pyperclip==1.8.2
+    # via tftui (pyproject.toml)
+python-dateutil==2.8.2
+    # via posthog
+requests==2.31.0
+    # via
+    #   posthog
+    #   tftui (pyproject.toml)
 rich==13.4.2
     # via textual
+six==1.16.0
+    # via
+    #   posthog
+    #   python-dateutil
 textual==0.32.0
     # via
     #   textual-dev
@@ -57,6 +82,8 @@ typing-extensions==4.7.1
     #   textual-dev
 uc-micro-py==1.0.2
     # via linkify-it-py
+urllib3==2.1.0
+    # via requests
 yarl==1.9.2
     # via aiohttp
 zipp==3.16.2
