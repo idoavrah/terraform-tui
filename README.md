@@ -10,6 +10,13 @@ With its latest version you can easily visualize the complete state tree, gainin
 
 ## Key Features
 
+### version 0.9
+
+- [x] Improved search functionality (now showing only matching resources)
+- [x] Improved the tainted resources display
+- [x] Added a copy to clipboard option (press `c` to copy)
+- [x] Major refactoring of the codebase
+
 ### version 0.8
 
 - [x] Added a delete resource option
