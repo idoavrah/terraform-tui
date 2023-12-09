@@ -1,31 +1,40 @@
 [build-system]
-requires      = ["setuptools>=61.0.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
-[project]
+[tool.poetry]
 name = "tftui"
-version = "x.x.x"
+version = "0.10.0"
 description = "Terraform Textual User Interface"
+authors = ["Ido Avraham"]
+license = "Apache-2.0"
 readme = "README.md"
-authors = [{ name = "Ido Avraham" }]
-license = { file = "LICENSE" }
+repository = "https://github.com/idoavrah/terraform-tui"
+keywords = ["terraform", "tui"]
 classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
 ]
-keywords = ["terraform", "tui"]
-dependencies = [
-    "textual>=0.32.0",
-    "textual-dev",
-    "posthog>=3.0.2",
-    "requests>=2.31.0",
-    "pyperclip>=1.8.2",
+packages = [
+    { include = "tftui" },
 ]
-requires-python = ">=3.9"
+include = ["tftui/ui.css"]
 
-[project.urls]
-Homepage = "https://github.com/idoavrah/terraform-tui"
+[tool.poetry.dependencies]
+python = "^3.12"
+textual = "^0.44.1"
+posthog = "^3.1.0"
+requests = "^2.31.0"
+pyperclip = "^1.8.2"
 
-[project.scripts]
-tftui = "tftui.__main__:main"
+[tool.poetry.scripts]
+tftui = 'tftui.__main__:main'
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_scheme = "pep440"
+version_provider = "poetry"
+update_changelog_on_bump = true
+major_version_zero = true

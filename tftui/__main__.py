@@ -14,7 +14,6 @@ from textual.widgets import (
     RichLog as TextLog,
     LoadingIndicator,
     ContentSwitcher,
-    Static,
     Button,
 )
 
@@ -89,7 +88,7 @@ class StateTree(Tree):
         global global_successful_termination
 
         self.app.switcher.current = "loading"
-        self.app.update_status(f"Running {global_executable.capitalize()} show")
+        self.app.notify(f"Running {global_executable.capitalize()} show")
         self.app.search.value = ""
         try:
             await self.current_state.refresh_state()
@@ -100,7 +99,6 @@ class StateTree(Tree):
 
         self.build_tree()
         self.app.tree.focus()
-        self.app.update_status("")
         OutboundAPIs.post_usage("refreshed state")
 
     def on_tree_node_highlighted(self, node) -> None:
@@ -133,7 +131,6 @@ class StateTree(Tree):
 
 
 class TerraformTUI(App):
-    status = None
     switcher = None
     tree = None
     resource = None
@@ -185,11 +182,9 @@ class TerraformTUI(App):
                 with Horizontal():
                     yield Button("Yes", id="yes", variant="primary")
                     yield Button("No", id="no", variant="error")
-        yield Static(id="status", classes="status")
         yield Footer()
 
     def on_mount(self) -> None:
-        self.status = self.get_widget_by_id("status")
         self.resource = self.get_widget_by_id("resource")
         self.tree = self.get_widget_by_id("tree")
         self.switcher = self.get_widget_by_id("switcher")
@@ -228,16 +223,13 @@ class TerraformTUI(App):
         if self.switcher.current != "action":
             return
         if self.selected_action in ["taint", "untaint", "delete"]:
-            self.update_status(
+            self.notify(
                 f"Executing {global_executable.capitalize()} {self.selected_action}"
             )
             self.switcher.current = "loading"
             await self.manipulate_resources(self.selected_action)
             OutboundAPIs.post_usage(f"applied {self.selected_action}")
         self.tree.refresh_state()
-
-    def update_status(self, message: str) -> None:
-        self.status.update(f"\n{message}")
 
     def perform_search(self, search_string: str) -> None:
         self.tree.root.collapse_all()
@@ -295,6 +287,7 @@ class TerraformTUI(App):
         if self.switcher.current != "resource":
             return
         pyperclip.copy(self.app.tree.current_node.data.contents)
+        self.notify("Copied to clipboard")
 
     def action_refresh(self) -> None:
         if not self.switcher.current == "tree":
