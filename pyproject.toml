@@ -22,7 +22,7 @@ packages = [
 include = ["tftui/ui.css"]
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.11"
 textual = "^0.44.1"
 posthog = "^3.1.0"
 requests = "^2.31.0"
