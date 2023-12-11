@@ -1,49 +1,71 @@
-.header {
-  height: 3;
-  background: blue;
-  color: white;
-}
-
-#search {
-  margin: 0 0;
-  border: blue;
-  height: 3;
-}
-
-Tree {
-  margin: 0 0;
-  border: blue;
-  height: 75vh;
-}
-
-.resource {
-  border: blue;
-  margin: 0 0;
-  height: 75vh;
-}
-
 #action {
-  layout: grid;
-  grid-size: 2;
-  grid-gutter: 2;
-  padding: 2;
   align: center bottom;
+  grid-gutter: 2;
+  grid-size: 2;
+  layout: grid;
+  padding: 2;
 }
 
-Horizontal {
-  column-span: 2;
-  align: center middle;
+#header {
+  border: double lightblue;
+  border-title-align: center;
+  grid-columns: 20 1fr 50;
+  grid-size: 3;
+  height: 7;
+  layout: grid;
 }
 
 #question {
-  width: 100%;
-  height: 100%;
+  border: solid red;
   column-span: 2;
   content-align: center bottom;
+  height: 100%;
   text-style: bold;
-  border: solid red;
+  width: 100%;
+}
+
+#resource {
+  margin: 0 0 0 1;
+  max-height: 75vh;
+}
+
+#search {
+  background: $surface;
+  border: double lightblue;
+  height: 3;
+}
+
+#switcher {
+  border: double lightblue;
+  max-height: 75vh;
+}
+
+#loading {
+  max-height: 75vh;
+  height: 75vh;
+}
+
+#tree {
+  background: $surface;
+  margin: 0 0 0 1;
+  max-height: 75vh;
 }
 
 Button {
   width: 20%;
+}
+
+Horizontal {
+  align: center middle;
+  column-span: 2;
+}
+
+Screen {
+  color: $text;
+  overflow-y: hidden;
+}
+
+.header-box {
+  margin: 0 0 0 3;
+  text-align: left;
 }

@@ -1,5 +1,6 @@
 import argparse
 import pyperclip
+import os
 from tftui.apis import OutboundAPIs
 from tftui.state import State, Block, execute_async
 from shutil import which
@@ -7,10 +8,10 @@ from textual import work
 from textual.app import App, Binding
 from textual.containers import Vertical, Horizontal
 from textual.widgets import (
-    Header,
     Footer,
     Tree,
     Input,
+    Static,
     RichLog as TextLog,
     LoadingIndicator,
     ContentSwitcher,
@@ -20,6 +21,32 @@ from textual.widgets import (
 global_no_init = False
 global_executable = "terraform"
 global_successful_termination = True
+
+
+class AppHeader(Horizontal):
+    LOGO = r""" ______   ______   ______   __  __    __
+/\__  _\ /\  ___\ /\__  _\ /\ \/\ \  /\ \
+\/_/\ \/ \ \  __\ \/_/\ \/ \ \ \_\ \ \ \ \
+   \ \_\  \ \_\      \ \_\  \ \_____\ \ \_\
+    \/_/   \/_/       \/_/   \/_____/  \/_/
+"""
+
+    TITLES = """
+TFTUI Version:\n
+Working folder:\n
+"""
+
+    INFO = f"""
+{OutboundAPIs.version}{' (new version available)' if OutboundAPIs.is_new_version_available else ''}\n
+{os.getcwd()}\n
+"""
+
+    BORDER_TITLE = "TFTUI - the Terraform terminal user interface"
+
+    def compose(self):
+        yield Static(AppHeader.TITLES, classes="header-box")
+        yield Static(AppHeader.INFO, classes="header-box")
+        yield Static(AppHeader.LOGO, classes="header-box")
 
 
 class StateTree(Tree):
@@ -150,6 +177,7 @@ class TerraformTUI(App):
         ("Enter", "", "View"),
         Binding("escape", "back", "Back"),
         ("s", "select", "Select"),
+        Binding("spacebar", "select", "Select"),
         ("d", "delete", "Delete"),
         ("t", "taint", "Taint"),
         ("u", "untaint", "Untaint"),
@@ -164,7 +192,7 @@ class TerraformTUI(App):
     ] + [Binding(f"{i}", f"collapse({i})", show=False) for i in range(10)]
 
     def compose(self):
-        yield Header(classes="header")
+        yield AppHeader(id="header")
         yield Input(id="search", placeholder="Search text...")
         with ContentSwitcher(id="switcher", initial="loading"):
             yield LoadingIndicator(id="loading")
@@ -202,12 +230,48 @@ class TerraformTUI(App):
             self.action_no()
 
     def on_input_changed(self, event: Input.Changed) -> None:
+        if self.app.switcher.current == "loading":
+            self.app.search.value = ""
+            return
         if event.input.id == "search":
             search_string = event.value.strip()
             self.perform_search(search_string)
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         self.tree.focus()
+
+    def on_key(self, event) -> None:
+        if event.key == "space":
+            self.action_select()
+        elif event.key == "left" and self.switcher.current == "tree":
+            if self.tree.current_node is not None:
+                if (
+                    self.tree.current_node.allow_expand
+                    and self.tree.current_node.is_expanded
+                ):
+                    self.tree.current_node.collapse()
+                elif self.tree.current_node.parent is not None:
+                    self.tree.current_node = self.tree.current_node.parent
+                    self.tree.select_node(self.tree.current_node)
+                    self.tree.scroll_to_node(self.tree.current_node)
+
+        elif event.key == "right" and self.switcher.current == "tree":
+            if self.tree.current_node is not None:
+                if (
+                    self.tree.current_node.allow_expand
+                    and not self.tree.current_node.is_expanded
+                ):
+                    self.tree.current_node.expand()
+                else:
+                    if (
+                        self.tree.get_node_at_line(self.tree.cursor_line + 1)
+                        is not None
+                    ):
+                        self.tree.current_node = self.tree.get_node_at_line(
+                            self.tree.cursor_line + 1
+                        )
+                        self.tree.select_node(self.tree.current_node)
+                        self.tree.scroll_to_node(self.tree.current_node)
 
     async def manipulate_resources(self, what_to_do: str) -> None:
         for node in self.tree.selected_nodes:
