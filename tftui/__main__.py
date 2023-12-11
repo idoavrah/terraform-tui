@@ -54,6 +54,7 @@ Working folder:\n
 
 class StateTree(Tree):
     current_node = None
+    highlighted_resource_node = []
     selected_nodes = []
     current_state = []
 
@@ -133,6 +134,14 @@ class StateTree(Tree):
 
     def on_tree_node_highlighted(self, node) -> None:
         self.current_node = node.node
+        if type(self.current_node.data) == Block:
+            self.highlighted_resource_node = (
+                [node.node]
+                if self.current_node.data.type == Block.TYPE_RESOURCE
+                else []
+            )
+        else:
+            self.highlighted_resource_node = []
 
     def on_tree_node_selected(self) -> None:
         if not self.current_node:
@@ -236,8 +245,7 @@ class TerraformTUI(App):
     def on_input_changed(self, event: Input.Changed) -> None:
         if self.app.switcher.current == "loading":
             self.app.search.value = ""
-            return
-        if event.input.id == "search":
+        elif event.input.id == "search":
             search_string = event.value.strip()
             self.perform_search(search_string)
 
@@ -278,7 +286,12 @@ class TerraformTUI(App):
                         self.tree.scroll_to_node(self.tree.current_node)
 
     async def manipulate_resources(self, what_to_do: str) -> None:
-        for node in self.tree.selected_nodes:
+        nodes = (
+            self.tree.selected_nodes
+            if self.tree.selected_nodes
+            else self.tree.highlighted_resource_node
+        )
+        for node in nodes:
             await execute_async(
                 ApplicationGlobals.executable,
                 (what_to_do if what_to_do != "delete" else "state rm"),
@@ -328,19 +341,22 @@ class TerraformTUI(App):
     def action_manipulate_resources(self, what_to_do: str) -> None:
         if not self.switcher.current == "tree":
             return
-        if not self.tree.selected_nodes:
-            return
-        self.selected_action = what_to_do
-        self.question.clear()
-        resources = [
-            f"{node.parent.data}.{node.label.plain}".lstrip(".")
-            for node in self.tree.selected_nodes
-        ]
-        self.question.write(
-            f"Are you sure you wish to {what_to_do} the selected resources?\n\n - "
-            + "\n - ".join(resources)
+        nodes = (
+            self.tree.selected_nodes
+            if self.tree.selected_nodes
+            else self.tree.highlighted_resource_node
         )
-        self.switcher.current = "action"
+        if nodes:
+            self.selected_action = what_to_do
+            self.question.clear()
+            resources = [
+                f"{node.parent.data}.{node.label.plain}".lstrip(".") for node in nodes
+            ]
+            self.question.write(
+                f"Are you sure you wish to {what_to_do} the selected resources?\n\n - "
+                + "\n - ".join(resources)
+            )
+            self.switcher.current = "action"
 
     def action_delete(self) -> None:
         self.action_manipulate_resources("delete")
@@ -443,8 +459,6 @@ def parse_command_line() -> None:
             f"Executable '{ApplicationGlobals.executable}' not found. Please install and try again."
         )
         exit(1)
-
-    return args
 
 
 def main() -> None:
