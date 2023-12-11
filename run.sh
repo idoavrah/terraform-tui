@@ -1,3 +1,3 @@
 cd test
-rm *.backup
+rm -f *.backup
 poetry run tftui -nd

@@ -18,9 +18,12 @@ from textual.widgets import (
     Button,
 )
 
-global_no_init = False
-global_executable = "terraform"
-global_successful_termination = True
+
+class ApplicationGlobals:
+    executable = "terraform"
+    successful_termination = True
+    no_init = False
+    darkmode = True
 
 
 class AppHeader(Horizontal):
@@ -56,7 +59,9 @@ class StateTree(Tree):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.current_state = State(executable=global_executable, no_init=global_no_init)
+        self.current_state = State(
+            executable=ApplicationGlobals.executable, no_init=ApplicationGlobals.no_init
+        )
         self.guide_depth = 3
         self.root.data = ""
 
@@ -112,16 +117,14 @@ class StateTree(Tree):
 
     @work(exclusive=True)
     async def refresh_state(self) -> None:
-        global global_successful_termination
-
         self.app.switcher.current = "loading"
-        self.app.notify(f"Running {global_executable.capitalize()} show")
+        self.app.notify(f"Running {ApplicationGlobals.executable.capitalize()} show")
         self.app.search.value = ""
         try:
             await self.current_state.refresh_state()
         except Exception as e:
             self.app.exit(e)
-            global_successful_termination = False
+            ApplicationGlobals.successful_termination = False
             return
 
         self.build_tree()
@@ -168,6 +171,7 @@ class TerraformTUI(App):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.dark = ApplicationGlobals.darkmode
 
     TITLE = f"Terraform TUI v{OutboundAPIs.version}"
     SUB_TITLE = f"The textual UI for Terraform{' (new version available)' if OutboundAPIs.is_new_version_available else ''}"
@@ -276,7 +280,7 @@ class TerraformTUI(App):
     async def manipulate_resources(self, what_to_do: str) -> None:
         for node in self.tree.selected_nodes:
             await execute_async(
-                global_executable,
+                ApplicationGlobals.executable,
                 (what_to_do if what_to_do != "delete" else "state rm"),
                 ".".join([node.data.submodule, node.data.name])
                 if node.data.submodule
@@ -288,7 +292,7 @@ class TerraformTUI(App):
             return
         if self.selected_action in ["taint", "untaint", "delete"]:
             self.notify(
-                f"Executing {global_executable.capitalize()} {self.selected_action}"
+                f"Executing {ApplicationGlobals.executable.capitalize()} {self.selected_action}"
             )
             self.switcher.current = "loading"
             await self.manipulate_resources(self.selected_action)
@@ -389,9 +393,6 @@ class TerraformTUI(App):
 
 
 def parse_command_line() -> None:
-    global global_no_init
-    global global_executable
-
     parser = argparse.ArgumentParser(
         prog="tftui", description="TFTUI - the Terraform terminal UI", epilog="Enjoy!"
     )
@@ -411,6 +412,12 @@ def parse_command_line() -> None:
         action="store_true",
     )
     parser.add_argument(
+        "-l",
+        "--light-mode",
+        help="enable light mode (default dark)",
+        action="store_true",
+    )
+    parser.add_argument(
         "-v", "--version", help="show version information", action="store_true"
     )
 
@@ -421,23 +428,26 @@ def parse_command_line() -> None:
             f"\ntftui v{OutboundAPIs.version}{' (new version available)' if OutboundAPIs.is_new_version_available else ''}\n"
         )
         exit(0)
-    if args.no_init:
-        global_no_init = True
     if args.disable_usage_tracking:
         OutboundAPIs.disable_usage_tracking()
     if args.executable:
-        global_executable = args.executable
+        ApplicationGlobals.executable = args.executable
 
-    if which(global_executable) is None and which(f"{global_executable}.exe") is None:
+    ApplicationGlobals.darkmode = not args.light_mode
+
+    if (
+        which(ApplicationGlobals.executable) is None
+        and which(f"{ApplicationGlobals.executable}.exe") is None
+    ):
         print(
-            f"Executable '{global_executable}' not found. Please install and try again."
+            f"Executable '{ApplicationGlobals.executable}' not found. Please install and try again."
         )
         exit(1)
 
+    return args
+
 
 def main() -> None:
-    global global_successful_termination
-
     parse_command_line()
     OutboundAPIs.post_usage("started application")
 
@@ -445,7 +455,7 @@ def main() -> None:
     result = app.run()
     if result is not None:
         print(result)
-    if global_successful_termination:
+    if ApplicationGlobals.successful_termination:
         OutboundAPIs.post_usage("exited successfully")
     else:
         OutboundAPIs.post_usage("exited unsuccessfully")
