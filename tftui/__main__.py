@@ -3,6 +3,7 @@ import pyperclip
 import os
 from tftui.apis import OutboundAPIs
 from tftui.state import State, Block, execute_async
+from tftui.plan import execute_plan
 from shutil import which
 from textual import work
 from textual.app import App, Binding
@@ -35,12 +36,12 @@ class AppHeader(Horizontal):
 """
 
     TITLES = """
-TFTUI Version:\n
+TFTUI Version:\n\n
 Working folder:\n
 """
 
     INFO = f"""
-{OutboundAPIs.version}{' (new version available)' if OutboundAPIs.is_new_version_available else ''}\n
+{OutboundAPIs.version}{' (new version available)' if OutboundAPIs.is_new_version_available else ''}\n\n
 {os.getcwd()}\n
 """
 
@@ -130,18 +131,21 @@ class StateTree(Tree):
 
         self.build_tree()
         self.app.tree.focus()
+        self.current_node = self.get_node_at_line(min(self.cursor_line, self.last_line))
+        self.update_highlighted_resource_node(self.current_node)
         OutboundAPIs.post_usage("refreshed state")
 
-    def on_tree_node_highlighted(self, node) -> None:
-        self.current_node = node.node
+    def update_highlighted_resource_node(self, node) -> None:
+        self.current_node = node
         if type(self.current_node.data) == Block:
             self.highlighted_resource_node = (
-                [node.node]
-                if self.current_node.data.type == Block.TYPE_RESOURCE
-                else []
+                [node] if self.current_node.data.type == Block.TYPE_RESOURCE else []
             )
         else:
             self.highlighted_resource_node = []
+
+    def on_tree_node_highlighted(self, node) -> None:
+        self.update_highlighted_resource_node(node.node)
 
     def on_tree_node_selected(self) -> None:
         if not self.current_node:
@@ -176,6 +180,7 @@ class TerraformTUI(App):
     question = None
     action = None
     search = None
+    commandoutput = None
     selected_action = None
 
     def __init__(self, *args, **kwargs):
@@ -184,7 +189,7 @@ class TerraformTUI(App):
 
     TITLE = f"Terraform TUI v{OutboundAPIs.version}"
     SUB_TITLE = f"The textual UI for Terraform{' (new version available)' if OutboundAPIs.is_new_version_available else ''}"
-    CSS_PATH = "ui.css"
+    CSS_PATH = "ui.tcss"
 
     BINDINGS = [
         ("Enter", "", "View"),
@@ -196,6 +201,8 @@ class TerraformTUI(App):
         ("u", "untaint", "Untaint"),
         ("c", "copy", "Copy"),
         ("r", "refresh", "Refresh"),
+        # ("p", "plan", "Plan"),
+        # ("a", "apply", "Apply"),
         ("/", "search", "Search"),
         ("1-9", "collapse", "Collapse"),
         ("m", "toggle_dark", "Dark mode"),
@@ -218,6 +225,7 @@ class TerraformTUI(App):
                 classes="resource",
                 auto_scroll=False,
             )
+            yield TextLog(id="commandoutput")
             with Vertical(id="action"):
                 yield TextLog(id="question", auto_scroll=False)
                 with Horizontal():
@@ -232,6 +240,7 @@ class TerraformTUI(App):
         self.question = self.get_widget_by_id("question")
         self.action = self.get_widget_by_id("action")
         self.search = self.get_widget_by_id("search")
+        self.commandoutput = self.get_widget_by_id("commandoutput")
 
     async def on_ready(self) -> None:
         self.tree.refresh_state()
@@ -304,13 +313,13 @@ class TerraformTUI(App):
         if self.switcher.current != "action":
             return
         if self.selected_action in ["taint", "untaint", "delete"]:
+            self.switcher.current = "loading"
             self.notify(
                 f"Executing {ApplicationGlobals.executable.capitalize()} {self.selected_action}"
             )
-            self.switcher.current = "loading"
             await self.manipulate_resources(self.selected_action)
             OutboundAPIs.post_usage(f"applied {self.selected_action}")
-        self.tree.refresh_state()
+            self.tree.refresh_state()
 
     def perform_search(self, search_string: str) -> None:
         self.tree.root.collapse_all()
@@ -327,11 +336,26 @@ class TerraformTUI(App):
         if (
             not self.switcher.current == "resource"
             and not self.switcher.current == "action"
+            and not self.switcher.current == "commandoutput"
             and not self.focused.id == "search"
         ):
             return
         self.switcher.current = "tree"
         self.tree.focus()
+
+    async def action_plan(self) -> None:
+        if not self.switcher.current == "tree":
+            return
+        self.switcher.current = "commandoutput"
+        self.commandoutput.clear()
+        self.notify(f"Executing {ApplicationGlobals.executable.capitalize()} plan")
+        await execute_plan(ApplicationGlobals.executable, self.commandoutput)
+        OutboundAPIs.post_usage(f"executed {ApplicationGlobals.executable} plan")
+
+    async def action_apply(self) -> None:
+        if not self.switcher.current == "commandoutput":
+            self.notify("You must PLAN before APPLY", severity="warning")
+            return
 
     def action_select(self) -> None:
         if not self.switcher.current == "tree":
@@ -368,10 +392,12 @@ class TerraformTUI(App):
         self.action_manipulate_resources("untaint")
 
     def action_copy(self) -> None:
-        if self.switcher.current != "resource":
-            return
-        pyperclip.copy(self.app.tree.current_node.data.contents)
-        self.notify("Copied to clipboard")
+        if self.switcher.current == "resource":
+            pyperclip.copy(self.app.tree.current_node.data.contents)
+            self.notify("Copied resource definition to clipboard")
+        elif self.switcher.current == "tree":
+            pyperclip.copy(self.app.tree.current_node.label.plain)
+            self.notify("Copied resource name to clipboard")
 
     def action_refresh(self) -> None:
         if not self.switcher.current == "tree":
@@ -436,7 +462,6 @@ def parse_command_line() -> None:
     parser.add_argument(
         "-v", "--version", help="show version information", action="store_true"
     )
-
     args = parser.parse_args()
 
     if args.version:
@@ -448,7 +473,6 @@ def parse_command_line() -> None:
         OutboundAPIs.disable_usage_tracking()
     if args.executable:
         ApplicationGlobals.executable = args.executable
-
     ApplicationGlobals.darkmode = not args.light_mode
 
     if (

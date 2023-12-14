@@ -11,7 +11,7 @@
   border-title-align: center;
   grid-columns: 20 1fr 50;
   grid-size: 3;
-  height: 7;
+  height: 8;
   layout: grid;
 }
 
@@ -25,6 +25,11 @@
 }
 
 #resource {
+  margin: 0 0 0 1;
+  max-height: 75vh;
+}
+
+#commandoutput {
   margin: 0 0 0 1;
   max-height: 75vh;
 }
