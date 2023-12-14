@@ -25,6 +25,7 @@ With its latest version you can easily visualize the complete state tree, gainin
 - [x] User interface overhaul: added logo, fixed coloring and loading indicator
 - [x] Added resource selection via the space key and tree traversal via the arrow keys
 - [x] Added a lightmode command-line argument
+- [x] Copy to clipboard now copies the resource name in the tree view
 - [x] Fixed a bug in the remove resource functionality
 - [x] Refactor: globals
 
