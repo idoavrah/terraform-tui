@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "tftui"
-version = "0.11.0"
+version = "0.10.0"
 description = "Terraform Textual User Interface"
 authors = ["Ido Avraham"]
 license = "Apache-2.0"
@@ -19,7 +19,7 @@ classifiers = [
 packages = [
     { include = "tftui" },
 ]
-include = ["tftui/ui.css"]
+include = ["tftui/ui.tcss"]
 
 [tool.poetry.dependencies]
 python = "^3.11"

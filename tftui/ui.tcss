@@ -1,0 +1,76 @@
+#action {
+  align: center bottom;
+  grid-gutter: 2;
+  grid-size: 2;
+  layout: grid;
+  padding: 2;
+}
+
+#header {
+  border: double lightblue;
+  border-title-align: center;
+  grid-columns: 20 1fr 50;
+  grid-size: 3;
+  height: 8;
+  layout: grid;
+}
+
+#question {
+  border: solid red;
+  column-span: 2;
+  content-align: center bottom;
+  height: 100%;
+  text-style: bold;
+  width: 100%;
+}
+
+#resource {
+  margin: 0 0 0 1;
+  max-height: 75vh;
+}
+
+#commandoutput {
+  margin: 0 0 0 1;
+  max-height: 75vh;
+}
+
+#search {
+  background: $surface;
+  border: double lightblue;
+  height: 3;
+}
+
+#switcher {
+  border: double lightblue;
+  max-height: 75vh;
+}
+
+#loading {
+  max-height: 75vh;
+  height: 75vh;
+}
+
+#tree {
+  background: $surface;
+  margin: 0 0 0 1;
+  max-height: 75vh;
+}
+
+Button {
+  width: 20%;
+}
+
+Horizontal {
+  align: center middle;
+  column-span: 2;
+}
+
+Screen {
+  color: $text;
+  overflow-y: hidden;
+}
+
+.header-box {
+  margin: 0 0 0 3;
+  text-align: left;
+}

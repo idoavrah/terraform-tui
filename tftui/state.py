@@ -5,7 +5,9 @@ async def execute_async(*command: str) -> tuple[str, str]:
     command = [word for phrase in command for word in phrase.split()]
 
     proc = await asyncio.create_subprocess_exec(
-        *command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT
+        *command,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.STDOUT,
     )
 
     stdout, strerr = await proc.communicate()
