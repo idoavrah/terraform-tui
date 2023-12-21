@@ -2,7 +2,7 @@ import argparse
 import pyperclip
 import os
 from tftui.apis import OutboundAPIs
-from tftui.state import State, Block, execute_async
+from tftui.state import State, Block, execute_async, split_resource_name
 from tftui.plan import execute_plan
 from shutil import which
 from textual import work
@@ -86,7 +86,7 @@ class StateTree(Tree):
         }
 
         for module_fullname in sorted(modules):
-            parts = module_fullname.split(".")
+            parts = split_resource_name(module_fullname)
             submodule = ""
             i = 0
             while i < len(parts):

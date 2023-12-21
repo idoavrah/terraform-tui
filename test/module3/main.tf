@@ -1,5 +1,5 @@
 resource "random_integer" "random_number" {
-  count = 5
+  for_each = toset(["e.f", "g.h"])
   min = 1
   max = 100
 }

@@ -1,5 +1,5 @@
 resource "random_integer" "random_number" {
-  count = 5
+  count = 2
   min = 1
   max = 100
 }
@@ -11,6 +11,6 @@ variable "input_number" {
 
 module "module3" {
   source = "../module3"
-  count = 7
+  count = 3
   input_number = var.input_number
 }

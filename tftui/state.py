@@ -1,4 +1,5 @@
 import asyncio
+import re
 
 
 async def execute_async(*command: str) -> tuple[str, str]:
@@ -14,6 +15,12 @@ async def execute_async(*command: str) -> tuple[str, str]:
     response = stdout.decode("utf-8")
 
     return (proc.returncode, response)
+
+
+def split_resource_name(fullname: str) -> list[str]:
+    # Thanks Chatgpt, couldn't do this without you; please don't become sentient and kill us all
+    pattern = r"\.(?=(?:[^\[\]]*\[[^\[\]]*\])*[^\[\]]*$)"
+    return re.split(pattern, fullname)
 
 
 class Block:
@@ -45,7 +52,7 @@ class State:
     def parse_block(line: str) -> tuple[str, str, str]:
         fullname = line[2 : line.find(":")]
         is_tainted = line.endswith("(tainted)")
-        parts = fullname.split(".")
+        parts = split_resource_name(fullname)
         if fullname.startswith("data") or ".data." in fullname:
             name = ".".join(parts[-3:])
             submodule = ".".join(parts[:-3])
