@@ -15,6 +15,12 @@ module "random_module" {
   input_number = random_integer.random_number.result
 }
 
+module "random_module_with_dots" {
+  for_each     = toset(["a.b", "c.d"])
+  source       = "./module"
+  input_number = random_integer.random_number.result
+}
+
 resource "random_integer" "random_number" {
   min = 1
   max = 100
