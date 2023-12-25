@@ -1,7 +1,7 @@
-resource "random_integer" "random_number" {
+resource "random_integer" "earth" {
   count = 2
-  min = 1
-  max = 100
+  min   = 1
+  max   = 100
 }
 
 variable "input_number" {
@@ -9,8 +9,7 @@ variable "input_number" {
 }
 
 
-module "module3" {
-  source = "../module3"
-  count = 3
+module "uranus" {
+  source       = "../module3"
   input_number = var.input_number
 }
