@@ -73,13 +73,13 @@ class State:
             if line.startswith("#"):
                 (fullname, name, submodule, type, is_tainted) = State.parse_block(line)
                 contents = ""
-            elif line == "}":
-                contents += line + "\n"
+            elif line.startswith("}"):
+                contents += line.rstrip() + "\n"
                 block = Block(submodule, name, type, is_tainted)
                 block.contents = contents
                 self.state_tree[fullname] = block
             else:
-                contents += line + "\n"
+                contents += line.rstrip() + "\n"
 
 
 if __name__ == "__main__":
