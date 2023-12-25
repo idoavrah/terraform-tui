@@ -10,12 +10,12 @@ terraform {
 provider "random" {
 }
 
-module "random_module" {
+module "mercury" {
   source       = "./module"
   input_number = random_integer.random_number.result
 }
 
-module "random_module_with_dots" {
+module "dotted" {
   for_each     = toset(["a.b", "c.d"])
   source       = "./module"
   input_number = random_integer.random_number.result
@@ -26,8 +26,8 @@ resource "random_integer" "random_number" {
   max = 100
 }
 
-data "local_file" "foo" {
-  count    = 4
+data "local_file" "saturn" {
+  count    = 3
   filename = "${path.module}/1.txt"
 }
 

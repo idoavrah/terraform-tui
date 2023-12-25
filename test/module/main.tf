@@ -1,5 +1,5 @@
-resource "random_integer" "random_number" {
-  count = 2
+resource "random_integer" "jupiter" {
+  count = 5
   min   = 1
   max   = 100
 }
@@ -9,13 +9,13 @@ variable "input_number" {
 }
 
 
-module "module2" {
+module "venus" {
   source       = "../module2"
-  count        = 2
+  count        = 4
   input_number = var.input_number
 }
 
-data "local_file" "foo" {
+data "local_file" "pluto" {
   count    = 2
   filename = "${path.module}/1.txt"
 }
