@@ -3,6 +3,7 @@ repos:
     rev: v4.4.0
     hooks:
       - id: check-added-large-files
+        args: ["--maxkb=3300"]
       - id: end-of-file-fixer
       - id: trailing-whitespace
       - id: no-commit-to-branch
