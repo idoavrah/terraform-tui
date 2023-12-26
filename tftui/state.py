@@ -79,7 +79,10 @@ class State:
             raise Exception(stdout)
 
         self.state_tree = {}
-        for line in stdout.splitlines():
+        state_output = stdout.splitlines()
+        logger.debug(f"state show line count: {len(state_output)}")
+
+        for line in state_output:
             if line.startswith("#"):
                 (fullname, name, submodule, type, is_tainted) = State.parse_block(line)
                 contents = ""
