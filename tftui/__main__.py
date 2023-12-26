@@ -1,9 +1,11 @@
 import argparse
 import pyperclip
 import os
+import json
 from tftui.apis import OutboundAPIs
 from tftui.state import State, Block, execute_async, split_resource_name
 from tftui.plan import execute_plan
+from tftui.debug_log import setup_logging
 from shutil import which
 from textual import work
 from textual.app import App, Binding
@@ -18,6 +20,8 @@ from textual.widgets import (
     ContentSwitcher,
     Button,
 )
+
+logger = setup_logging()
 
 
 class ApplicationGlobals:
@@ -75,7 +79,8 @@ class StateTree(Tree):
 
         filtered_blocks = dict(
             filter(
-                lambda block: search_string in block[1].contents,
+                lambda block: search_string in block[1].contents
+                or search_string in block[1].name,
                 self.current_state.state_tree.items(),
             )
         )
@@ -84,6 +89,18 @@ class StateTree(Tree):
             for block in filtered_blocks.values()
             if block.submodule != ""
         }
+
+        logger.debug(
+            "Filter tree: %s",
+            json.dumps(
+                {
+                    "search string": search_string,
+                    "filtered blocks": len(filtered_blocks),
+                    "filtered modules": len(modules),
+                },
+                indent=2,
+            ),
+        )
 
         for module_fullname in sorted(modules):
             parts = split_resource_name(module_fullname)
@@ -153,6 +170,11 @@ class StateTree(Tree):
         if not self.current_node.allow_expand:
             self.app.resource.clear()
             self.app.resource.write(self.current_node.data.contents)
+            self.app.switcher.border_title = (
+                f"{self.current_node.data.submodule}.{self.current_node.data.name}"
+                if self.current_node.data.submodule
+                else self.current_node.data.name
+            )
             self.app.switcher.current = "resource"
 
     def select_current_node(self) -> None:
@@ -341,6 +363,7 @@ class TerraformTUI(App):
         ):
             return
         self.switcher.current = "tree"
+        self.app.switcher.border_title = ""
         self.tree.focus()
 
     async def action_plan(self) -> None:
@@ -430,6 +453,7 @@ class TerraformTUI(App):
         self.tree.root.expand()
 
     def action_search(self) -> None:
+        self.switcher.border_title = ""
         self.switcher.current = "tree"
         self.search.focus()
 
@@ -460,6 +484,12 @@ def parse_command_line() -> None:
         action="store_true",
     )
     parser.add_argument(
+        "-g",
+        "--generate-debug-log",
+        action="store_true",
+        help="generate debug log file (default disabled)",
+    )
+    parser.add_argument(
         "-v", "--version", help="show version information", action="store_true"
     )
     args = parser.parse_args()
@@ -473,8 +503,10 @@ def parse_command_line() -> None:
         OutboundAPIs.disable_usage_tracking()
     if args.executable:
         ApplicationGlobals.executable = args.executable
+    if args.generate_debug_log:
+        logger = setup_logging("debug")
+        logger.debug("Debug log enabled")
     ApplicationGlobals.darkmode = not args.light_mode
-
     if (
         which(ApplicationGlobals.executable) is None
         and which(f"{ApplicationGlobals.executable}.exe") is None

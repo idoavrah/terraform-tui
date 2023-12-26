@@ -1,4 +1,7 @@
 import asyncio
+from tftui.debug_log import setup_logging
+
+logger = setup_logging()
 
 
 async def execute_plan(executable: str, console) -> tuple[int, str]:
