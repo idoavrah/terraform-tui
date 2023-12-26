@@ -1,5 +1,11 @@
 import asyncio
 import re
+import logging
+import json
+from collections import Counter
+from tftui.debug_log import setup_logging
+
+logger = setup_logging()
 
 
 async def execute_async(*command: str) -> tuple[str, str]:
@@ -13,7 +19,10 @@ async def execute_async(*command: str) -> tuple[str, str]:
 
     stdout, strerr = await proc.communicate()
     response = stdout.decode("utf-8")
-
+    logger.debug(
+        "Executed command: %s",
+        json.dumps({"command": command, "return_code": proc.returncode}, indent=2),
+    )
     return (proc.returncode, response)
 
 
@@ -61,6 +70,7 @@ class State:
             name = ".".join(parts[-2:])
             submodule = ".".join(parts[:-2])
             type = Block.TYPE_RESOURCE
+
         return (fullname, name, submodule, type, is_tainted)
 
     async def refresh_state(self) -> None:
@@ -80,6 +90,28 @@ class State:
                 self.state_tree[fullname] = block
             else:
                 contents += line.rstrip() + "\n"
+
+        if logger.isEnabledFor(logging.DEBUG):
+            for key, block in self.state_tree.items():
+                logger.debug(
+                    "Parsed block: %s",
+                    json.dumps(
+                        {
+                            "fullname": key,
+                            "module": block.submodule,
+                            "name": block.name,
+                            "lines": block.contents.count("\n"),
+                            "tainted": block.is_tainted,
+                        },
+                        indent=2,
+                    ),
+                )
+            logger.debug(
+                "Total blocks: %s",
+                json.dumps(
+                    Counter(block.type for block in self.state_tree.values()), indent=2
+                ),
+            )
 
 
 if __name__ == "__main__":

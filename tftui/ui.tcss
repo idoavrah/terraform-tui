@@ -42,6 +42,7 @@
 
 #switcher {
   border: double lightblue;
+  border_title_align: center;
   max-height: 75vh;
 }
 
