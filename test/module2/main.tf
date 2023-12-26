@@ -1,13 +1,12 @@
-resource "random_integer" "earth" {
-  count = 2
-  min   = 1
-  max   = 100
+resource "local_file" "foo" {
+  for_each = toset(["#1", "#2", "#3"])
+  content  = each.value
+  filename = "local_file${each.value}.txt"
 }
 
 variable "input_number" {
   description = "Input number for the module"
 }
-
 
 module "uranus" {
   source       = "../module3"

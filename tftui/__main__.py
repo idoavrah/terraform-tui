@@ -142,8 +142,8 @@ class StateTree(Tree):
         try:
             await self.current_state.refresh_state()
         except Exception as e:
-            self.app.exit(e)
             ApplicationGlobals.successful_termination = False
+            self.app.exit(e)
             return
 
         self.build_tree()
@@ -505,7 +505,8 @@ def parse_command_line() -> None:
         ApplicationGlobals.executable = args.executable
     if args.generate_debug_log:
         logger = setup_logging("debug")
-        logger.debug("Debug log enabled")
+        logger.debug("*" * 50)
+        logger.debug(f"Debug log enabled (tftui v{OutboundAPIs.version})")
     ApplicationGlobals.darkmode = not args.light_mode
     if (
         which(ApplicationGlobals.executable) is None

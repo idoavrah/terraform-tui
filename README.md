@@ -40,7 +40,7 @@ With its latest version you can easily visualize the complete state tree, gainin
 
 ## Demo
 
-![](demo/demo.gif "demo")
+![](demo/tftui.gif "demo")
 
 ## Installation
 

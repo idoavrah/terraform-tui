@@ -11,7 +11,7 @@ variable "input_number" {
 
 module "venus" {
   source       = "../module2"
-  count        = 4
+  count        = 2
   input_number = var.input_number
 }
 
