@@ -1,6 +1,6 @@
 resource "local_file" "foo" {
   for_each = toset(["#1", "#2", "#3"])
-  content  = each.value
+  content  = "${each.value}\n"
   filename = "local_file${each.value}.txt"
 }
 
