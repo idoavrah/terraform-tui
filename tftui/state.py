@@ -50,7 +50,7 @@ class State:
         self.no_init = no_init
 
     def parse_block(line: str) -> tuple[str, str, str]:
-        fullname = line[2 : line.find(":")]
+        fullname = line[2 : line.rindex(":")]
         is_tainted = line.endswith("(tainted)")
         parts = split_resource_name(fullname)
         if fullname.startswith("data") or ".data." in fullname:

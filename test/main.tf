@@ -15,8 +15,14 @@ module "mercury" {
   input_number = random_integer.random_number.result
 }
 
-module "dotted" {
-  for_each     = toset(["a.b", "c.d"])
+module "dots" {
+  for_each     = toset(["string.with.dots", "another.string.with.dots"])
+  source       = "./module"
+  input_number = random_integer.random_number.result
+}
+
+module "colons" {
+  for_each     = toset(["string:with:colons", "another:string:with:colons"])
   source       = "./module"
   input_number = random_integer.random_number.result
 }
