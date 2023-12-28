@@ -8,10 +8,11 @@ terraform {
       source  = "hashicorp/local"
       version = "2.4.1"
     }
+    time = {
+      source  = "hashicorp/time"
+      version = "0.10.0"
+    }
   }
-}
-
-provider "random" {
 }
 
 module "mercury" {
@@ -36,11 +37,11 @@ resource "random_integer" "random_number" {
   max = 100
 }
 
+resource "time_offset" "example" {
+  offset_days = 12
+}
+
 data "local_file" "saturn" {
   count    = 3
   filename = "${path.module}/1.txt"
 }
-
-#module "aws" {
-#  source = "./aws"
-#}

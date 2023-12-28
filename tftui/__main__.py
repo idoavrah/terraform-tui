@@ -4,7 +4,7 @@ import os
 import json
 from tftui.apis import OutboundAPIs
 from tftui.state import State, Block, execute_async, split_resource_name
-from tftui.plan import execute_plan
+from tftui.screens.plan import PlanScreen
 from tftui.debug_log import setup_logging
 from shutil import which
 from textual import work
@@ -202,7 +202,7 @@ class TerraformTUI(App):
     question = None
     action = None
     search = None
-    commandoutput = None
+    plan = None
     selected_action = None
 
     def __init__(self, *args, **kwargs):
@@ -223,7 +223,7 @@ class TerraformTUI(App):
         ("u", "untaint", "Untaint"),
         ("c", "copy", "Copy"),
         ("r", "refresh", "Refresh"),
-        # ("p", "plan", "Plan"),
+        ("p", "plan", "Plan"),
         # ("a", "apply", "Apply"),
         ("/", "search", "Search"),
         ("1-9", "collapse", "Collapse"),
@@ -247,7 +247,7 @@ class TerraformTUI(App):
                 classes="resource",
                 auto_scroll=False,
             )
-            yield TextLog(id="commandoutput")
+            yield PlanScreen(id="plan", executable=ApplicationGlobals.executable)
             with Vertical(id="action"):
                 yield TextLog(id="question", auto_scroll=False)
                 with Horizontal():
@@ -262,7 +262,7 @@ class TerraformTUI(App):
         self.question = self.get_widget_by_id("question")
         self.action = self.get_widget_by_id("action")
         self.search = self.get_widget_by_id("search")
-        self.commandoutput = self.get_widget_by_id("commandoutput")
+        self.plan = self.get_widget_by_id("plan")
 
     async def on_ready(self) -> None:
         self.tree.refresh_state()
@@ -358,7 +358,7 @@ class TerraformTUI(App):
         if (
             not self.switcher.current == "resource"
             and not self.switcher.current == "action"
-            and not self.switcher.current == "commandoutput"
+            and not self.switcher.current == "plan"
             and not self.focused.id == "search"
         ):
             return
@@ -369,14 +369,14 @@ class TerraformTUI(App):
     async def action_plan(self) -> None:
         if not self.switcher.current == "tree":
             return
-        self.switcher.current = "commandoutput"
-        self.commandoutput.clear()
+        self.switcher.current = "plan"
+        self.plan.clear()
         self.notify(f"Executing {ApplicationGlobals.executable.capitalize()} plan")
-        await execute_plan(ApplicationGlobals.executable, self.commandoutput)
+        await self.plan.execute_plan()
         OutboundAPIs.post_usage(f"executed {ApplicationGlobals.executable} plan")
 
     async def action_apply(self) -> None:
-        if not self.switcher.current == "commandoutput":
+        if not self.switcher.current == "plan":
             self.notify("You must PLAN before APPLY", severity="warning")
             return
 
