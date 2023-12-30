@@ -39,7 +39,7 @@ class Block:
     type = None
     name = None
     submodule = None
-    contents = None
+    contents = ""
     is_tainted = False
 
     def __init__(self, submodule: str, name: str, type: str, is_tainted: bool):
@@ -81,6 +81,9 @@ class State:
         self.state_tree = {}
         state_output = stdout.splitlines()
         logger.debug(f"state show line count: {len(state_output)}")
+
+        if stdout.startswith("The state file is empty."):
+            return
 
         for line in state_output:
             if line.startswith("#"):

@@ -166,3 +166,4 @@ state.txt
 .vscode/**
 
 test/terraform.tfstate*
+test/tftui.plan

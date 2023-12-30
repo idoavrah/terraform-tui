@@ -1,7 +1,7 @@
 resource "local_file" "foo" {
   for_each = toset(["#1", "#2", "#3"])
   content  = "${each.value}\n"
-  filename = "local_file${each.value}.txt"
+  filename = "local_file_${each.value}.txt"
 }
 
 variable "input_number" {

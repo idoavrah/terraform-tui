@@ -1,3 +1,3 @@
 cd test
 rm -f *.backup tftui.plan
-poetry run tftui -ngd
+poetry run tftui -ndg
