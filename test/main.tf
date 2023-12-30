@@ -38,7 +38,15 @@ resource "random_integer" "random_number" {
 }
 
 resource "time_offset" "example" {
-  offset_days = 12
+  offset_days = 1
+}
+
+resource "time_offset" "example1" {
+  offset_days = 2
+}
+
+resource "time_offset" "example2" {
+  offset_days = 3
 }
 
 data "local_file" "saturn" {

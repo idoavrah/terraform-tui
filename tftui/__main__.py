@@ -129,15 +129,14 @@ class StateTree(Tree):
                 module_node = module_nodes[block.submodule]
             leaf = module_node.add_leaf(block.name, data=block)
             if block.is_tainted:
-                leaf.label.stylize("strike")
+                leaf.label.stylize("gold3 strike")
 
         self.root.expand_all()
-        self.app.switcher.current = "tree"
 
     @work(exclusive=True)
-    async def refresh_state(self) -> None:
+    async def refresh_state(self, focus=True) -> None:
         self.loading = True
-        self.app.notify(f"Running {ApplicationGlobals.executable.capitalize()} show")
+        self.app.notify("Refreshing state tree")
         self.app.search.value = ""
         try:
             await self.current_state.refresh_state()
@@ -147,11 +146,12 @@ class StateTree(Tree):
             return
 
         self.build_tree()
-        self.app.tree.focus()
         self.current_node = self.get_node_at_line(min(self.cursor_line, self.last_line))
         self.update_highlighted_resource_node(self.current_node)
         self.loading = False
         OutboundAPIs.post_usage("refreshed state")
+        if focus:
+            self.focus()
 
     def update_highlighted_resource_node(self, node) -> None:
         self.current_node = node
@@ -190,7 +190,7 @@ class StateTree(Tree):
             self.selected_nodes.remove(self.current_node)
             self.current_node.label = self.current_node.label.plain
             if self.current_node.data.is_tainted:
-                self.current_node.label.stylize("strike")
+                self.current_node.label.stylize("gold3 strike")
         else:
             self.selected_nodes.append(self.current_node)
             self.current_node.label.stylize("red bold italic reverse")
@@ -223,9 +223,9 @@ class TerraformTUI(App):
         ("c", "copy", "Copy"),
         ("r", "refresh", "Refresh"),
         ("p", "plan", "Plan"),
-        # ("a", "apply", "Apply"),
+        ("a", "apply", "Apply"),
         ("/", "search", "Search"),
-        ("1-9", "collapse", "Collapse"),
+        ("0-9", "collapse", "Collapse"),
         ("m", "toggle_dark", "Dark mode"),
         ("q", "quit", "Quit"),
     ] + [Binding(f"{i}", f"collapse({i})", show=False) for i in range(10)]
@@ -253,11 +253,18 @@ class TerraformTUI(App):
         self.search = self.get_widget_by_id("search")
         self.plan = self.get_widget_by_id("plan")
 
-    async def on_ready(self) -> None:
+    def on_ready(self) -> None:
         self.tree.refresh_state()
 
     def on_input_changed(self, event: Input.Changed) -> None:
-        if event.input.id == "search":
+        if self.app.search.value == "":
+            return
+        elif self.app.tree.loading:
+            self.app.search.value = ""
+            self.app.notify(
+                "Please wait until state refresh is complete", severity="warning"
+            )
+        elif event.input.id == "search":
             search_string = event.value.strip()
             self.perform_search(search_string)
 
@@ -321,6 +328,7 @@ class TerraformTUI(App):
             await self.manipulate_resources(self.selected_action)
             OutboundAPIs.post_usage(f"applied {self.selected_action}")
             self.tree.refresh_state()
+            self.tree.focus()
             self.switcher.loading = False
 
     def perform_search(self, search_string: str) -> None:
@@ -340,20 +348,31 @@ class TerraformTUI(App):
         self.tree.focus()
 
     async def action_plan(self) -> None:
-        if not self.switcher.current == "tree":
-            return
         self.switcher.current = "plan"
-        self.plan.loading = True
-        self.plan.clear()
         self.notify(f"Executing {ApplicationGlobals.executable.capitalize()} plan")
-        await self.plan.execute_plan()
-        self.plan.loading = False
+        self.plan.execute_plan()
         OutboundAPIs.post_usage(f"executed {ApplicationGlobals.executable} plan")
 
     async def action_apply(self) -> None:
-        if not self.switcher.current == "plan":
-            self.notify("You must PLAN before APPLY", severity="warning")
+        if not self.plan.active_plan:
+            self.app.notify("No active plan to apply", severity="warning")
             return
+
+        question = Text.assemble(
+            ("Are you sure you wish to apply the current plan?\n\n\t", "bold"),
+            (self.plan.active_plan, "bold"),
+        )
+
+        async def execute_if_yes(flag):
+            if flag:
+                self.switcher.loading = True
+                self.notify("Applying plan")
+                OutboundAPIs.post_usage("applied plan")
+                logger.debug("Applying plan %s", self.plan.active_plan)
+                self.plan.execute_apply()
+
+        self.push_screen(YesNoModal(question), execute_if_yes)
+        self.plan.focus()
 
     def action_select(self) -> None:
         if not self.switcher.current == "tree":
@@ -406,8 +425,7 @@ class TerraformTUI(App):
             self.notify("Copied resource name to clipboard")
 
     def action_refresh(self) -> None:
-        if not self.switcher.current == "tree":
-            return
+        self.switcher.current = "tree"
         self.tree.refresh_state()
         OutboundAPIs.post_usage("refreshed state")
 
@@ -429,11 +447,11 @@ class TerraformTUI(App):
             return
         if level == 0:
             self.tree.root.expand_all()
-            return
-        self.tree.root.collapse_all()
-        for node in self.tree.root.children:
-            self.expand_node(level, node)
-        self.tree.root.expand()
+        else:
+            self.tree.root.collapse_all()
+            for node in self.tree.root.children:
+                self.expand_node(level, node)
+            self.tree.root.expand()
 
     def action_search(self) -> None:
         self.switcher.border_title = ""
