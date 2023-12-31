@@ -10,9 +10,10 @@ With its latest version you can easily visualize the complete state tree, gainin
 
 ## Key Features
 
-- [x] Comprehensive display of the entire Terraform state tree.
-- [x] Effortlessly view and navigate through a single resource state.
+- [x] Comprehensive display of the entire Terraform state tree
+- [x] Effortlessly view and navigate through a single resource state
 - [x] Search the state tree and resource definitions
+- [x] Create plans, present them in full colors and apply them directly from the TUI
 - [x] Single/multiple resource selection
 - [x] Operate on resources: taint, untaint, delete
 - [x] Support for Terraform wrappers (e.g. terragrunt)
