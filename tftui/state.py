@@ -85,6 +85,7 @@ class State:
         if stdout.startswith("The state file is empty."):
             return
 
+        contents = ""
         for line in state_output:
             if line.startswith("#"):
                 (fullname, name, submodule, type, is_tainted) = State.parse_block(line)
