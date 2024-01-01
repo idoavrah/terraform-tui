@@ -8,7 +8,7 @@ from tftui.apis import OutboundAPIs
 from tftui.state import State, Block, execute_async, split_resource_name
 from tftui.plan import PlanScreen
 from tftui.debug_log import setup_logging
-from tftui.modal import YesNoModal
+from tftui.modal import YesNoModal, PlanInputsModal
 from textual import work
 from textual.app import App, Binding
 from textual.containers import Horizontal
@@ -269,9 +269,12 @@ class TerraformTUI(App):
             self.perform_search(search_string)
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
-        self.tree.focus()
+        if self.switcher.current == "tree":
+            self.tree.focus()
 
     def on_key(self, event) -> None:
+        if not self.tree.has_focus:
+            return
         if event.key == "space":
             self.action_select()
         elif event.key == "left" and self.switcher.current == "tree":
@@ -349,9 +352,17 @@ class TerraformTUI(App):
 
     async def action_plan(self) -> None:
         self.switcher.current = "plan"
-        self.notify(f"Executing {ApplicationGlobals.executable.capitalize()} plan")
-        self.plan.execute_plan()
-        OutboundAPIs.post_usage(f"executed {ApplicationGlobals.executable} plan")
+
+        async def execute(response):
+            if response is not None:
+                self.notify("Creating plan")
+                self.plan.execute_plan(response)
+                OutboundAPIs.post_usage("create plan")
+            else:
+                self.switcher.current = "tree"
+
+        self.push_screen(PlanInputsModal(), execute)
+        self.plan.focus()
 
     async def action_apply(self) -> None:
         if not self.plan.active_plan:
@@ -367,7 +378,7 @@ class TerraformTUI(App):
             if flag:
                 self.switcher.loading = True
                 self.notify("Applying plan")
-                OutboundAPIs.post_usage("applied plan")
+                OutboundAPIs.post_usage("apply plan")
                 logger.debug("Applying plan %s", self.plan.active_plan)
                 self.plan.execute_apply()
 

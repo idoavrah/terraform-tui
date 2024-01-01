@@ -21,7 +21,7 @@ class PlanScreen(RichLog):
         self.wrap = True
 
     @work(exclusive=True)
-    async def execute_plan(self) -> None:
+    async def execute_plan(self, varfile) -> None:
         self.active_plan = ""
         self.auto_scroll = False
         self.parent.loading = True
@@ -30,9 +30,14 @@ class PlanScreen(RichLog):
             self.executable,
             "plan",
             "-no-color",
+            "-input=false",
             "-out=tftui.plan",
             "-detailed-exitcode",
         ]
+        if varfile:
+            command.append(f"-var-file={varfile}")
+
+        logger.debug(f"Executing command: {command}")
         proc = await asyncio.create_subprocess_exec(
             *command,
             stdout=asyncio.subprocess.PIPE,
@@ -104,6 +109,7 @@ class PlanScreen(RichLog):
         self.auto_scroll = True
         command = [self.executable, "apply", "-no-color", "tftui.plan"]
 
+        logger.debug(f"Executing command: {command}")
         proc = await asyncio.create_subprocess_exec(
             *command,
             stdout=asyncio.subprocess.PIPE,

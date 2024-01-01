@@ -53,3 +53,7 @@ data "local_file" "saturn" {
   count    = 3
   filename = "${path.module}/1.txt"
 }
+
+variable "something" {
+  type = string
+}
