@@ -29,6 +29,7 @@ class ApplicationGlobals:
     successful_termination = True
     no_init = False
     darkmode = True
+    var_file = None
 
 
 class AppHeader(Horizontal):
@@ -373,7 +374,7 @@ class TerraformTUI(App):
             else:
                 self.switcher.current = "tree"
 
-        self.push_screen(PlanInputsModal(), execute)
+        self.push_screen(PlanInputsModal(ApplicationGlobals.var_file), execute)
         self.plan.focus()
 
     async def action_apply(self) -> None:
@@ -484,16 +485,25 @@ class TerraformTUI(App):
 
 def parse_command_line() -> None:
     parser = argparse.ArgumentParser(
-        prog="tftui", description="TFTUI - the Terraform terminal UI", epilog="Enjoy!"
+        prog="tftui",
+        description="TFTUI - the Terraform terminal UI",
+        epilog="Enjoy!",
     )
     parser.add_argument(
-        "-e", "--executable", help="set executable command (default 'terraform')"
+        "-e",
+        "--executable",
+        help="set executable command (default 'terraform')",
     )
     parser.add_argument(
         "-n",
         "--no-init",
         help="do not run terraform init on startup (default run)",
         action="store_true",
+    )
+    parser.add_argument(
+        "-f",
+        "--var-file",
+        help="tfvars filename to be used in planning",
     )
     parser.add_argument(
         "-d",
@@ -527,6 +537,8 @@ def parse_command_line() -> None:
         OutboundAPIs.disable_usage_tracking()
     if args.executable:
         ApplicationGlobals.executable = args.executable
+    if args.var_file:
+        ApplicationGlobals.var_file = args.var_file
     if args.generate_debug_log:
         logger = setup_logging("debug")
         logger.debug("*" * 50)

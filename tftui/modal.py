@@ -38,20 +38,23 @@ class YesNoModal(ModalScreen):
 class PlanInputsModal(ModalScreen):
     input = None
     checkbox = None
+    var_file = None
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, var_file, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.var_file = var_file
 
     def compose(self) -> ComposeResult:
         question = Static(
             Text("Would you like to create a terraform plan?", "bold"), id="question"
         )
-        self.input = Input(
-            id="varfile", placeholder="Optional: Enter a valid var-file name..."
-        )
+        self.input = Input(id="varfile", placeholder="Optional")
+        if self.var_file:
+            self.input.value = self.var_file
         self.checkbox = Checkbox("Target only selected resources", id="plantarget")
         yield Grid(
             question,
+            Static("Var-file:", id="varfilelabel"),
             self.input,
             self.checkbox,
             Button("Yes", variant="primary", id="yes"),
