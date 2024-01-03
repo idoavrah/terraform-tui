@@ -356,7 +356,19 @@ class TerraformTUI(App):
         async def execute(response):
             if response is not None:
                 self.notify("Creating plan")
-                self.plan.execute_plan(response)
+                targets = []
+                if response[1]:
+                    if self.tree.selected_nodes:
+                        targets = [
+                            f"{node.parent.data}.{node.label.plain}".lstrip(".")
+                            for node in self.tree.selected_nodes
+                        ]
+                    else:
+                        targets = [
+                            f"{node.parent.data}.{node.label.plain}".lstrip(".")
+                            for node in self.tree.highlighted_resource_node
+                        ]
+                self.plan.execute_plan(response[0], targets)
                 OutboundAPIs.post_usage("create plan")
             else:
                 self.switcher.current = "tree"

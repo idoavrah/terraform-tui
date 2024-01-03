@@ -2,7 +2,7 @@ from rich.text import Text
 from textual.app import ComposeResult
 from textual.containers import Grid
 from textual.screen import ModalScreen
-from textual.widgets import Button, RichLog, Input
+from textual.widgets import Button, RichLog, Input, Checkbox, Static
 
 
 class YesNoModal(ModalScreen):
@@ -37,17 +37,23 @@ class YesNoModal(ModalScreen):
 
 class PlanInputsModal(ModalScreen):
     input = None
+    checkbox = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def compose(self) -> ComposeResult:
-        question = RichLog(id="question", auto_scroll=False, wrap=True)
-        question.write(Text("Would you like to create a terraform plan?", "bold"))
-        self.input = Input(id="varfile", placeholder="Enter a valid var-file name...")
+        question = Static(
+            Text("Would you like to create a terraform plan?", "bold"), id="question"
+        )
+        self.input = Input(
+            id="varfile", placeholder="Optional: Enter a valid var-file name..."
+        )
+        self.checkbox = Checkbox("Target only selected resources", id="plantarget")
         yield Grid(
             question,
             self.input,
+            self.checkbox,
             Button("Yes", variant="primary", id="yes"),
             Button("No", id="no"),
             id="tfvars",
@@ -56,15 +62,15 @@ class PlanInputsModal(ModalScreen):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "yes":
-            self.dismiss(self.input.value)
+            self.dismiss((self.input.value, self.checkbox.value))
         else:
             self.dismiss(None)
 
     def on_key(self, event) -> None:
         if event.key == "y":
-            self.dismiss(self.input.value)
+            self.dismiss((self.input.value, self.checkbox.value))
         elif event.key == "n" or event.key == "escape":
             self.dismiss(None)
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
-        self.dismiss(self.input.value)
+        self.dismiss((self.input.value, self.checkbox.value))
