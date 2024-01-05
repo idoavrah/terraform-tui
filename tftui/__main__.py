@@ -226,6 +226,7 @@ class TerraformTUI(App):
         ("r", "refresh", "Refresh"),
         ("p", "plan", "Plan"),
         ("a", "apply", "Apply"),
+        ("ctrl+d", "destroy", "Destroy"),
         ("/", "search", "Search"),
         ("0-9", "collapse", "Collapse"),
         ("m", "toggle_dark", "Dark mode"),
@@ -352,12 +353,12 @@ class TerraformTUI(App):
         self.app.switcher.border_title = ""
         self.tree.focus()
 
-    async def action_plan(self) -> None:
+    async def create_plan(self, destroy="") -> None:
         self.switcher.current = "plan"
 
         async def execute(response):
             if response is not None:
-                self.notify("Creating plan")
+                self.notify(f"Creating {destroy} plan")
                 targets = []
                 if response[1]:
                     if self.tree.selected_nodes:
@@ -370,13 +371,25 @@ class TerraformTUI(App):
                             f"{node.parent.data}.{node.label.plain}".lstrip(".")
                             for node in self.tree.highlighted_resource_node
                         ]
-                self.plan.execute_plan(response[0], targets)
-                OutboundAPIs.post_usage("create plan")
+                self.plan.create_plan(response[0], targets, destroy)
+                OutboundAPIs.post_usage("create {destroy} plan")
             else:
                 self.switcher.current = "tree"
 
-        self.push_screen(PlanInputsModal(ApplicationGlobals.var_file), execute)
+        self.push_screen(
+            PlanInputsModal(
+                ApplicationGlobals.var_file,
+                len(self.tree.selected_nodes) > 0,
+            ),
+            execute,
+        )
         self.plan.focus()
+
+    async def action_plan(self) -> None:
+        await self.create_plan()
+
+    async def action_destroy(self) -> None:
+        await self.create_plan("destruction")
 
     async def action_apply(self) -> None:
         if not self.plan.active_plan:
