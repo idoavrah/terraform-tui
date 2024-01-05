@@ -12,6 +12,7 @@ from tftui.modal import YesNoModal, PlanInputsModal
 from textual import work
 from textual.app import App, Binding
 from textual.containers import Horizontal
+from textual.screen import ModalScreen
 from textual.widgets import (
     Footer,
     Tree,
@@ -274,7 +275,7 @@ class TerraformTUI(App):
             self.tree.focus()
 
     def on_key(self, event) -> None:
-        if not self.tree.has_focus:
+        if not self.tree.has_focus or isinstance(self.screen, ModalScreen):
             return
         if event.key == "space":
             self.action_select()
