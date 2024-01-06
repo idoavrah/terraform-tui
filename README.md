@@ -18,7 +18,16 @@ With its latest version you can easily visualize the complete state tree, gainin
 - [x] Operate on resources: taint, untaint, delete
 - [x] Support for Terraform wrappers (e.g. terragrunt)
 
-## Changelog (last two versions)
+## Changelog (latest versions)
+
+### Version 0.12
+
+- [x] Enabled targeting specific resources for plan creation
+- [x] Introducing cli argument: tfvars file
+- [x] Added destroy functionality
+- [x] Added a help screen
+- [x] Added dynamic value for "targets" checkbox (checkbox is marked when resources are selected)
+- [x] Fixed: search through full module names
 
 ### Version 0.11
 
