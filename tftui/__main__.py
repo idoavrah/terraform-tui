@@ -82,7 +82,8 @@ class StateTree(Tree):
         filtered_blocks = dict(
             filter(
                 lambda block: search_string in block[1].contents
-                or search_string in block[1].name,
+                or search_string in block[1].name
+                or search_string in block[1].submodule,
                 self.current_state.state_tree.items(),
             )
         )
