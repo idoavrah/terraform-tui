@@ -8,10 +8,11 @@ from tftui.apis import OutboundAPIs
 from tftui.state import State, Block, execute_async, split_resource_name
 from tftui.plan import PlanScreen
 from tftui.debug_log import setup_logging
-from tftui.modal import YesNoModal, PlanInputsModal
+from tftui.modal import HelpModal, YesNoModal, PlanInputsModal
 from textual import work
 from textual.app import App, Binding
 from textual.containers import Horizontal
+from textual.screen import ModalScreen
 from textual.widgets import (
     Footer,
     Tree,
@@ -29,6 +30,7 @@ class ApplicationGlobals:
     successful_termination = True
     no_init = False
     darkmode = True
+    var_file = None
 
 
 class AppHeader(Horizontal):
@@ -80,7 +82,8 @@ class StateTree(Tree):
         filtered_blocks = dict(
             filter(
                 lambda block: search_string in block[1].contents
-                or search_string in block[1].name,
+                or search_string in block[1].name
+                or search_string in block[1].submodule,
                 self.current_state.state_tree.items(),
             )
         )
@@ -224,9 +227,11 @@ class TerraformTUI(App):
         ("r", "refresh", "Refresh"),
         ("p", "plan", "Plan"),
         ("a", "apply", "Apply"),
+        ("ctrl+d", "destroy", "Destroy"),
         ("/", "search", "Search"),
         ("0-9", "collapse", "Collapse"),
         ("m", "toggle_dark", "Dark mode"),
+        ("h", "help", "Help"),
         ("q", "quit", "Quit"),
     ] + [Binding(f"{i}", f"collapse({i})", show=False) for i in range(10)]
 
@@ -273,7 +278,7 @@ class TerraformTUI(App):
             self.tree.focus()
 
     def on_key(self, event) -> None:
-        if not self.tree.has_focus:
+        if not self.tree.has_focus or isinstance(self.screen, ModalScreen):
             return
         if event.key == "space":
             self.action_select()
@@ -350,19 +355,43 @@ class TerraformTUI(App):
         self.app.switcher.border_title = ""
         self.tree.focus()
 
-    async def action_plan(self) -> None:
+    async def create_plan(self, destroy="") -> None:
         self.switcher.current = "plan"
 
         async def execute(response):
             if response is not None:
-                self.notify("Creating plan")
-                self.plan.execute_plan(response)
-                OutboundAPIs.post_usage("create plan")
+                self.notify(f"Creating {destroy} plan")
+                targets = []
+                if response[1]:
+                    if self.tree.selected_nodes:
+                        targets = [
+                            f"{node.parent.data}.{node.label.plain}".lstrip(".")
+                            for node in self.tree.selected_nodes
+                        ]
+                    else:
+                        targets = [
+                            f"{node.parent.data}.{node.label.plain}".lstrip(".")
+                            for node in self.tree.highlighted_resource_node
+                        ]
+                self.plan.create_plan(response[0], targets, destroy)
+                OutboundAPIs.post_usage("create {destroy} plan")
             else:
                 self.switcher.current = "tree"
 
-        self.push_screen(PlanInputsModal(), execute)
+        self.push_screen(
+            PlanInputsModal(
+                ApplicationGlobals.var_file,
+                len(self.tree.selected_nodes) > 0,
+            ),
+            execute,
+        )
         self.plan.focus()
+
+    async def action_plan(self) -> None:
+        await self.create_plan()
+
+    async def action_destroy(self) -> None:
+        await self.create_plan("destruction")
 
     async def action_apply(self) -> None:
         if not self.plan.active_plan:
@@ -440,6 +469,9 @@ class TerraformTUI(App):
         self.tree.refresh_state()
         OutboundAPIs.post_usage("refreshed state")
 
+    def action_help(self) -> None:
+        self.push_screen(HelpModal())
+
     def action_toggle_dark(self) -> None:
         self.dark = not self.dark
 
@@ -472,16 +504,25 @@ class TerraformTUI(App):
 
 def parse_command_line() -> None:
     parser = argparse.ArgumentParser(
-        prog="tftui", description="TFTUI - the Terraform terminal UI", epilog="Enjoy!"
+        prog="tftui",
+        description="TFTUI - the Terraform terminal UI",
+        epilog="Enjoy!",
     )
     parser.add_argument(
-        "-e", "--executable", help="set executable command (default 'terraform')"
+        "-e",
+        "--executable",
+        help="set executable command (default 'terraform')",
     )
     parser.add_argument(
         "-n",
         "--no-init",
         help="do not run terraform init on startup (default run)",
         action="store_true",
+    )
+    parser.add_argument(
+        "-f",
+        "--var-file",
+        help="tfvars filename to be used in planning",
     )
     parser.add_argument(
         "-d",
@@ -515,6 +556,8 @@ def parse_command_line() -> None:
         OutboundAPIs.disable_usage_tracking()
     if args.executable:
         ApplicationGlobals.executable = args.executable
+    if args.var_file:
+        ApplicationGlobals.var_file = args.var_file
     if args.generate_debug_log:
         logger = setup_logging("debug")
         logger.debug("*" * 50)

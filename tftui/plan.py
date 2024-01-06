@@ -21,7 +21,7 @@ class PlanScreen(RichLog):
         self.wrap = True
 
     @work(exclusive=True)
-    async def execute_plan(self, varfile) -> None:
+    async def create_plan(self, varfile, targets, destroy="") -> None:
         self.active_plan = ""
         self.auto_scroll = False
         self.parent.loading = True
@@ -36,6 +36,11 @@ class PlanScreen(RichLog):
         ]
         if varfile:
             command.append(f"-var-file={varfile}")
+        if destroy:
+            command.append("-destroy")
+        if targets:
+            for target in targets:
+                command.append(f"-target={target}")
 
         logger.debug(f"Executing command: {command}")
         proc = await asyncio.create_subprocess_exec(
