@@ -8,7 +8,7 @@ from tftui.apis import OutboundAPIs
 from tftui.state import State, Block, execute_async, split_resource_name
 from tftui.plan import PlanScreen
 from tftui.debug_log import setup_logging
-from tftui.modal import YesNoModal, PlanInputsModal
+from tftui.modal import HelpModal, YesNoModal, PlanInputsModal
 from textual import work
 from textual.app import App, Binding
 from textual.containers import Horizontal
@@ -230,6 +230,7 @@ class TerraformTUI(App):
         ("/", "search", "Search"),
         ("0-9", "collapse", "Collapse"),
         ("m", "toggle_dark", "Dark mode"),
+        ("h", "help", "Help"),
         ("q", "quit", "Quit"),
     ] + [Binding(f"{i}", f"collapse({i})", show=False) for i in range(10)]
 
@@ -466,6 +467,9 @@ class TerraformTUI(App):
         self.switcher.current = "tree"
         self.tree.refresh_state()
         OutboundAPIs.post_usage("refreshed state")
+
+    def action_help(self) -> None:
+        self.push_screen(HelpModal())
 
     def action_toggle_dark(self) -> None:
         self.dark = not self.dark

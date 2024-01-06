@@ -64,6 +64,20 @@ Button {
     width: 100%;
 }
 
+HelpModal {
+    align: center middle;
+}
+
+#help {
+    grid-gutter: 1 2;
+    grid-rows: 1fr 3;
+    padding: 0 1;
+    width: 88;
+    height: 22;
+    border: thick $background 80%;
+    background: $surface;
+}
+
 YesNoModal {
     align: center middle;
 }
