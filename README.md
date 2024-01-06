@@ -15,7 +15,7 @@ With its latest version you can easily visualize the complete state tree, gainin
 - [x] Search the state tree and resource definitions
 - [x] Create plans, present them in full colors and apply them directly from the TUI
 - [x] Single/multiple resource selection
-- [x] Operate on resources: taint, untaint, delete
+- [x] Operate on resources: taint, untaint, delete, destroy
 - [x] Support for Terraform wrappers (e.g. terragrunt)
 
 ## Changelog (latest versions)
@@ -27,6 +27,7 @@ With its latest version you can easily visualize the complete state tree, gainin
 - [x] Added destroy functionality
 - [x] Added a help screen
 - [x] Added dynamic value for "targets" checkbox (checkbox is marked when resources are selected)
+- [x] Added a short summary of the suggested plan before applying it
 - [x] Fixed: search through full module names
 
 ### Version 0.11

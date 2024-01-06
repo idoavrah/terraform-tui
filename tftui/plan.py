@@ -10,7 +10,7 @@ logger = setup_logging()
 
 class PlanScreen(RichLog):
     executable = None
-    active_plan = ""
+    active_plan = None
 
     BINDINGS = []
 
@@ -22,7 +22,7 @@ class PlanScreen(RichLog):
 
     @work(exclusive=True)
     async def create_plan(self, varfile, targets, destroy="") -> None:
-        self.active_plan = ""
+        self.active_plan = Text("")
         self.auto_scroll = False
         self.parent.loading = True
         self.clear()
@@ -70,8 +70,12 @@ class PlanScreen(RichLog):
                 if stripped_line == "":
                     block_color = ""
                 elif stripped_line.startswith("Plan:"):
-                    self.active_plan = stripped_line
                     stylzed_line.stylize("bold")
+                    self.active_plan = self.active_plan.assemble(
+                        stylzed_line,
+                        Text("\n\n"),
+                        self.active_plan,
+                    )
                 elif stripped_line.startswith("  #"):
                     if stripped_line.endswith(
                         "will be destroyed"
@@ -82,6 +86,11 @@ class PlanScreen(RichLog):
                     elif stripped_line.endswith("will be updated in-place"):
                         block_color = "yellow3"
                     stylzed_line.stylize(f"bold {block_color}")
+                    self.active_plan = self.active_plan.assemble(
+                        self.active_plan,
+                        stylzed_line,
+                        Text("\n"),
+                    )
                 elif stripped_line.strip().startswith("-"):
                     stylzed_line.stylize("red")
                 elif stripped_line.strip().startswith("+"):
@@ -104,7 +113,7 @@ class PlanScreen(RichLog):
         finally:
             await proc.wait()
             if proc.returncode != 2:
-                self.active_plan = ""
+                self.active_plan = None
 
         self.focus()
 

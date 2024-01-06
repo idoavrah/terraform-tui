@@ -93,8 +93,8 @@ YesNoModal {
     grid-gutter: 1 2;
     grid-rows: 1fr 3;
     padding: 1 2;
-    width: 50%;
-    height: 30%;
+    width: 80%;
+    height: 40%;
     border: thick $background 80%;
     background: $surface;
 }
@@ -124,7 +124,7 @@ PlanInputsModal{
     background: $surface;
 }
 
-#tfvars{
+#tfvars {
     grid-size: 2;
     grid-gutter: 1 2;
     grid-rows: 1fr 3;

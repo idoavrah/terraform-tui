@@ -399,8 +399,8 @@ class TerraformTUI(App):
             return
 
         question = Text.assemble(
-            ("Are you sure you wish to apply the current plan?\n\n\t", "bold"),
-            (self.plan.active_plan, "bold"),
+            ("Are you sure you wish to apply the current plan?\n\n", "bold"),
+            self.plan.active_plan,
         )
 
         async def execute_if_yes(flag):
