@@ -28,7 +28,7 @@ With its latest version you can easily visualize the complete state tree, gainin
 - [x] Added a help screen
 - [x] Added dynamic value for "targets" checkbox (checkbox is marked when resources are selected)
 - [x] Added a short summary of the suggested plan before applying it
-- [x] Added redacted error tracker on unhandeled exceptions (only when usage reporting is enabled)
+- [x] Added a redacted error tracker on unhandeled exceptions (only when usage reporting is enabled)
 - [x] Fixed: search through full module names
 
 ### Version 0.11
