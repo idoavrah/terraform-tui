@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "tftui"
-version = "0.12.1"
+version = "0.12.2"
 description = "Terraform Textual User Interface"
 authors = ["Ido Avraham"]
 license = "Apache-2.0"
