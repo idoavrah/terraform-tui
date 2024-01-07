@@ -2,6 +2,8 @@ import argparse
 import pyperclip
 import os
 import json
+import traceback
+import re
 from rich.text import Text
 from shutil import which
 from tftui.apis import OutboundAPIs
@@ -206,6 +208,7 @@ class TerraformTUI(App):
     search = None
     plan = None
     selected_action = None
+    error_message = ""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -374,7 +377,9 @@ class TerraformTUI(App):
                             for node in self.tree.highlighted_resource_node
                         ]
                 self.plan.create_plan(response[0], targets, destroy)
-                OutboundAPIs.post_usage("create {destroy} plan")
+                OutboundAPIs.post_usage(
+                    f"create {'targeted' if targets else ''} {destroy} plan"
+                )
             else:
                 self.switcher.current = "tree"
 
@@ -467,7 +472,6 @@ class TerraformTUI(App):
     def action_refresh(self) -> None:
         self.switcher.current = "tree"
         self.tree.refresh_state()
-        OutboundAPIs.post_usage("refreshed state")
 
     def action_help(self) -> None:
         self.push_screen(HelpModal())
@@ -500,6 +504,19 @@ class TerraformTUI(App):
         self.switcher.border_title = ""
         self.switcher.current = "tree"
         self.search.focus()
+
+    def _handle_exception(self, exception: Exception) -> None:
+        self.error_message = "".join(
+            traceback.format_exception(
+                type(exception), exception, exception.__traceback__
+            )
+        )
+        self.error_message = re.sub(
+            r'"([^"]*)"',
+            lambda match: f'"{os.path.basename(match.group(1))}"',
+            self.error_message,
+        ).split("\n")
+        super()._handle_exception(exception)
 
 
 def parse_command_line() -> None:
@@ -577,14 +594,22 @@ def main() -> None:
     parse_command_line()
     OutboundAPIs.post_usage("started application")
 
-    app = TerraformTUI()
-    result = app.run()
+    result = ""
+    try:
+        app = TerraformTUI()
+        result = app.run()
+    finally:
+        if app.return_code > 0:
+            ApplicationGlobals.successful_termination = False
+
     if result is not None:
         print(result)
     if ApplicationGlobals.successful_termination:
         OutboundAPIs.post_usage("exited successfully")
     else:
-        OutboundAPIs.post_usage("exited unsuccessfully")
+        error_message = app.error_message or str(result).strip()
+        logger.debug(error_message)
+        OutboundAPIs.post_usage("exited unsuccessfully", error_message)
 
     if OutboundAPIs.is_new_version_available:
         print("\n*** New version available. ***")
