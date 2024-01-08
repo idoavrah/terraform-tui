@@ -38,7 +38,7 @@ class OutboundAPIs:
         )
 
     @staticmethod
-    def post_usage(message: str, error_message="") -> None:
+    def post_usage(message: str, error_message="", platform="", size="") -> None:
         if not OutboundAPIs.is_usage_tracking_enabled:
             return
         if not OutboundAPIs.generated_handle:
@@ -50,6 +50,8 @@ class OutboundAPIs:
             {
                 "tftui_version": OutboundAPIs.version,
                 "error_message": error_message,
+                "platform": platform,
+                "size": size,
             },
         )
 
