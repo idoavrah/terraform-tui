@@ -511,11 +511,15 @@ class TerraformTUI(App):
                 type(exception), exception, exception.__traceback__
             )
         )
-        self.error_message = re.sub(
-            r'"([^"]*)"',
-            lambda match: f'"{os.path.basename(match.group(1))}"',
-            self.error_message,
-        ).split("\n")
+
+        def redacted_text(text):
+            return re.sub(
+                "(/[^/\\s]+)+",
+                lambda match: "[REDACTED]/" + os.path.basename(match.group()),
+                text,
+            )
+
+        self.error_message = redacted_text(self.error_message).split("\n")
         super()._handle_exception(exception)
 
 
