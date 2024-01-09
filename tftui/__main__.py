@@ -1,6 +1,7 @@
 import argparse
 import pyperclip
 import os
+import platform
 import json
 import traceback
 import re
@@ -511,12 +512,13 @@ class TerraformTUI(App):
                 type(exception), exception, exception.__traceback__
             )
         )
-        self.error_message = re.sub(
-            r'"([^"]*)"',
-            lambda match: f'"{os.path.basename(match.group(1))}"',
-            self.error_message,
-        ).split("\n")
         super()._handle_exception(exception)
+
+    def _on_resize(self, event):
+        OutboundAPIs.post_usage(
+            "app resize", size=f"{event.size.width}x{event.size.height}"
+        )
+        super()._on_resize(event)
 
 
 def parse_command_line() -> None:
@@ -592,7 +594,7 @@ def parse_command_line() -> None:
 
 def main() -> None:
     parse_command_line()
-    OutboundAPIs.post_usage("started application")
+    OutboundAPIs.post_usage("started application", platform=platform.platform())
 
     result = ""
     try:
@@ -607,9 +609,13 @@ def main() -> None:
     if ApplicationGlobals.successful_termination:
         OutboundAPIs.post_usage("exited successfully")
     else:
-        error_message = app.error_message or str(result).strip()
+        error_message = re.sub(
+            r"(?<=[/\\])[^\s/\\]+(?=[/\\])",
+            "***",
+            app.error_message or str(result).strip(),
+        ).split("\n")
         logger.debug(error_message)
-        OutboundAPIs.post_usage("exited unsuccessfully", error_message)
+        OutboundAPIs.post_usage("exited unsuccessfully", error_message=error_message)
 
     if OutboundAPIs.is_new_version_available:
         print("\n*** New version available. ***")
