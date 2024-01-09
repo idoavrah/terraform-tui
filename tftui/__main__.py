@@ -512,15 +512,6 @@ class TerraformTUI(App):
                 type(exception), exception, exception.__traceback__
             )
         )
-
-        def redacted_text(text):
-            return re.sub(
-                "(/[^/\\s]+)+",
-                lambda match: "[REDACTED]/" + os.path.basename(match.group()),
-                text,
-            )
-
-        self.error_message = redacted_text(self.error_message).split("\n")
         super()._handle_exception(exception)
 
     def _on_resize(self, event):
@@ -618,7 +609,11 @@ def main() -> None:
     if ApplicationGlobals.successful_termination:
         OutboundAPIs.post_usage("exited successfully")
     else:
-        error_message = app.error_message or str(result).strip()
+        error_message = re.sub(
+            r"(?<=[/\\])[^\s/\\]+(?=[/\\])",
+            "***",
+            app.error_message or str(result).strip(),
+        ).split("\n")
         logger.debug(error_message)
         OutboundAPIs.post_usage("exited unsuccessfully", error_message=error_message)
 
