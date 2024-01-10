@@ -45,12 +45,12 @@ class AppHeader(Horizontal):
 """
 
     TITLES = """
-TFTUI Version:\n\n
+TFTUI Version:\n
 Working folder:\n
 """
 
     INFO = f"""
-{OutboundAPIs.version}{' (new version available)' if OutboundAPIs.is_new_version_available else ''}\n\n
+{OutboundAPIs.version}{' (new version available)' if OutboundAPIs.is_new_version_available else ''}\n
 {os.getcwd()}\n
 """
 
@@ -515,6 +515,9 @@ class TerraformTUI(App):
         super()._handle_exception(exception)
 
     def _on_resize(self, event):
+        main_height = max(event.size.height - 11, 5)
+        self.switcher.styles.height = main_height
+        logger.debug("Main height: %s", main_height)
         OutboundAPIs.post_usage(
             "app resize", size=f"{event.size.width}x{event.size.height}"
         )
