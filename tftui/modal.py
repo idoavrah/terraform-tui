@@ -3,6 +3,7 @@ from textual.app import ComposeResult
 from textual.containers import Grid
 from textual.screen import ModalScreen
 from textual.widgets import Button, RichLog, Input, Checkbox, Static, DataTable
+from textual.containers import Horizontal
 
 
 class YesNoModal(ModalScreen):
@@ -58,8 +59,7 @@ class PlanInputsModal(ModalScreen):
             self.input.value = self.var_file
         yield Grid(
             question,
-            Static("Var-file:", id="varfilelabel"),
-            self.input,
+            Horizontal(Static("Var-file:", id="varfilelabel"), self.input),
             self.checkbox,
             Button("Yes", variant="primary", id="yes"),
             Button("No", id="no"),
