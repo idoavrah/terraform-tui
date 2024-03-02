@@ -11,7 +11,7 @@ from tftui.apis import OutboundAPIs
 from tftui.state import State, Block, execute_async, split_resource_name
 from tftui.plan import PlanScreen
 from tftui.debug_log import setup_logging
-from tftui.modal import HelpModal, YesNoModal, PlanInputsModal
+from tftui.modal import HelpModal, YesNoModal, PlanInputsModal, FullTextModal
 from textual import work
 from textual.app import App, Binding
 from textual.containers import Horizontal
@@ -224,6 +224,7 @@ class TerraformTUI(App):
         Binding("escape", "back", "Back"),
         ("s", "select", "Select"),
         Binding("spacebar", "select", "Select"),
+        ("f", "fullscreen", "FullScreen"),
         ("d", "delete", "Delete"),
         ("t", "taint", "Taint"),
         ("u", "untaint", "Untaint"),
@@ -463,12 +464,17 @@ class TerraformTUI(App):
         await self.action_manipulate_resources("untaint")
 
     def action_copy(self) -> None:
-        if self.switcher.current == "resource":
-            pyperclip.copy(self.app.tree.current_node.data.contents)
-            self.notify("Copied resource definition to clipboard")
-        elif self.switcher.current == "tree":
-            pyperclip.copy(self.app.tree.current_node.label.plain)
-            self.notify("Copied resource name to clipboard")
+        try:
+            if self.switcher.current == "resource":
+                pyperclip.copy(self.app.tree.current_node.data.contents)
+                self.notify("Copied resource definition to clipboard")
+            elif self.switcher.current == "tree":
+                pyperclip.copy(self.app.tree.current_node.label.plain)
+                self.notify("Copied resource name to clipboard")
+        except Exception:
+            self.notify(
+                "Copy to clipboard is unsupported in this terminal", severity="warning"
+            )
 
     def action_refresh(self) -> None:
         self.switcher.current = "tree"
@@ -505,6 +511,19 @@ class TerraformTUI(App):
         self.switcher.border_title = ""
         self.switcher.current = "tree"
         self.search.focus()
+
+    def action_fullscreen(self) -> None:
+        if self.switcher.current not in ("plan", "resource"):
+            return
+        self.push_screen(
+            FullTextModal(
+                self.tree.current_node.data.contents
+                if self.switcher.current == "resource"
+                else self.plan.fulltext,
+                self.switcher.current == "resource",
+            )
+        )
+        self.plan.focus()
 
     def _handle_exception(self, exception: Exception) -> None:
         self.error_message = "".join(

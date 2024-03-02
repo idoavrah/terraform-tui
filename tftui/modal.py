@@ -6,6 +6,30 @@ from textual.widgets import Button, RichLog, Input, Checkbox, Static, DataTable
 from textual.containers import Horizontal
 
 
+class FullTextModal(ModalScreen):
+    contents = None
+    is_resource = False
+
+    def __init__(self, contents: str, is_resource: bool, *args, **kwargs):
+        self.contents = contents
+        self.is_resource = is_resource
+        super().__init__(*args, **kwargs)
+
+    def compose(self) -> ComposeResult:
+        fullscreen = RichLog(auto_scroll=False)
+        if self.is_resource:
+            fullscreen.highlight = True
+            fullscreen.markup = True
+            fullscreen.wrap = True
+
+        fullscreen.write(self.contents)
+        yield fullscreen
+
+    def on_key(self, event) -> None:
+        if event.key in ("f", "escape"):
+            self.app.pop_screen()
+
+
 class YesNoModal(ModalScreen):
     contents = None
 
@@ -88,6 +112,7 @@ class HelpModal(ModalScreen):
         ("ENTER", "View resource details"),
         ("ESC", "Go back"),
         ("S / Space", "Select current resource (toggle)"),
+        ("F", "Show resource/plan on full screen; Hold SHIFT/OPTIONS to copy text"),
         ("D", "Delete selected resources, or highlighted resource if none is selected"),
         ("T", "Taint selected resources, or highlighted resource if none is selected"),
         (
