@@ -11,6 +11,7 @@ logger = setup_logging()
 class PlanScreen(RichLog):
     executable = None
     active_plan = None
+    fulltext = None
 
     BINDINGS = []
 
@@ -25,6 +26,7 @@ class PlanScreen(RichLog):
         self.active_plan = Text("")
         self.auto_scroll = False
         self.parent.loading = True
+        self.fulltext = None
         self.clear()
         command = [
             self.executable,
@@ -56,6 +58,7 @@ class PlanScreen(RichLog):
                 data = await proc.stdout.readline()
                 if not data:
                     break
+
                 self.parent.loading = False
                 stripped_line = data.decode("utf-8").rstrip()
                 stylzed_line = Text(stripped_line)
@@ -66,6 +69,7 @@ class PlanScreen(RichLog):
                 ):
                     self.clear()
                     self.auto_scroll = False
+                    self.fulltext = Text("")
 
                 if stripped_line == "":
                     block_color = ""
@@ -110,6 +114,10 @@ class PlanScreen(RichLog):
                     stylzed_line.stylize(block_color)
 
                 self.write(stylzed_line)
+
+                if self.fulltext is not None:
+                    self.fulltext += stylzed_line + Text("\n")
+
         finally:
             await proc.wait()
             if proc.returncode != 2:
@@ -121,6 +129,7 @@ class PlanScreen(RichLog):
     async def execute_apply(self) -> None:
         self.parent.loading = True
         self.auto_scroll = True
+        self.fulltext = Text("")
         command = [self.executable, "apply", "-no-color", "tftui.plan"]
 
         logger.debug(f"Executing command: {command}")
@@ -142,6 +151,7 @@ class PlanScreen(RichLog):
                 if text.plain.startswith("Apply complete!"):
                     text.stylize("bold white")
                 self.write(text)
+                self.fulltext += text + Text("\n")
         finally:
             await proc.wait()
             self.active_plan = ""

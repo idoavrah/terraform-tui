@@ -64,7 +64,7 @@ HelpModal {
     grid-rows: 1fr 3;
     padding: 0 1;
     width: 88;
-    height: 22;
+    height: 23;
     border: thick $background 80%;
     background: $surface;
 }

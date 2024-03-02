@@ -29,7 +29,9 @@ With its latest version you can easily visualize the complete state tree, gainin
 - [x] Added dynamic value for "targets" checkbox (checkbox is marked when resources are selected)
 - [x] Added a short summary of the suggested plan before applying it
 - [x] Added a redacted error tracker on unhandeled exceptions (only when usage reporting is enabled)
+- [x] Added a fullscreen mode to allow easier copying of resource / plan parts
 - [x] Fixed: search through full module names
+- [x] Fixed: Copy to clipboard crashes on some systems
 
 ### Version 0.11
 
