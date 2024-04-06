@@ -5,13 +5,20 @@ import platform
 import json
 import traceback
 import re
+import subprocess
 from rich.text import Text
 from shutil import which
 from tftui.apis import OutboundAPIs
 from tftui.state import State, Block, execute_async, split_resource_name
 from tftui.plan import PlanScreen
 from tftui.debug_log import setup_logging
-from tftui.modal import HelpModal, YesNoModal, PlanInputsModal, FullTextModal
+from tftui.modal import (
+    HelpModal,
+    YesNoModal,
+    PlanInputsModal,
+    FullTextModal,
+    WorkspaceModal,
+)
 from textual import work
 from textual.app import App, Binding
 from textual.containers import Horizontal
@@ -44,22 +51,39 @@ class AppHeader(Horizontal):
     \/_/   \/_/       \/_/   \/_____/  \/_/
 """
 
-    TITLES = """
-TFTUI Version:\n
+    TITLES = """TFTUI Version:\n
 Working folder:\n
-"""
-
-    INFO = f"""
-{OutboundAPIs.version}{' (new version available)' if OutboundAPIs.is_new_version_available else ''}\n
-{os.getcwd()}\n
+Workspace:
 """
 
     BORDER_TITLE = "TFTUI - the Terraform terminal user interface"
 
+    info = Static("", classes="header-box")
+
+    def refresh_info(self):
+        result = subprocess.run(
+            [ApplicationGlobals.executable, "workspace", "show"],
+            capture_output=True,
+            text=True,
+        )
+
+        if result.returncode == 0:
+            workspace = result.stdout
+        else:
+            logger.error(f"Error getting workspace: {result.stderr}")
+            workspace = "Unknown"
+
+        self.info.update(
+            f"""{OutboundAPIs.version}{' (new version available)' if OutboundAPIs.is_new_version_available else ''}\n
+{os.getcwd()}\n
+{workspace}"""
+        )
+
     def compose(self):
-        yield Static(AppHeader.TITLES, classes="header-box")
-        yield Static(AppHeader.INFO, classes="header-box")
-        yield Static(AppHeader.LOGO, classes="header-box")
+        self.refresh_info()
+        yield Static(self.TITLES, classes="header-box")
+        yield self.info
+        yield Static(self.LOGO, classes="header-box")
 
 
 class StateTree(Tree):
@@ -235,6 +259,7 @@ class TerraformTUI(App):
         ("ctrl+d", "destroy", "Destroy"),
         ("/", "search", "Search"),
         ("0-9", "collapse", "Collapse"),
+        ("w", "workspaces", "Workspaces"),
         ("m", "toggle_dark", "Dark mode"),
         ("h", "help", "Help"),
         ("q", "quit", "Quit"),
@@ -511,6 +536,53 @@ class TerraformTUI(App):
         self.switcher.border_title = ""
         self.switcher.current = "tree"
         self.search.focus()
+
+    def action_workspaces(self) -> None:
+        if self.switcher.current != "tree":
+            return
+
+        result = subprocess.run(
+            [ApplicationGlobals.executable, "workspace", "list"],
+            capture_output=True,
+            text=True,
+        )
+
+        if result.returncode == 0:
+            workspaces = []
+            for workspace in result.stdout.split("\n"):
+                if workspace.strip():
+                    workspaces.append(workspace[2:])
+                if workspace.startswith("*"):
+                    current_workspace = workspace[2:]
+        else:
+            logger.error(f"Error getting workspaces: {result.stderr}")
+            self.notify("Failed getting workspaces", severity="error")
+
+        def switch_workspace(selected_workspace: str):
+            if (
+                selected_workspace is not None
+                and selected_workspace != current_workspace
+            ):
+                result = subprocess.run(
+                    [
+                        ApplicationGlobals.executable,
+                        "workspace",
+                        "select",
+                        selected_workspace,
+                    ],
+                    capture_output=True,
+                    text=True,
+                )
+                if result.returncode == 0:
+                    self.app.get_child_by_id("header").refresh_info()
+                    self.action_refresh()
+                else:
+                    logger.error(f"Failed switching workspaces: {result.stderr}")
+                    self.notify("Failed switching workspaces", severity="error")
+
+        self.push_screen(
+            WorkspaceModal(workspaces, current_workspace), switch_workspace
+        )
 
     def action_fullscreen(self) -> None:
         if self.switcher.current not in ("plan", "resource"):
