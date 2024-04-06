@@ -2,8 +2,47 @@ from rich.text import Text
 from textual.app import ComposeResult
 from textual.containers import Grid
 from textual.screen import ModalScreen
-from textual.widgets import Button, RichLog, Input, Checkbox, Static, DataTable
-from textual.containers import Horizontal
+from textual.widgets import (
+    Button,
+    RichLog,
+    Input,
+    Checkbox,
+    Static,
+    DataTable,
+    OptionList,
+)
+from textual.containers import Horizontal, Vertical
+
+
+class WorkspaceModal(ModalScreen):
+    workspaces = []
+    current = ""
+    options = None
+
+    def __init__(self, workspaces: list, current: str, *args, **kwargs):
+        self.current = current
+        self.workspaces = workspaces
+        super().__init__(*args, **kwargs)
+
+    def compose(self) -> ComposeResult:
+        question = Static(
+            Text("Select workspace to switch to:\n", "bold"),
+            id="question",
+        )
+        self.options = OptionList(*self.workspaces)
+        self.options.highlighted = self.workspaces.index(self.current)
+        yield Vertical(
+            question,
+            self.options,
+            Button("OK", id="ok"),
+            id="workspaces",
+        )
+
+    def on_key(self, event) -> None:
+        if event.key == "enter":
+            self.dismiss(self.workspaces[self.options.highlighted])
+        elif event.key == "escape":
+            self.dismiss(None)
 
 
 class FullTextModal(ModalScreen):
@@ -132,6 +171,7 @@ class HelpModal(ModalScreen):
         ("A", "Apply current plan, available only if a valid plan was created"),
         ("/", "Filter tree based on text inside resources names and descriptions"),
         ("0-9", "Collapse the state tree to the selected level, 0 expands all nodes"),
+        ("W", "Switch workspace"),
         ("M", "Toggle dark mode"),
         ("Q", "Quit"),
     )

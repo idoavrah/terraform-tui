@@ -27,6 +27,7 @@ class PlanScreen(RichLog):
         self.auto_scroll = False
         self.parent.loading = True
         self.fulltext = None
+        self.app.switcher.border_title = ""
         self.clear()
         command = [
             self.executable,
@@ -122,6 +123,9 @@ class PlanScreen(RichLog):
             await proc.wait()
             if proc.returncode != 2:
                 self.active_plan = None
+
+        if self.active_plan:
+            self.app.switcher.border_title = self.active_plan.plain.split("\n")[0]
 
         self.focus()
 

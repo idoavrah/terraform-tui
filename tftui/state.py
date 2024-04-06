@@ -75,15 +75,12 @@ class State:
 
     async def refresh_state(self) -> None:
         returncode, stdout = await execute_async(self.executable, "show -no-color")
-        if returncode != 0 or stdout.startswith("No state"):
+        if returncode != 0:
             raise Exception(stdout)
 
         self.state_tree = {}
         state_output = stdout.splitlines()
         logger.debug(f"state show line count: {len(state_output)}")
-
-        if stdout.startswith("The state file is empty."):
-            return
 
         contents = ""
         for line in state_output:

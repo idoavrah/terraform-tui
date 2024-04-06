@@ -1,3 +1,7 @@
+ModalScreen {
+    align: center middle;
+}
+
 #header {
   border: double lightblue;
   border-title-align: center;
@@ -55,22 +59,14 @@ Button {
     width: 100%;
 }
 
-HelpModal {
-    align: center middle;
-}
-
 #help {
     grid-gutter: 1 2;
     grid-rows: 1fr 3;
     padding: 0 1;
     width: 88;
-    height: 23;
+    height: 24;
     border: thick $background 80%;
     background: $surface;
-}
-
-YesNoModal {
-    align: center middle;
 }
 
 #question {
@@ -87,10 +83,6 @@ YesNoModal {
     height: 20;
     border: thick $background 80%;
     background: $surface;
-}
-
-PlanInputsModal {
-    align: center middle;
 }
 
 #varfilelabel {
@@ -122,4 +114,24 @@ PlanInputsModal {
     border: thick $background 80%;
     background: $surface;
     height: 20;
+}
+
+OptionList {
+    grid-gutter: 1 2;
+    height: 8;
+    margin-bottom: 1;
+}
+
+Vertical {
+  align: center middle;
+  column-span: 1;
+}
+
+#workspaces {
+    grid-size: 2;
+    padding: 1 2;
+    width: 30%;
+    max-height: 18;
+    border: thick $background 80%;
+    background: $surface;
 }

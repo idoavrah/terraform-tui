@@ -20,6 +20,12 @@ With its latest version you can easily visualize the complete state tree, gainin
 
 ## Changelog (latest versions)
 
+### Version 0.13
+
+- [x] Added support for workspace switching
+- [x] Added plan summary in the screen title
+- [x] Empty tree is now shown when no state exists instead of program shutting down, allowing for plan creation
+
 ### Version 0.12
 
 - [x] Enabled targeting specific resources for plan creation
@@ -39,18 +45,6 @@ With its latest version you can easily visualize the complete state tree, gainin
 - [x] Changed the confirmation dialog to a modal screen
 - [x] Added coloring to tainted resources considering some terminals can't display strikethrough correctly
 - [x] Improved loading screen mechanism
-
-### Version 0.10
-
-- [x] Perform actions on a single highlighted resource without pre-selecting it
-- [x] User interface overhaul: added logo, fixed coloring and loading indicator
-- [x] Added resource selection via the space key and tree traversal via the arrow keys
-- [x] Added a lightmode command-line argument
-- [x] Added a debug log command-line argument
-- [x] Copy to clipboard now copies the resource name in the tree view
-- [x] Fixed a bug in the remove resource functionality
-- [x] Fixed a bug in the parsing mechanism (colons, dots)
-- [x] Refactor: globals
 
 ## Demo
 
