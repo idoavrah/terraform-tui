@@ -609,9 +609,6 @@ class TerraformTUI(App):
         main_height = max(event.size.height - 11, 5)
         self.switcher.styles.height = main_height
         logger.debug("Main height: %s", main_height)
-        OutboundAPIs.post_usage(
-            "app resize", size=f"{event.size.width}x{event.size.height}"
-        )
         super()._on_resize(event)
 
 
@@ -638,6 +635,12 @@ def parse_command_line() -> None:
         help="tfvars filename to be used in planning",
     )
     parser.add_argument(
+        "-o",
+        "--offline",
+        help="run in offline mode (i.e. no outbound API calls; default online)",
+        action="store_true",
+    )
+    parser.add_argument(
         "-d",
         "--disable-usage-tracking",
         help="disable usage tracking (default enabled)",
@@ -660,13 +663,15 @@ def parse_command_line() -> None:
     )
     args = parser.parse_args()
 
+    if args.offline or args.disable_usage_tracking:
+        OutboundAPIs.disable_usage_tracking()
+    if not args.offline:
+        OutboundAPIs.check_for_new_version()
     if args.version:
         print(
             f"\ntftui v{OutboundAPIs.version}{' (new version available)' if OutboundAPIs.is_new_version_available else ''}\n"
         )
         exit(0)
-    if args.disable_usage_tracking:
-        OutboundAPIs.disable_usage_tracking()
     if args.executable:
         ApplicationGlobals.executable = args.executable
     if args.var_file:
