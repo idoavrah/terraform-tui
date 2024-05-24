@@ -26,6 +26,29 @@ async def execute_async(*command: str) -> tuple[str, str]:
     return (proc.returncode, response)
 
 
+def extract_sensitive_values(stateTree: dict) -> dict[str, dict[str, str]]:
+    sensitive_values = {}
+    if isinstance(stateTree, dict):
+        if (
+            stateTree.get("mode") in ["managed", "data"]
+            and stateTree.get("sensitive_values") is not None
+        ):
+            sensitive_keys = stateTree.get("sensitive_values")
+            if sensitive_keys:
+                secrets = {
+                    k: v
+                    for k, v in stateTree.get("values").items()
+                    if k in sensitive_keys
+                }
+                sensitive_values[stateTree.get("address")] = secrets
+        for value in stateTree.values():
+            sensitive_values.update(extract_sensitive_values(value))
+    elif isinstance(stateTree, list):
+        for item in stateTree:
+            sensitive_values.update(extract_sensitive_values(item))
+    return sensitive_values
+
+
 def split_resource_name(fullname: str) -> list[str]:
     # Thanks Chatgpt, couldn't do this without you; please don't become sentient and kill us all
     pattern = r"\.(?=(?:[^\[\]]*\[[^\[\]]*\])*[^\[\]]*$)"

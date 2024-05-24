@@ -1,17 +1,24 @@
 import argparse
-import pyperclip
+import json
 import os
 import platform
-import json
-import traceback
+import pyperclip
 import re
 import subprocess
+import traceback
+from asyncio import CancelledError
 from rich.text import Text
 from shutil import which
 from tftui.apis import OutboundAPIs
-from tftui.state import State, Block, execute_async, split_resource_name
 from tftui.plan import PlanScreen
 from tftui.debug_log import setup_logging
+from tftui.state import (
+    State,
+    Block,
+    execute_async,
+    split_resource_name,
+    extract_sensitive_values,
+)
 from tftui.modal import (
     HelpModal,
     YesNoModal,
@@ -91,6 +98,7 @@ class StateTree(Tree):
     highlighted_resource_node = []
     selected_nodes = []
     current_state = []
+    sensitive_values = {}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -164,12 +172,30 @@ class StateTree(Tree):
         self.root.expand_all()
 
     @work(exclusive=True)
+    async def extract_sensitive_values(self) -> None:
+        self.sensitive_values = {}
+        try:
+            returncode, stdout = await execute_async(
+                ApplicationGlobals.executable, "show -json"
+            )
+            if returncode == 0:
+                self.current_state_json = json.loads(stdout)
+                self.sensitive_values = extract_sensitive_values(
+                    self.current_state_json
+                )
+        except CancelledError:
+            pass
+        except Exception as e:
+            logger.error("Error extracting sensitive values: %s", e)
+
+    @work(exclusive=True)
     async def refresh_state(self, focus=True) -> None:
         self.loading = True
         self.app.notify("Refreshing state tree")
         self.app.search.value = ""
         try:
             await self.current_state.refresh_state()
+            self.extract_sensitive_values()
         except Exception as e:
             ApplicationGlobals.successful_termination = False
             self.app.exit(e)
@@ -225,6 +251,17 @@ class StateTree(Tree):
             self.selected_nodes.append(self.current_node)
             self.current_node.label.stylize("red bold italic reverse")
 
+    def display_sensitive_data(self, fullname, contents) -> None:
+        self.app.resource.clear()
+        sensitive_values = self.sensitive_values.get(fullname)
+        if sensitive_values:
+            for value in sensitive_values.values():
+                if value:
+                    contents = contents.replace(
+                        " (sensitive value)\n", f" {value}\n", 1
+                    )
+        self.app.resource.write(contents)
+
 
 class TerraformTUI(App):
     switcher = None
@@ -244,9 +281,9 @@ class TerraformTUI(App):
     CSS_PATH = "ui.tcss"
 
     BINDINGS = [
-        ("Enter", "", "View"),
-        Binding("escape", "back", "Back"),
-        ("s", "select", "Select"),
+        Binding("Enter", "", "View", show=False),
+        Binding("escape", "back", "Back", show=False),
+        Binding("s", "select", "Select", show=False),
         Binding("spacebar", "select", "Select"),
         ("f", "fullscreen", "FullScreen"),
         ("d", "delete", "Delete"),
@@ -260,6 +297,7 @@ class TerraformTUI(App):
         ("/", "search", "Search"),
         ("0-9", "collapse", "Collapse"),
         ("w", "workspaces", "Workspaces"),
+        ("x", "sensitive", "Sensitive"),
         ("m", "toggle_dark", "Dark mode"),
         ("h", "help", "Help"),
         ("q", "quit", "Quit"),
@@ -596,6 +634,17 @@ class TerraformTUI(App):
             )
         )
         self.plan.focus()
+
+    def action_sensitive(self) -> None:
+        if self.switcher.current != "resource":
+            return
+        fullname = f"{self.tree.current_node.data.submodule}.{self.tree.current_node.data.name}"
+        if self.tree.current_node.data.contents is None:
+            self.notify("Unable to display sensitive contents", severity="warning")
+        else:
+            self.tree.display_sensitive_data(
+                fullname, self.tree.current_node.data.contents
+            )
 
     def _handle_exception(self, exception: Exception) -> None:
         self.error_message = "".join(
