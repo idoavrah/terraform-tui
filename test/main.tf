@@ -54,6 +54,11 @@ data "local_file" "saturn" {
   filename = "${path.module}/1.txt"
 }
 
+resource "random_password" "password" {
+  length  = 16
+  special = true
+}
+
 variable "something" {
   type = string
 }

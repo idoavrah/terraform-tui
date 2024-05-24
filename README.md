@@ -20,13 +20,14 @@ With its latest version you can easily visualize the complete state tree, gainin
 
 ## Changelog (latest versions)
 
-### Version 0.13.1
+### Version 0.13.2
 
 - [x] Added support for workspace switching
 - [x] Added plan summary in the screen title
 - [x] Empty tree is now shown when no state exists instead of program shutting down, allowing for plan creation
 - [x] Added `-o` flag for offline mode (no outbound API calls)
 - [x] Removed the default outbound call to PostHog when tracking is disabled
+- [x] Added sensitive values extraction in resource details
 
 ### Version 0.12
 

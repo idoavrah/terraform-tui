@@ -152,6 +152,7 @@ class HelpModal(ModalScreen):
         ("ESC", "Go back"),
         ("S / Space", "Select current resource (toggle)"),
         ("F", "Show resource/plan on full screen; Hold SHIFT/OPTIONS to copy text"),
+        ("X", "Expose sensitive values in resource screen"),
         ("D", "Delete selected resources, or highlighted resource if none is selected"),
         ("T", "Taint selected resources, or highlighted resource if none is selected"),
         (
