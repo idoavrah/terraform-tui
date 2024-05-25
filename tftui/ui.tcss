@@ -1,9 +1,5 @@
-#action {
-  align: center bottom;
-  grid-gutter: 2;
-  grid-size: 2;
-  layout: grid;
-  padding: 2;
+ModalScreen {
+    align: center middle;
 }
 
 #header {
@@ -11,27 +7,21 @@
   border-title-align: center;
   grid-columns: 20 1fr 50;
   grid-size: 3;
-  height: 8;
+  height: 7;
   layout: grid;
-}
-
-#question {
-  border: solid red;
-  column-span: 2;
-  content-align: center bottom;
-  height: 100%;
-  text-style: bold;
-  width: 100%;
 }
 
 #resource {
   margin: 0 0 0 1;
-  max-height: 75vh;
+}
+
+#plan {
+  background: $surface;
+  margin: 0 0 0 1;
 }
 
 #commandoutput {
   margin: 0 0 0 1;
-  max-height: 75vh;
 }
 
 #search {
@@ -43,22 +33,11 @@
 #switcher {
   border: double lightblue;
   border_title_align: center;
-  max-height: 75vh;
-}
-
-#loading {
-  max-height: 75vh;
-  height: 75vh;
 }
 
 #tree {
   background: $surface;
   margin: 0 0 0 1;
-  max-height: 75vh;
-}
-
-Button {
-  width: 20%;
 }
 
 Horizontal {
@@ -74,4 +53,85 @@ Screen {
 .header-box {
   margin: 0 0 0 3;
   text-align: left;
+}
+
+Button {
+    width: 100%;
+}
+
+#help {
+    grid-gutter: 1 2;
+    grid-rows: 1fr 3;
+    padding: 0 1;
+    width: 88;
+    height: 25;
+    border: thick $background 80%;
+    background: $surface;
+}
+
+#question {
+    column-span: 2;
+    border: none;
+}
+
+#yesno {
+    grid-size: 2;
+    grid-gutter: 1 2;
+    grid-rows: 1fr 3;
+    padding: 1 2;
+    width: 80%;
+    height: 20;
+    border: thick $background 80%;
+    background: $surface;
+}
+
+#varfilelabel {
+    height: 3;
+    width: 14;
+    content-align: center middle;
+}
+
+#varfile {
+    height: 3;
+    width: 1fr;
+    border: none;
+    content-align: center middle;
+}
+
+#plantarget {
+    column-span: 2;
+    height: 5;
+    width: 1fr;
+    border: none;
+    background: $surface;
+}
+
+#tfvars {
+    grid-size: 2;
+    grid-gutter: 0 1;
+    padding: 1 2;
+    width: 80%;
+    border: thick $background 80%;
+    background: $surface;
+    height: 20;
+}
+
+OptionList {
+    grid-gutter: 1 2;
+    height: 8;
+    margin-bottom: 1;
+}
+
+Vertical {
+  align: center middle;
+  column-span: 1;
+}
+
+#workspaces {
+    grid-size: 2;
+    padding: 1 2;
+    width: 30%;
+    max-height: 18;
+    border: thick $background 80%;
+    background: $surface;
 }

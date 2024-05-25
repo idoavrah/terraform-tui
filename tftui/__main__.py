@@ -1,24 +1,42 @@
 import argparse
-import pyperclip
-import os
 import json
-from tftui.apis import OutboundAPIs
-from tftui.state import State, Block, execute_async, split_resource_name
-from tftui.plan import execute_plan
-from tftui.debug_log import setup_logging
+import os
+import platform
+import pyperclip
+import re
+import subprocess
+import traceback
+from asyncio import CancelledError
+from rich.text import Text
 from shutil import which
+from tftui.apis import OutboundAPIs
+from tftui.plan import PlanScreen
+from tftui.debug_log import setup_logging
+from tftui.state import (
+    State,
+    Block,
+    execute_async,
+    split_resource_name,
+    extract_sensitive_values,
+)
+from tftui.modal import (
+    HelpModal,
+    YesNoModal,
+    PlanInputsModal,
+    FullTextModal,
+    WorkspaceModal,
+)
 from textual import work
 from textual.app import App, Binding
-from textual.containers import Vertical, Horizontal
+from textual.containers import Horizontal
+from textual.screen import ModalScreen
 from textual.widgets import (
     Footer,
     Tree,
     Input,
     Static,
     RichLog as TextLog,
-    LoadingIndicator,
     ContentSwitcher,
-    Button,
 )
 
 logger = setup_logging()
@@ -29,6 +47,7 @@ class ApplicationGlobals:
     successful_termination = True
     no_init = False
     darkmode = True
+    var_file = None
 
 
 class AppHeader(Horizontal):
@@ -39,22 +58,39 @@ class AppHeader(Horizontal):
     \/_/   \/_/       \/_/   \/_____/  \/_/
 """
 
-    TITLES = """
-TFTUI Version:\n\n
+    TITLES = """TFTUI Version:\n
 Working folder:\n
-"""
-
-    INFO = f"""
-{OutboundAPIs.version}{' (new version available)' if OutboundAPIs.is_new_version_available else ''}\n\n
-{os.getcwd()}\n
+Workspace:
 """
 
     BORDER_TITLE = "TFTUI - the Terraform terminal user interface"
 
+    info = Static("", classes="header-box")
+
+    def refresh_info(self):
+        result = subprocess.run(
+            [ApplicationGlobals.executable, "workspace", "show"],
+            capture_output=True,
+            text=True,
+        )
+
+        if result.returncode == 0:
+            workspace = result.stdout
+        else:
+            logger.error(f"Error getting workspace: {result.stderr}")
+            workspace = "Unknown"
+
+        self.info.update(
+            f"""{OutboundAPIs.version}{' (new version available)' if OutboundAPIs.is_new_version_available else ''}\n
+{os.getcwd()}\n
+{workspace}"""
+        )
+
     def compose(self):
-        yield Static(AppHeader.TITLES, classes="header-box")
-        yield Static(AppHeader.INFO, classes="header-box")
-        yield Static(AppHeader.LOGO, classes="header-box")
+        self.refresh_info()
+        yield Static(self.TITLES, classes="header-box")
+        yield self.info
+        yield Static(self.LOGO, classes="header-box")
 
 
 class StateTree(Tree):
@@ -62,6 +98,7 @@ class StateTree(Tree):
     highlighted_resource_node = []
     selected_nodes = []
     current_state = []
+    sensitive_values = {}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -80,7 +117,8 @@ class StateTree(Tree):
         filtered_blocks = dict(
             filter(
                 lambda block: search_string in block[1].contents
-                or search_string in block[1].name,
+                or search_string in block[1].name
+                or search_string in block[1].submodule,
                 self.current_state.state_tree.items(),
             )
         )
@@ -129,28 +167,47 @@ class StateTree(Tree):
                 module_node = module_nodes[block.submodule]
             leaf = module_node.add_leaf(block.name, data=block)
             if block.is_tainted:
-                leaf.label.stylize("strike")
+                leaf.label.stylize("gold3 strike")
 
         self.root.expand_all()
-        self.app.switcher.current = "tree"
 
     @work(exclusive=True)
-    async def refresh_state(self) -> None:
-        self.app.switcher.current = "loading"
-        self.app.notify(f"Running {ApplicationGlobals.executable.capitalize()} show")
+    async def extract_sensitive_values(self) -> None:
+        self.sensitive_values = {}
+        try:
+            returncode, stdout = await execute_async(
+                ApplicationGlobals.executable, "show -json"
+            )
+            if returncode == 0:
+                self.current_state_json = json.loads(stdout)
+                self.sensitive_values = extract_sensitive_values(
+                    self.current_state_json
+                )
+        except CancelledError:
+            pass
+        except Exception as e:
+            logger.error("Error extracting sensitive values: %s", e)
+
+    @work(exclusive=True)
+    async def refresh_state(self, focus=True) -> None:
+        self.loading = True
+        self.app.notify("Refreshing state tree")
         self.app.search.value = ""
         try:
             await self.current_state.refresh_state()
+            self.extract_sensitive_values()
         except Exception as e:
             ApplicationGlobals.successful_termination = False
             self.app.exit(e)
             return
 
         self.build_tree()
-        self.app.tree.focus()
         self.current_node = self.get_node_at_line(min(self.cursor_line, self.last_line))
         self.update_highlighted_resource_node(self.current_node)
+        self.loading = False
         OutboundAPIs.post_usage("refreshed state")
+        if focus:
+            self.focus()
 
     def update_highlighted_resource_node(self, node) -> None:
         self.current_node = node
@@ -189,21 +246,31 @@ class StateTree(Tree):
             self.selected_nodes.remove(self.current_node)
             self.current_node.label = self.current_node.label.plain
             if self.current_node.data.is_tainted:
-                self.current_node.label.stylize("strike")
+                self.current_node.label.stylize("gold3 strike")
         else:
             self.selected_nodes.append(self.current_node)
             self.current_node.label.stylize("red bold italic reverse")
+
+    def display_sensitive_data(self, fullname, contents) -> None:
+        self.app.resource.clear()
+        sensitive_values = self.sensitive_values.get(fullname)
+        if sensitive_values:
+            for value in sensitive_values.values():
+                if value:
+                    contents = contents.replace(
+                        " (sensitive value)\n", f" {value}\n", 1
+                    )
+        self.app.resource.write(contents)
 
 
 class TerraformTUI(App):
     switcher = None
     tree = None
     resource = None
-    question = None
-    action = None
     search = None
-    commandoutput = None
+    plan = None
     selected_action = None
+    error_message = ""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -214,30 +281,32 @@ class TerraformTUI(App):
     CSS_PATH = "ui.tcss"
 
     BINDINGS = [
-        ("Enter", "", "View"),
-        Binding("escape", "back", "Back"),
-        ("s", "select", "Select"),
+        Binding("Enter", "", "View", show=False),
+        Binding("escape", "back", "Back", show=False),
+        Binding("s", "select", "Select", show=False),
         Binding("spacebar", "select", "Select"),
+        ("f", "fullscreen", "FullScreen"),
         ("d", "delete", "Delete"),
         ("t", "taint", "Taint"),
         ("u", "untaint", "Untaint"),
         ("c", "copy", "Copy"),
         ("r", "refresh", "Refresh"),
-        # ("p", "plan", "Plan"),
-        # ("a", "apply", "Apply"),
+        ("p", "plan", "Plan"),
+        ("a", "apply", "Apply"),
+        ("ctrl+d", "destroy", "Destroy"),
         ("/", "search", "Search"),
-        ("1-9", "collapse", "Collapse"),
+        ("0-9", "collapse", "Collapse"),
+        ("w", "workspaces", "Workspaces"),
+        ("x", "sensitive", "Sensitive"),
         ("m", "toggle_dark", "Dark mode"),
-        Binding("y", "yes", "Yes", show=False),
-        Binding("n", "no", "No", show=False),
+        ("h", "help", "Help"),
         ("q", "quit", "Quit"),
     ] + [Binding(f"{i}", f"collapse({i})", show=False) for i in range(10)]
 
     def compose(self):
         yield AppHeader(id="header")
         yield Input(id="search", placeholder="Search text...")
-        with ContentSwitcher(id="switcher", initial="loading"):
-            yield LoadingIndicator(id="loading")
+        with ContentSwitcher(id="switcher", initial="tree"):
             yield StateTree("State", id="tree")
             yield TextLog(
                 id="resource",
@@ -247,43 +316,38 @@ class TerraformTUI(App):
                 classes="resource",
                 auto_scroll=False,
             )
-            yield TextLog(id="commandoutput")
-            with Vertical(id="action"):
-                yield TextLog(id="question", auto_scroll=False)
-                with Horizontal():
-                    yield Button("Yes", id="yes", variant="primary")
-                    yield Button("No", id="no", variant="error")
+            yield PlanScreen(id="plan", executable=ApplicationGlobals.executable)
         yield Footer()
 
     def on_mount(self) -> None:
         self.resource = self.get_widget_by_id("resource")
         self.tree = self.get_widget_by_id("tree")
         self.switcher = self.get_widget_by_id("switcher")
-        self.question = self.get_widget_by_id("question")
-        self.action = self.get_widget_by_id("action")
         self.search = self.get_widget_by_id("search")
-        self.commandoutput = self.get_widget_by_id("commandoutput")
+        self.plan = self.get_widget_by_id("plan")
 
-    async def on_ready(self) -> None:
+    def on_ready(self) -> None:
         self.tree.refresh_state()
 
-    async def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "yes":
-            await self.perform_action()
-        elif event.button.id == "no":
-            self.action_no()
-
     def on_input_changed(self, event: Input.Changed) -> None:
-        if self.app.switcher.current == "loading":
+        if self.app.search.value == "":
+            return
+        elif self.app.tree.loading:
             self.app.search.value = ""
+            self.app.notify(
+                "Please wait until state refresh is complete", severity="warning"
+            )
         elif event.input.id == "search":
             search_string = event.value.strip()
             self.perform_search(search_string)
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
-        self.tree.focus()
+        if self.switcher.current == "tree":
+            self.tree.focus()
 
     def on_key(self, event) -> None:
+        if not self.tree.has_focus or isinstance(self.screen, ModalScreen):
+            return
         if event.key == "space":
             self.action_select()
         elif event.key == "left" and self.switcher.current == "tree":
@@ -332,33 +396,26 @@ class TerraformTUI(App):
             )
 
     async def perform_action(self) -> None:
-        if self.switcher.current != "action":
-            return
         if self.selected_action in ["taint", "untaint", "delete"]:
-            self.switcher.current = "loading"
+            self.switcher.loading = True
             self.notify(
                 f"Executing {ApplicationGlobals.executable.capitalize()} {self.selected_action}"
             )
             await self.manipulate_resources(self.selected_action)
             OutboundAPIs.post_usage(f"applied {self.selected_action}")
             self.tree.refresh_state()
+            self.tree.focus()
+            self.switcher.loading = False
 
     def perform_search(self, search_string: str) -> None:
         self.tree.root.collapse_all()
         self.tree.build_tree(search_string)
         self.tree.root.expand()
 
-    async def action_yes(self) -> None:
-        await self.perform_action()
-
-    def action_no(self) -> None:
-        self.action_back()
-
     def action_back(self) -> None:
         if (
             not self.switcher.current == "resource"
-            and not self.switcher.current == "action"
-            and not self.switcher.current == "commandoutput"
+            and not self.switcher.current == "plan"
             and not self.focused.id == "search"
         ):
             return
@@ -366,26 +423,73 @@ class TerraformTUI(App):
         self.app.switcher.border_title = ""
         self.tree.focus()
 
+    async def create_plan(self, destroy="") -> None:
+        self.switcher.current = "plan"
+
+        async def execute(response):
+            if response is not None:
+                self.notify(f"Creating {destroy} plan")
+                targets = []
+                if response[1]:
+                    if self.tree.selected_nodes:
+                        targets = [
+                            f"{node.parent.data}.{node.label.plain}".lstrip(".")
+                            for node in self.tree.selected_nodes
+                        ]
+                    else:
+                        targets = [
+                            f"{node.parent.data}.{node.label.plain}".lstrip(".")
+                            for node in self.tree.highlighted_resource_node
+                        ]
+                self.plan.create_plan(response[0], targets, destroy)
+                OutboundAPIs.post_usage(
+                    f"create {'targeted' if targets else ''} {destroy} plan"
+                )
+            else:
+                self.switcher.current = "tree"
+
+        self.push_screen(
+            PlanInputsModal(
+                ApplicationGlobals.var_file,
+                len(self.tree.selected_nodes) > 0,
+            ),
+            execute,
+        )
+        self.plan.focus()
+
     async def action_plan(self) -> None:
-        if not self.switcher.current == "tree":
-            return
-        self.switcher.current = "commandoutput"
-        self.commandoutput.clear()
-        self.notify(f"Executing {ApplicationGlobals.executable.capitalize()} plan")
-        await execute_plan(ApplicationGlobals.executable, self.commandoutput)
-        OutboundAPIs.post_usage(f"executed {ApplicationGlobals.executable} plan")
+        await self.create_plan()
+
+    async def action_destroy(self) -> None:
+        await self.create_plan("destruction")
 
     async def action_apply(self) -> None:
-        if not self.switcher.current == "commandoutput":
-            self.notify("You must PLAN before APPLY", severity="warning")
+        if not self.plan.active_plan:
+            self.app.notify("No active plan to apply", severity="warning")
             return
+
+        question = Text.assemble(
+            ("Are you sure you wish to apply the current plan?\n\n", "bold"),
+            self.plan.active_plan,
+        )
+
+        async def execute_if_yes(flag):
+            if flag:
+                self.switcher.loading = True
+                self.notify("Applying plan")
+                OutboundAPIs.post_usage("apply plan")
+                logger.debug("Applying plan %s", self.plan.active_plan)
+                self.plan.execute_apply()
+
+        self.push_screen(YesNoModal(question), execute_if_yes)
+        self.plan.focus()
 
     def action_select(self) -> None:
         if not self.switcher.current == "tree":
             return
         self.tree.select_current_node()
 
-    def action_manipulate_resources(self, what_to_do: str) -> None:
+    async def action_manipulate_resources(self, what_to_do: str) -> None:
         if not self.switcher.current == "tree":
             return
         nodes = (
@@ -393,40 +497,54 @@ class TerraformTUI(App):
             if self.tree.selected_nodes
             else self.tree.highlighted_resource_node
         )
+
         if nodes:
             self.selected_action = what_to_do
-            self.question.clear()
             resources = [
                 f"{node.parent.data}.{node.label.plain}".lstrip(".") for node in nodes
             ]
-            self.question.write(
-                f"Are you sure you wish to {what_to_do} the selected resources?\n\n - "
-                + "\n - ".join(resources)
+
+            question = Text.assemble(
+                ("Are you sure you wish to ", "bold"),
+                (what_to_do, "bold red"),
+                (" the selected resources?\n\n - ", "bold"),
+                ("\n - ".join(resources)),
             )
-            self.switcher.current = "action"
 
-    def action_delete(self) -> None:
-        self.action_manipulate_resources("delete")
+            async def execute_if_yes(flag):
+                if flag:
+                    await self.perform_action()
 
-    def action_taint(self) -> None:
-        self.action_manipulate_resources("taint")
+            self.push_screen(YesNoModal(question), execute_if_yes)
 
-    def action_untaint(self) -> None:
-        self.action_manipulate_resources("untaint")
+    async def action_delete(self) -> None:
+        await self.action_manipulate_resources("delete")
+
+    async def action_taint(self) -> None:
+        await self.action_manipulate_resources("taint")
+
+    async def action_untaint(self) -> None:
+        await self.action_manipulate_resources("untaint")
 
     def action_copy(self) -> None:
-        if self.switcher.current == "resource":
-            pyperclip.copy(self.app.tree.current_node.data.contents)
-            self.notify("Copied resource definition to clipboard")
-        elif self.switcher.current == "tree":
-            pyperclip.copy(self.app.tree.current_node.label.plain)
-            self.notify("Copied resource name to clipboard")
+        try:
+            if self.switcher.current == "resource":
+                pyperclip.copy(self.app.tree.current_node.data.contents)
+                self.notify("Copied resource definition to clipboard")
+            elif self.switcher.current == "tree":
+                pyperclip.copy(self.app.tree.current_node.label.plain)
+                self.notify("Copied resource name to clipboard")
+        except Exception:
+            self.notify(
+                "Copy to clipboard is unsupported in this terminal", severity="warning"
+            )
 
     def action_refresh(self) -> None:
-        if not self.switcher.current == "tree":
-            return
+        self.switcher.current = "tree"
         self.tree.refresh_state()
-        OutboundAPIs.post_usage("refreshed state")
+
+    def action_help(self) -> None:
+        self.push_screen(HelpModal())
 
     def action_toggle_dark(self) -> None:
         self.dark = not self.dark
@@ -446,29 +564,129 @@ class TerraformTUI(App):
             return
         if level == 0:
             self.tree.root.expand_all()
-            return
-        self.tree.root.collapse_all()
-        for node in self.tree.root.children:
-            self.expand_node(level, node)
-        self.tree.root.expand()
+        else:
+            self.tree.root.collapse_all()
+            for node in self.tree.root.children:
+                self.expand_node(level, node)
+            self.tree.root.expand()
 
     def action_search(self) -> None:
         self.switcher.border_title = ""
         self.switcher.current = "tree"
         self.search.focus()
 
+    def action_workspaces(self) -> None:
+        if self.switcher.current != "tree":
+            return
+
+        result = subprocess.run(
+            [ApplicationGlobals.executable, "workspace", "list"],
+            capture_output=True,
+            text=True,
+        )
+
+        if result.returncode == 0:
+            workspaces = []
+            for workspace in result.stdout.split("\n"):
+                if workspace.strip():
+                    workspaces.append(workspace[2:])
+                if workspace.startswith("*"):
+                    current_workspace = workspace[2:]
+        else:
+            logger.error(f"Error getting workspaces: {result.stderr}")
+            self.notify("Failed getting workspaces", severity="error")
+
+        def switch_workspace(selected_workspace: str):
+            if (
+                selected_workspace is not None
+                and selected_workspace != current_workspace
+            ):
+                result = subprocess.run(
+                    [
+                        ApplicationGlobals.executable,
+                        "workspace",
+                        "select",
+                        selected_workspace,
+                    ],
+                    capture_output=True,
+                    text=True,
+                )
+                if result.returncode == 0:
+                    self.app.get_child_by_id("header").refresh_info()
+                    self.action_refresh()
+                else:
+                    logger.error(f"Failed switching workspaces: {result.stderr}")
+                    self.notify("Failed switching workspaces", severity="error")
+
+        self.push_screen(
+            WorkspaceModal(workspaces, current_workspace), switch_workspace
+        )
+
+    def action_fullscreen(self) -> None:
+        if self.switcher.current not in ("plan", "resource"):
+            return
+        self.push_screen(
+            FullTextModal(
+                self.tree.current_node.data.contents
+                if self.switcher.current == "resource"
+                else self.plan.fulltext,
+                self.switcher.current == "resource",
+            )
+        )
+        self.plan.focus()
+
+    def action_sensitive(self) -> None:
+        if self.switcher.current != "resource":
+            return
+        fullname = f"{self.tree.current_node.data.submodule}.{self.tree.current_node.data.name}"
+        if self.tree.current_node.data.contents is None:
+            self.notify("Unable to display sensitive contents", severity="warning")
+        else:
+            self.tree.display_sensitive_data(
+                fullname, self.tree.current_node.data.contents
+            )
+
+    def _handle_exception(self, exception: Exception) -> None:
+        self.error_message = "".join(
+            traceback.format_exception(
+                type(exception), exception, exception.__traceback__
+            )
+        )
+        super()._handle_exception(exception)
+
+    def _on_resize(self, event):
+        main_height = max(event.size.height - 11, 5)
+        self.switcher.styles.height = main_height
+        logger.debug("Main height: %s", main_height)
+        super()._on_resize(event)
+
 
 def parse_command_line() -> None:
     parser = argparse.ArgumentParser(
-        prog="tftui", description="TFTUI - the Terraform terminal UI", epilog="Enjoy!"
+        prog="tftui",
+        description="TFTUI - the Terraform terminal UI",
+        epilog="Enjoy!",
     )
     parser.add_argument(
-        "-e", "--executable", help="set executable command (default 'terraform')"
+        "-e",
+        "--executable",
+        help="set executable command (default 'terraform')",
     )
     parser.add_argument(
         "-n",
         "--no-init",
         help="do not run terraform init on startup (default run)",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-f",
+        "--var-file",
+        help="tfvars filename to be used in planning",
+    )
+    parser.add_argument(
+        "-o",
+        "--offline",
+        help="run in offline mode (i.e. no outbound API calls; default online)",
         action="store_true",
     )
     parser.add_argument(
@@ -494,15 +712,19 @@ def parse_command_line() -> None:
     )
     args = parser.parse_args()
 
+    if args.offline or args.disable_usage_tracking:
+        OutboundAPIs.disable_usage_tracking()
+    if not args.offline:
+        OutboundAPIs.check_for_new_version()
     if args.version:
         print(
             f"\ntftui v{OutboundAPIs.version}{' (new version available)' if OutboundAPIs.is_new_version_available else ''}\n"
         )
         exit(0)
-    if args.disable_usage_tracking:
-        OutboundAPIs.disable_usage_tracking()
     if args.executable:
         ApplicationGlobals.executable = args.executable
+    if args.var_file:
+        ApplicationGlobals.var_file = args.var_file
     if args.generate_debug_log:
         logger = setup_logging("debug")
         logger.debug("*" * 50)
@@ -520,16 +742,28 @@ def parse_command_line() -> None:
 
 def main() -> None:
     parse_command_line()
-    OutboundAPIs.post_usage("started application")
+    OutboundAPIs.post_usage("started application", platform=platform.platform())
 
-    app = TerraformTUI()
-    result = app.run()
+    result = ""
+    try:
+        app = TerraformTUI()
+        result = app.run()
+    finally:
+        if app.return_code > 0:
+            ApplicationGlobals.successful_termination = False
+
     if result is not None:
         print(result)
     if ApplicationGlobals.successful_termination:
         OutboundAPIs.post_usage("exited successfully")
     else:
-        OutboundAPIs.post_usage("exited unsuccessfully")
+        error_message = re.sub(
+            r"(?<=[/\\])[^\s/\\]+(?=[/\\])",
+            "***",
+            app.error_message or str(result).strip(),
+        ).split("\n")
+        logger.debug(error_message)
+        OutboundAPIs.post_usage("exited unsuccessfully", error_message=error_message)
 
     if OutboundAPIs.is_new_version_available:
         print("\n*** New version available. ***")
