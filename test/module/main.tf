@@ -19,3 +19,8 @@ data "local_file" "pluto" {
   count    = 2
   filename = "${path.module}/1.txt"
 }
+
+resource "random_password" "password" {
+  length  = 16
+  special = true
+}
