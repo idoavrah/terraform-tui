@@ -20,7 +20,7 @@ With its latest version you can easily visualize the complete state tree, gainin
 
 ## Changelog (latest versions)
 
-### Version 0.13.2
+### Version 0.13
 
 - [x] Added support for workspace switching
 - [x] Added plan summary in the screen title
