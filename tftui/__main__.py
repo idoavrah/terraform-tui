@@ -390,9 +390,11 @@ class TerraformTUI(App):
             await execute_async(
                 ApplicationGlobals.executable,
                 (what_to_do if what_to_do != "delete" else "state rm"),
-                ".".join([node.data.submodule, node.data.name])
-                if node.data.submodule
-                else node.data.name,
+                (
+                    ".".join([node.data.submodule, node.data.name])
+                    if node.data.submodule
+                    else node.data.name
+                ),
             )
 
     async def perform_action(self) -> None:
@@ -627,9 +629,11 @@ class TerraformTUI(App):
             return
         self.push_screen(
             FullTextModal(
-                self.tree.current_node.data.contents
-                if self.switcher.current == "resource"
-                else self.plan.fulltext,
+                (
+                    self.tree.current_node.data.contents
+                    if self.switcher.current == "resource"
+                    else self.plan.fulltext
+                ),
                 self.switcher.current == "resource",
             )
         )
@@ -638,7 +642,9 @@ class TerraformTUI(App):
     def action_sensitive(self) -> None:
         if self.switcher.current != "resource":
             return
-        fullname = f"{self.tree.current_node.data.submodule}.{self.tree.current_node.data.name}"
+        fullname = f"{self.tree.current_node.data.submodule}.{self.tree.current_node.data.name}".strip(
+            "."
+        )
         if self.tree.current_node.data.contents is None:
             self.notify("Unable to display sensitive contents", severity="warning")
         else:
