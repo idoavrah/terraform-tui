@@ -29,6 +29,7 @@ from tftui.modal import (
 from textual import work
 from textual.app import App, Binding
 from textual.containers import Horizontal
+from textual.events import Key
 from textual.screen import ModalScreen
 from textual.widgets import (
     Footer,
@@ -283,7 +284,10 @@ class TerraformTUI(App):
     BINDINGS = [
         Binding("Enter", "", "View", show=False),
         Binding("escape", "back", "Back", show=False),
-        Binding("s", "select", "Select", show=False),
+        Binding("h", "left", "Left", show=False),
+        Binding("j", "down", "Down", show=False),
+        Binding("k", "up", "Up", show=False),
+        Binding("l", "right", "Right", show=False),
         Binding("spacebar", "select", "Select"),
         ("f", "fullscreen", "FullScreen"),
         ("d", "delete", "Delete"),
@@ -299,7 +303,7 @@ class TerraformTUI(App):
         ("w", "workspaces", "Workspaces"),
         ("x", "sensitive", "Sensitive"),
         ("m", "toggle_dark", "Dark mode"),
-        ("h", "help", "Help"),
+        ("?", "help", "Help"),
         ("q", "quit", "Quit"),
     ] + [Binding(f"{i}", f"collapse({i})", show=False) for i in range(10)]
 
@@ -346,11 +350,15 @@ class TerraformTUI(App):
             self.tree.focus()
 
     def on_key(self, event) -> None:
+        if event.key == "j":
+            self.post_message(Key("down", character="down"))
+        elif event.key == "k":
+            self.post_message(Key("up", character="up"))
         if not self.tree.has_focus or isinstance(self.screen, ModalScreen):
             return
         if event.key == "space":
             self.action_select()
-        elif event.key == "left" and self.switcher.current == "tree":
+        elif event.key in ("left", "h") and self.switcher.current == "tree":
             if self.tree.current_node is not None:
                 if (
                     self.tree.current_node.allow_expand
@@ -361,8 +369,7 @@ class TerraformTUI(App):
                     self.tree.current_node = self.tree.current_node.parent
                     self.tree.select_node(self.tree.current_node)
                     self.tree.scroll_to_node(self.tree.current_node)
-
-        elif event.key == "right" and self.switcher.current == "tree":
+        elif event.key in ("right", "l") and self.switcher.current == "tree":
             if self.tree.current_node is not None:
                 if (
                     self.tree.current_node.allow_expand
