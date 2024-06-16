@@ -28,6 +28,7 @@ With its latest version you can easily visualize the complete state tree, gainin
 - [x] Added `-o` flag for offline mode (no outbound API calls)
 - [x] Removed the default outbound call to PostHog when tracking is disabled
 - [x] Added sensitive values extraction in resource details
+- [x] Added support for vim-like navigation
 
 ### Version 0.12
 
