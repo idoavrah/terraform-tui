@@ -107,7 +107,7 @@ class State:
 
         contents = ""
         for line in state_output:
-            if line.startswith("#"):
+            if line.startswith("# "):
                 (fullname, name, submodule, type, is_tainted) = State.parse_block(line)
                 contents = ""
             elif line.startswith("}"):
