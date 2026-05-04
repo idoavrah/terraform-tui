@@ -669,7 +669,8 @@ class TerraformTUI(App):
 
     def _on_resize(self, event):
         main_height = max(event.size.height - 11, 5)
-        self.switcher.styles.height = main_height
+        if self.switcher is not None:
+            self.switcher.styles.height = main_height
         logger.debug("Main height: %s", main_height)
         super()._on_resize(event)
 
