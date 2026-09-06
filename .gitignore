@@ -167,3 +167,17 @@ state.txt
 
 test/terraform.tfstate*
 test/tftui.plan
+
+# --- tftui ---
+tftui.log
+uv.lock.bak
+
+# Terraform working files in the bundled example project
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.plan
+crash.log
+crash.*.log
+examples/terraform/generated/

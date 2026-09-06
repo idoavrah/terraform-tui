@@ -1,74 +1,131 @@
-# TFTUI - The Terraform textual UI
+# TFTUI — the Terraform textual UI
 
 [![PyPI version](https://badge.fury.io/py/tftui.svg?random=stuff)](https://badge.fury.io/py/tftui?)
+[![CI](https://github.com/idoavrah/terraform-tui/actions/workflows/ci.yaml/badge.svg)](https://github.com/idoavrah/terraform-tui/actions/workflows/ci.yaml)
 ![GitHub](https://img.shields.io/github/license/idoavrah/terraform-tui?random=stuff)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/tftui?random=stuff)
 
-`TFTUI` is a powerful textual UI that empowers users to effortlessly view and interact with their Terraform state.
+`TFTUI` is a terminal UI for viewing and working with your Terraform state.
 
-With its latest version you can easily visualize the complete state tree, gaining deeper insights into your infrastructure's current configuration. Additionally, the ability to search the tree and inspect individual resource states allows you to focus on specific details for better analysis and management. It's also possible to select specific resources and perform actions such as tainting, untainting and deleting them. Finally, you are now able to create and apply plans directly from the UI.
+Browse the full state tree, search it, read individual resources, reveal
+sensitive values, taint or remove resources, and create and apply plans —
+without leaving the terminal.
 
-## Key Features
+![The state tree](docs/screenshots/01-state-tree.svg)
 
-- [x] Comprehensive display of the entire Terraform state tree
-- [x] Effortlessly view and navigate through a single resource state
-- [x] Search the state tree and resource definitions
-- [x] Create plans, present them in full colors and apply them directly from the TUI
-- [x] Single/multiple resource selection
-- [x] Operate on resources: taint, untaint, delete, destroy
-- [x] Support for Terraform wrappers (e.g. terragrunt)
+More screenshots: [docs/screenshots.md](docs/screenshots.md). The animated
+[demo](demo/tftui.gif) still shows the 0.13 interface and is due a re-record.
 
-## Changelog (latest versions)
+## Features
 
-### Version 0.13
-
-- [x] Added support for workspace switching
-- [x] Added plan summary in the screen title
-- [x] Empty tree is now shown when no state exists instead of program shutting down, allowing for plan creation
-- [x] Added `-o` flag for offline mode (no outbound API calls)
-- [x] Removed the default outbound call to PostHog when tracking is disabled
-- [x] Added sensitive values extraction in resource details
-- [x] Added support for vim-like navigation
-
-### Version 0.12
-
-- [x] Enabled targeting specific resources for plan creation
-- [x] Introducing cli argument: tfvars file
-- [x] Added destroy functionality
-- [x] Added a help screen
-- [x] Added dynamic value for "targets" checkbox (checkbox is marked when resources are selected)
-- [x] Added a short summary of the suggested plan before applying it
-- [x] Added a redacted error tracker on unhandeled exceptions (only when usage reporting is enabled)
-- [x] Added a fullscreen mode to allow easier copying of resource / plan parts
-- [x] Fixed: search through full module names
-- [x] Fixed: Copy to clipboard crashes on some systems
-
-### Version 0.11
-
-- [x] Added support for creating plans (in vivid colors!) and applying them
-- [x] Changed the confirmation dialog to a modal screen
-- [x] Added coloring to tainted resources considering some terminals can't display strikethrough correctly
-- [x] Improved loading screen mechanism
-
-## Demo
-
-![](demo/tftui.gif "demo")
+- Full state tree, with modules nested as they are in your configuration
+- Search across resource names *and* their definitions
+- Read a single resource with HCL syntax highlighting
+- Reveal sensitive values on demand
+- Select one or many resources and taint, untaint or remove them from state
+- Create plans — including targeted and destroy plans — in full colour, and apply them
+- Switch workspaces without restarting
+- Works with Terraform, OpenTofu and wrappers such as Terragrunt
 
 ## Installation
 
 | Tool     | Install                                | Upgrade                       | Run                                      |
 | -------- | -------------------------------------- | ----------------------------- | ---------------------------------------- |
 | Homebrew | `brew install idoavrah/homebrew/tftui` | `brew upgrade tftui`          | `cd /path/to/terraform/project && tftui` |
-| PIP      | `pip install tftui`                    | `pip install --upgrade tftui` | `cd /path/to/terraform/project && tftui` |
-| PIPX     | `pipx install tftui`                   | `pipx upgrade tftui`          | `cd /path/to/terraform/project && tftui` |
+| pipx     | `pipx install tftui`                   | `pipx upgrade tftui`          | `cd /path/to/terraform/project && tftui` |
+| uv       | `uv tool install tftui`                | `uv tool upgrade tftui`       | `cd /path/to/terraform/project && tftui` |
+| pip      | `pip install tftui`                    | `pip install --upgrade tftui` | `cd /path/to/terraform/project && tftui` |
 
-## Usage Tracking
+Requires Python 3.10 or newer and a `terraform` (or compatible) binary on `PATH`.
 
-- TFTUI utilizes [PostHog](https://posthog.com) to track usage of the application.
-- This is done to help us understand how the tool is being used and to improve it.
-- No personal data is being sent to the tracking service. Returning users are being uniquely identified by a generated fingerprint.
-- You can opt-out of usage tracking completely by setting the `-d` flag when running the tool.
+## Keys
 
-## Star History
+Press `?` in the application for the full list.
+
+| Key         | Action                                                       |
+| ----------- | ------------------------------------------------------------ |
+| `↑ ↓ / j k` | Move up and down                                             |
+| `← → / h l` | Collapse and expand, or step in and out                      |
+| `Enter`     | View the highlighted resource                                |
+| `Esc`       | Back to the state tree                                       |
+| `/`         | Filter by text in resource names and definitions             |
+| `0`–`9`     | Collapse the tree to a module depth (`0` expands everything) |
+| `Space`     | Select or deselect the highlighted resource                  |
+| `Ctrl+A`    | Clear the selection                                          |
+| `T` `U` `D` | Taint, untaint, or remove from state                         |
+| `P`         | Create a plan                                                |
+| `Ctrl+D`    | Create a destruction plan                                    |
+| `A`         | Apply the current plan                                       |
+| `X`         | Reveal sensitive values                                      |
+| `F`         | Full screen (hold Shift or Option to select text)            |
+| `C`         | Copy to clipboard                                            |
+| `R`         | Refresh state                                                |
+| `W`         | Switch workspace                                             |
+| `M`         | Toggle light and dark mode                                   |
+| `Q`         | Quit                                                         |
+
+## Configuration
+
+Every option can be set with a flag or an environment variable. Flags win.
+
+| Flag                             | Environment variable           | Meaning                                       |
+| -------------------------------- | ------------------------------ | --------------------------------------------- |
+| `-e`, `--executable`             | `TFTUI_EXECUTABLE`             | Binary to drive (default `terraform`)         |
+| `-f`, `--var-file`               | `TFTUI_VAR_FILE`               | Default `-var-file` offered when planning     |
+| `-C`, `--chdir`                  | `TFTUI_WORKING_DIR`            | Directory to run in (default current)         |
+| `-n`, `--no-init`                | `TFTUI_NO_INIT`                | Skip `terraform init` on startup              |
+| `-o`, `--offline`                | `TFTUI_OFFLINE`                | No outbound calls at all                      |
+| `-d`, `--disable-usage-tracking` | `TFTUI_DISABLE_USAGE_TRACKING` | Turn off usage tracking                       |
+| `-l`, `--light-mode`             | `TFTUI_LIGHT_MODE`             | Start in the light theme                      |
+| `-g`, `--generate-debug-log`     | `TFTUI_DEBUG_LOG`              | Write `tftui.log` in the working directory    |
+| `-v`, `--version`                | —                              | Print the version and exit                    |
+
+### Using OpenTofu or Terragrunt
+
+```bash
+tftui --executable tofu
+tftui --executable terragrunt
+```
+
+## Handling of sensitive data
+
+Terraform state routinely contains secrets, so tftui is deliberate about them:
+
+- Sensitive attributes stay redacted as `(sensitive value)` until you press `X`.
+- When revealed, values are matched to attributes **by name**, so one secret can
+  never be displayed under another attribute's label.
+- Plan files are written to a private temporary directory (mode `0700`) and
+  deleted when the plan is superseded, applied, or the program exits. They are
+  never written into your Terraform directory, where they could be committed by
+  accident.
+- A plan is discarded once applied, so a stale plan cannot be applied twice.
+- tftui never invokes a shell. Terraform is executed directly with an argument
+  list, so resource addresses containing quotes, spaces or `$` are safe.
+
+## Usage tracking
+
+- tftui uses [PostHog](https://posthog.com) to understand how the tool is used.
+- No personal data is sent. Returning users are identified by a two-word handle
+  derived from a one-way hash of the machine name.
+- Crash reports have directory names stripped out before they are sent.
+- Tracking never blocks the UI and never takes the application down.
+- Opt out with `-d`, or turn off every outbound call — tracking and the update
+  check alike — with `-o`.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). In short:
+
+```bash
+make setup     # install dependencies and git hooks
+make check     # lint, type-check and test
+make run       # run against the bundled example project
+```
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
+
+## Star history
 
 [![Star History Chart](https://api.star-history.com/svg?repos=idoavrah/terraform-tui&type=Date)](https://star-history.com/#idoavrah/terraform-tui&Date)

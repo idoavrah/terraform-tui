@@ -1,0 +1,634 @@
+module.colons["string:with:colons"].data.local_file.pluto[0]: Reading...
+data.local_file.saturn[0]: Reading...
+data.local_file.saturn[1]: Reading...
+module.colons["another:string:with:colons"].data.local_file.pluto[0]: Reading...
+module.colons["string:with:colons"].data.local_file.pluto[1]: Reading...
+data.local_file.saturn[2]: Reading...
+module.colons["string:with:colons"].data.local_file.pluto[0]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.mercury.module.venus[1].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.colons["string:with:colons"].data.local_file.pluto[1]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.mercury.module.venus[0].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+data.local_file.saturn[1]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.mercury.module.venus[0].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+data.local_file.saturn[0]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.mercury.module.venus[1].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.colons["another:string:with:colons"].data.local_file.pluto[1]: Reading...
+module.colons["another:string:with:colons"].data.local_file.pluto[0]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+data.local_file.saturn[2]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.mercury.data.local_file.pluto[1]: Reading...
+module.mercury.data.local_file.pluto[0]: Reading...
+module.mercury.module.venus[0].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.mercury.data.local_file.pluto[1]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.dots["string.with.dots"].module.venus[1].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.colons["another:string:with:colons"].data.local_file.pluto[1]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.mercury.module.venus[1].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+module.dots["string.with.dots"].module.venus[0].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+module.dots["string.with.dots"].module.venus[0].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.mercury.data.local_file.pluto[0]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.dots["another.string.with.dots"].module.venus[0].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.dots["string.with.dots"].module.venus[0].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.dots["another.string.with.dots"].module.venus[1].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.dots["another.string.with.dots"].module.venus[0].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+module.dots["string.with.dots"].module.venus[1].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.dots["another.string.with.dots"].module.venus[0].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.dots["another.string.with.dots"].module.venus[1].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.dots["string.with.dots"].data.local_file.pluto[1]: Reading...
+module.dots["string.with.dots"].module.venus[1].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+module.dots["another.string.with.dots"].module.venus[1].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+module.dots["another.string.with.dots"].data.local_file.pluto[1]: Reading...
+module.dots["another.string.with.dots"].data.local_file.pluto[1]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.dots["string.with.dots"].data.local_file.pluto[1]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.dots["another.string.with.dots"].data.local_file.pluto[0]: Reading...
+module.dots["string.with.dots"].data.local_file.pluto[0]: Reading...
+module.colons["another:string:with:colons"].module.venus[0].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.colons["string:with:colons"].module.venus[0].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.dots["string.with.dots"].data.local_file.pluto[0]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.colons["another:string:with:colons"].module.venus[1].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.colons["string:with:colons"].module.venus[1].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.dots["another.string.with.dots"].data.local_file.pluto[0]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.colons["another:string:with:colons"].module.venus[1].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+module.colons["another:string:with:colons"].module.venus[0].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.colons["string:with:colons"].module.venus[0].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+module.colons["string:with:colons"].module.venus[1].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.colons["string:with:colons"].module.venus[0].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.colons["another:string:with:colons"].module.venus[0].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+time_static.example: Refreshing state... [id=2026-09-06T15:38:53Z]
+random_integer.random_number: Refreshing state... [id=5]
+module.colons["string:with:colons"].module.venus[1].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+module.colons["another:string:with:colons"].module.venus[1].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.colons["string:with:colons"].random_password.password: Refreshing state... [id=none]
+module.colons["another:string:with:colons"].random_password.password: Refreshing state... [id=none]
+module.mercury.module.venus[0].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=46]
+module.mercury.module.venus[1].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=4]
+module.mercury.module.venus[0].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=25]
+random_password.password: Refreshing state... [id=none]
+module.dots["another.string.with.dots"].random_password.password: Refreshing state... [id=none]
+module.mercury.module.venus[1].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=97]
+module.mercury.random_password.password: Refreshing state... [id=none]
+module.dots["string.with.dots"].random_password.password: Refreshing state... [id=none]
+module.mercury.random_integer.jupiter[0]: Refreshing state... [id=40]
+module.mercury.random_integer.jupiter[3]: Refreshing state... [id=37]
+module.mercury.random_integer.jupiter[4]: Refreshing state... [id=18]
+module.mercury.random_integer.jupiter[1]: Refreshing state... [id=75]
+module.mercury.random_integer.jupiter[2]: Refreshing state... [id=14]
+module.colons["another:string:with:colons"].random_integer.jupiter[3]: Refreshing state... [id=100]
+module.colons["string:with:colons"].random_integer.jupiter[0]: Refreshing state... [id=89]
+module.colons["string:with:colons"].random_integer.jupiter[2]: Refreshing state... [id=33]
+module.colons["another:string:with:colons"].random_integer.jupiter[0]: Refreshing state... [id=15]
+module.colons["string:with:colons"].random_integer.jupiter[4]: Refreshing state... [id=17]
+module.colons["string:with:colons"].random_integer.jupiter[3]: Refreshing state... [id=6]
+module.colons["another:string:with:colons"].random_integer.jupiter[4]: Refreshing state... [id=15]
+module.colons["string:with:colons"].random_integer.jupiter[1]: Refreshing state... [id=38]
+module.colons["another:string:with:colons"].random_integer.jupiter[1]: Refreshing state... [id=16]
+module.colons["another:string:with:colons"].random_integer.jupiter[2]: Refreshing state... [id=46]
+module.colons["another:string:with:colons"].module.venus[1].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=25]
+module.dots["string.with.dots"].random_integer.jupiter[4]: Refreshing state... [id=18]
+module.dots["another.string.with.dots"].module.venus[1].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=6]
+module.dots["string.with.dots"].module.venus[1].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=1]
+module.dots["another.string.with.dots"].module.venus[0].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=22]
+module.dots["string.with.dots"].module.venus[1].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=63]
+module.dots["another.string.with.dots"].module.venus[1].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=98]
+module.dots["string.with.dots"].module.venus[0].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=89]
+module.dots["string.with.dots"].module.venus[0].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=59]
+module.dots["another.string.with.dots"].module.venus[0].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=97]
+module.dots["another.string.with.dots"].random_integer.jupiter[0]: Refreshing state... [id=37]
+module.dots["another.string.with.dots"].random_integer.jupiter[1]: Refreshing state... [id=22]
+module.dots["string.with.dots"].random_integer.jupiter[0]: Refreshing state... [id=54]
+module.dots["another.string.with.dots"].random_integer.jupiter[4]: Refreshing state... [id=11]
+module.dots["another.string.with.dots"].random_integer.jupiter[2]: Refreshing state... [id=68]
+module.dots["string.with.dots"].random_integer.jupiter[3]: Refreshing state... [id=59]
+module.dots["string.with.dots"].random_integer.jupiter[1]: Refreshing state... [id=14]
+module.dots["another.string.with.dots"].random_integer.jupiter[3]: Refreshing state... [id=4]
+module.dots["string.with.dots"].random_integer.jupiter[2]: Refreshing state... [id=81]
+module.colons["string:with:colons"].module.venus[1].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=33]
+module.colons["another:string:with:colons"].module.venus[1].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=89]
+module.colons["string:with:colons"].module.venus[0].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=97]
+module.colons["string:with:colons"].module.venus[1].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=76]
+module.colons["another:string:with:colons"].module.venus[0].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=6]
+module.colons["string:with:colons"].module.venus[0].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=56]
+module.colons["another:string:with:colons"].module.venus[0].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=79]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # module.colons["another:string:with:colons"].module.venus[0].local_file.foo["#1"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #1
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/colons-1-venus0_#1.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.colons["another:string:with:colons"].module.venus[0].local_file.foo["#2"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #2
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/colons-1-venus0_#2.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.colons["another:string:with:colons"].module.venus[0].local_file.foo["#3"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #3
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/colons-1-venus0_#3.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.colons["another:string:with:colons"].module.venus[1].local_file.foo["#1"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #1
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/colons-1-venus1_#1.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.colons["another:string:with:colons"].module.venus[1].local_file.foo["#2"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #2
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/colons-1-venus1_#2.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.colons["another:string:with:colons"].module.venus[1].local_file.foo["#3"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #3
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/colons-1-venus1_#3.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.colons["string:with:colons"].module.venus[0].local_file.foo["#1"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #1
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/colons-0-venus0_#1.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.colons["string:with:colons"].module.venus[0].local_file.foo["#2"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #2
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/colons-0-venus0_#2.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.colons["string:with:colons"].module.venus[0].local_file.foo["#3"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #3
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/colons-0-venus0_#3.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.colons["string:with:colons"].module.venus[1].local_file.foo["#1"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #1
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/colons-0-venus1_#1.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.colons["string:with:colons"].module.venus[1].local_file.foo["#2"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #2
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/colons-0-venus1_#2.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.colons["string:with:colons"].module.venus[1].local_file.foo["#3"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #3
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/colons-0-venus1_#3.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.dots["another.string.with.dots"].module.venus[0].local_file.foo["#1"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #1
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/dots-1-venus0_#1.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.dots["another.string.with.dots"].module.venus[0].local_file.foo["#2"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #2
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/dots-1-venus0_#2.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.dots["another.string.with.dots"].module.venus[0].local_file.foo["#3"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #3
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/dots-1-venus0_#3.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.dots["another.string.with.dots"].module.venus[1].local_file.foo["#1"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #1
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/dots-1-venus1_#1.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.dots["another.string.with.dots"].module.venus[1].local_file.foo["#2"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #2
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/dots-1-venus1_#2.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.dots["another.string.with.dots"].module.venus[1].local_file.foo["#3"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #3
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/dots-1-venus1_#3.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.dots["string.with.dots"].module.venus[0].local_file.foo["#1"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #1
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/dots-0-venus0_#1.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.dots["string.with.dots"].module.venus[0].local_file.foo["#2"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #2
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/dots-0-venus0_#2.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.dots["string.with.dots"].module.venus[0].local_file.foo["#3"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #3
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/dots-0-venus0_#3.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.dots["string.with.dots"].module.venus[1].local_file.foo["#1"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #1
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/dots-0-venus1_#1.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.dots["string.with.dots"].module.venus[1].local_file.foo["#2"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #2
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/dots-0-venus1_#2.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.dots["string.with.dots"].module.venus[1].local_file.foo["#3"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #3
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/dots-0-venus1_#3.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.mercury.module.venus[0].local_file.foo["#1"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #1
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/mercury-venus0_#1.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.mercury.module.venus[0].local_file.foo["#2"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #2
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/mercury-venus0_#2.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.mercury.module.venus[0].local_file.foo["#3"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #3
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/mercury-venus0_#3.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.mercury.module.venus[1].local_file.foo["#1"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #1
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/mercury-venus1_#1.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.mercury.module.venus[1].local_file.foo["#2"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #2
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/mercury-venus1_#2.txt"
+      + id                   = (known after apply)
+    }
+
+  # module.mercury.module.venus[1].local_file.foo["#3"] will be created
+  + resource "local_file" "foo" {
+      + content              = <<-EOT
+            #3
+        EOT
+      + content_base64sha256 = (known after apply)
+      + content_base64sha512 = (known after apply)
+      + content_md5          = (known after apply)
+      + content_sha1         = (known after apply)
+      + content_sha256       = (known after apply)
+      + content_sha512       = (known after apply)
+      + directory_permission = "0777"
+      + file_permission      = "0777"
+      + filename             = "./generated/mercury-venus1_#3.txt"
+      + id                   = (known after apply)
+    }
+
+Plan: 30 to add, 0 to change, 0 to destroy.
+
+─────────────────────────────────────────────────────────────────────────────
+
+Saved the plan to: /tmp/tmp.OkmAPaW8dS/changes.plan
+
+To perform exactly these actions, run the following command to apply:
+    terraform apply "/tmp/tmp.OkmAPaW8dS/changes.plan"
