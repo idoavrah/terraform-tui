@@ -27,6 +27,7 @@ from tftui.version import __version__
 from tftui.widgets.header import AppHeader
 from tftui.widgets.plan_view import PlanView
 from tftui.widgets.resource_view import ResourceView
+from tftui.widgets.searchable_log import SearchableLog
 from tftui.widgets.state_tree import NodeData, StateTree
 
 logger = get_logger("app")
@@ -34,6 +35,12 @@ logger = get_logger("app")
 TREE = "tree"
 RESOURCE = "resource"
 PLAN = "plan"
+
+_SEARCH_PLACEHOLDER = {
+    TREE: "Filter resources…",
+    RESOURCE: "Search this resource…",
+    PLAN: "Search the plan…",
+}
 
 DARK_THEME = "textual-dark"
 LIGHT_THEME = "textual-light"
@@ -88,7 +95,8 @@ class TerraformTUI(App[str]):
         self.telemetry = telemetry or NullTelemetry()
         self.error_message = ""
         self._pending_operation: Operation | None = None
-        self._searching_plan = False
+        #: Which pane the search box is currently driving.
+        self._search_target = TREE
 
     # --------------------------------------------------------------- compose
 
@@ -98,7 +106,13 @@ class TerraformTUI(App[str]):
             directory=str(self.client.cwd),
             id="header",
         )
-        yield Input(id="search", placeholder="Filter resources…")
+        # `select_on_focus=False`: returning to the box must let the existing
+        # text be extended or corrected, not replaced by the first keystroke.
+        yield Input(
+            id="search",
+            placeholder=_SEARCH_PLACEHOLDER[TREE],
+            select_on_focus=False,
+        )
         with ContentSwitcher(id="switcher", initial=TREE):
             yield StateTree("State", id=TREE)
             yield ResourceView(id=RESOURCE)
@@ -216,38 +230,48 @@ class TerraformTUI(App[str]):
 
     # ---------------------------------------------------------------- search
 
+    @property
+    def _searchable(self) -> SearchableLog | None:
+        """The pane the search box drives, when it is not the tree."""
+        if self._search_target == PLAN:
+            return self.plan_view
+        if self._search_target == RESOURCE:
+            return self.resource_view
+        return None
+
     @on(Input.Changed, "#search")
     def on_search_changed(self, event: Input.Changed) -> None:
-        """Filter the tree, or highlight within the plan, depending on the view."""
-        if self._searching_plan:
-            count = self.plan_view.search(event.value)
-            self.switcher.border_title = self._plan_title()
-            if event.value and not count:
-                self.search_input.add_class("nomatch")
-            else:
-                self.search_input.remove_class("nomatch")
+        """Filter the tree, or highlight in place within a resource or plan."""
+        pane = self._searchable
+        if pane is None:
+            if self.state_tree.loading:
+                return
+            self.state_tree.rebuild(event.value.strip())
             return
-        if self.state_tree.loading:
-            return
-        self.state_tree.rebuild(event.value.strip())
+
+        count = pane.search(event.value)
+        self.switcher.border_title = self._search_title()
+        self.search_input.set_class(bool(event.value) and not count, "nomatch")
 
     @on(Input.Submitted, "#search")
     def on_search_submitted(self) -> None:
-        if self._searching_plan:
-            self.plan_view.focus()
-        else:
-            self.state_tree.focus()
+        """Enter hands focus to the pane so n/N and scrolling work."""
+        pane = self._searchable
+        (pane or self.state_tree).focus()
 
     def action_search(self) -> None:
-        """Search: the tree filters, the plan highlights in place."""
-        if self.view == PLAN:
-            self._searching_plan = True
-            self.search_input.placeholder = "Search the plan…"
-        else:
-            self._searching_plan = False
-            self.search_input.placeholder = "Filter resources…"
+        """Search the current pane: the tree filters, the others highlight."""
+        target = self.view if self.view in (RESOURCE, PLAN) else TREE
+        if target == TREE:
             self._show(TREE)
-        self.search_input.value = ""
+
+        # Re-entering the search box must keep what is already typed, so it can
+        # be extended or corrected. The text only means something within one
+        # pane, so switching panes starts afresh.
+        if target != self._search_target:
+            self._clear_search()
+            self._search_target = target
+        self.search_input.placeholder = _SEARCH_PLACEHOLDER[target]
         self.search_input.focus()
 
     def action_next_match(self) -> None:
@@ -257,20 +281,31 @@ class TerraformTUI(App[str]):
         self._step_match(-1)
 
     def _step_match(self, delta: int) -> None:
-        if self.view != PLAN or not self.plan_view.match_count:
+        pane = self._searchable
+        if pane is None or not pane.match_count:
             return
-        self.plan_view.step_match(delta)
-        self.switcher.border_title = self._plan_title()
+        pane.step_match(delta)
+        self.switcher.border_title = self._search_title()
 
-    def _plan_title(self) -> str:
-        """The plan pane's title, with the search position appended if searching."""
-        title = self.plan_view.title
-        if not self.plan_view.needle:
+    def _search_title(self) -> str:
+        """The pane title, with the search position appended while searching."""
+        pane = self._searchable
+        title = pane.title if pane is not None else ""
+        if pane is None or not pane.needle:
             return title
-        count = self.plan_view.match_count
-        if not count:
+        if not pane.match_count:
             return f"{title}  -  no match"
-        return f"{title}  -  match {self.plan_view.match_position}/{count}"
+        return f"{title}  -  match {pane.match_position}/{pane.match_count}"
+
+    def _clear_search(self) -> None:
+        """Drop any in-pane search, in whichever pane owns it."""
+        pane = self._searchable
+        if pane is not None:
+            pane.clear_search()
+        self._search_target = TREE
+        self.search_input.value = ""
+        self.search_input.remove_class("nomatch")
+        self.search_input.placeholder = _SEARCH_PLACEHOLDER[TREE]
 
     # ------------------------------------------------------------------ tree
 
@@ -280,6 +315,8 @@ class TerraformTUI(App[str]):
         if not isinstance(resource, Resource):
             return
         secrets = self.state_tree.loaded.secrets_for(resource.full_address)
+        if self._search_target == RESOURCE:
+            self._clear_search()
         self.resource_view.show(resource, secrets=secrets)
         self._show(RESOURCE, resource.full_address)
 
@@ -313,20 +350,13 @@ class TerraformTUI(App[str]):
 
     def action_go_back(self) -> None:
         if self.focused is self.search_input:
-            (self.plan_view if self._searching_plan else self.state_tree).focus()
+            (self._searchable or self.state_tree).focus()
             return
         if self.view == TREE:
             return
-        if self.view == PLAN:
-            self._end_plan_search()
+        self._clear_search()
         self._show(TREE)
         self.state_tree.focus()
-
-    def _end_plan_search(self) -> None:
-        self._searching_plan = False
-        self.plan_view.clear_search()
-        self.search_input.remove_class("nomatch")
-        self.search_input.placeholder = "Filter resources…"
 
     # ------------------------------------------------------------ inspection
 
@@ -468,7 +498,7 @@ class TerraformTUI(App[str]):
         destroy: bool,
     ) -> None:
         view = self.plan_view
-        self._end_plan_search()
+        self._clear_search()
         view.begin(follow=False)
         self._show(PLAN, "Planning…")
         self.switcher.loading = True
@@ -510,7 +540,7 @@ class TerraformTUI(App[str]):
     @work(exclusive=True, group="plan")
     async def execute_apply(self) -> None:
         view = self.plan_view
-        self._end_plan_search()
+        self._clear_search()
         view.begin(follow=True)
         self._show(PLAN, "Applying…")
         self.switcher.loading = True

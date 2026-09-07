@@ -70,6 +70,10 @@ fixtures: example-apply ## Regenerate the captured terraform output in tests/fix
 screenshots: example-apply ## Regenerate the SVG screenshots in docs/
 	uv run python scripts/capture-screenshots.py
 
+.PHONY: release-check
+release-check: ## Would a push to main publish this version?
+	uv run --no-project --with packaging python scripts/should_release.py
+
 .PHONY: build
 build: ## Build the wheel and sdist
 	uv build

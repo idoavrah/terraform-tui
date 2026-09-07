@@ -95,10 +95,36 @@ these files, and the script prints a reminder to that effect.
 
 ## Releasing
 
-1. `cz bump` — updates the version in `pyproject.toml` and `CHANGELOG.md`, and tags.
-2. Push the tag and create a GitHub release.
-3. The release workflow builds, verifies the tag matches the packaged version,
-   publishes to TestPyPI, then to PyPI via trusted publishing (no stored tokens).
+Releases are driven by the version in `pyproject.toml`. There is no tagging
+step to remember and no release to create by hand.
+
+1. Bump `version` in `pyproject.toml` and add the matching `## <version>`
+   section to `CHANGELOG.md`. `cz bump` does both.
+2. Merge to `main`.
+
+Every push to `main` runs the release workflow, which starts by asking
+`scripts/should_release.py` whether this version should ship. It ships only if
+the version is **not already on PyPI** *and* is **newer than everything
+published**. Any other answer — an unchanged version, a revert, a downgrade, or
+PyPI being unreachable — skips the whole pipeline after one cheap job.
+
+When it does ship, the workflow:
+
+1. runs lint, types and the full test suite, including the Terraform integration tests;
+2. builds, checks the metadata, and confirms the installed wheel reports the expected version;
+3. publishes to TestPyPI, then to PyPI, via trusted publishing (no stored tokens);
+4. creates the `v<version>` tag and a GitHub release, with notes taken from that
+   version's `CHANGELOG.md` section, attaching the wheel and sdist.
+
+The steps are ordered so nothing is tagged that was not published, and nothing
+is published that did not pass its tests.
+
+Run the workflow manually with **dry run** ticked to see what it would decide
+and build without publishing anything.
+
+`major_version_zero` is set for commitizen, so a breaking change bumps the
+minor version. Going to 1.0 is a deliberate act, not something a `feat!:`
+commit does on its own.
 
 ## Debugging the UI
 

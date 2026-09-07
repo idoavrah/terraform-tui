@@ -5,9 +5,10 @@ from __future__ import annotations
 from typing import Any
 
 from rich.syntax import Syntax
+from rich.text import Text
 
 from tftui.terraform.state import Resource
-from tftui.widgets.reflowing_log import ReflowingLog
+from tftui.widgets.searchable_log import SearchableLog
 
 
 def syntax_theme(*, dark: bool) -> str:
@@ -20,23 +21,25 @@ def syntax_theme(*, dark: bool) -> str:
     return "ansi_dark" if dark else "ansi_light"
 
 
-def highlight(code: str, *, dark: bool) -> Syntax:
-    """Render ``code`` as HCL, with no background of its own.
+def highlight_lines(code: str, *, dark: bool) -> list[Text]:
+    """Highlight ``code`` as HCL and return it one styled line at a time.
 
-    ``background_color`` is deliberately not set. Passing it - even as
-    "default" - stamps an explicit background onto every segment, which then
-    overrides the pane's own background: the highlighted cells end up a
-    different shade from the whitespace around them.
+    Rendering line by line rather than as a single ``Syntax`` block is what lets
+    the pane be searched: matches are marked on individual lines, and each line
+    can be scrolled to. It also keeps the output free of any background of its
+    own, so the pane's colour shows through.
     """
-    return Syntax(
-        code,
-        "hcl",
-        theme=syntax_theme(dark=dark),
-        word_wrap=True,
-    )
+    highlighted = Syntax(code, "hcl", theme=syntax_theme(dark=dark)).highlight(code)
+    lines = highlighted.split("\n")
+    # `split` keeps a trailing empty line for a trailing newline; drop it so the
+    # pane does not end in a blank row.
+    rendered = list(lines)
+    if rendered and not rendered[-1].plain:
+        rendered.pop()
+    return rendered
 
 
-class ResourceView(ReflowingLog):
+class ResourceView(SearchableLog):
     """Shows one resource block, with sensitive values hidden until asked for.
 
     HCL syntax highlighting replaces the previous generic value highlighting,
@@ -76,8 +79,7 @@ class ResourceView(ReflowingLog):
             self._draw()
 
     def _draw(self) -> None:
-        self.reset_content()
-        self.append(highlight(self._body, dark=self._dark))
+        self.set_lines(highlight_lines(self._body, dark=self._dark))
 
     @property
     def _dark(self) -> bool:
@@ -96,4 +98,4 @@ class ResourceView(ReflowingLog):
         self.resource = None
         self.revealed = False
         self._body = ""
-        self.reset_content()
+        self.clear_lines()

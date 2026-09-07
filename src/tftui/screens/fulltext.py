@@ -10,7 +10,7 @@ from textual.binding import Binding, BindingType
 from textual.screen import ModalScreen
 from textual.widgets import RichLog
 
-from tftui.widgets.resource_view import highlight
+from tftui.widgets.resource_view import highlight_lines
 
 
 class FullTextScreen(ModalScreen[None]):
@@ -30,7 +30,8 @@ class FullTextScreen(ModalScreen[None]):
     def compose(self) -> ComposeResult:
         log = RichLog(auto_scroll=False, wrap=True, markup=False, id="fulltext")
         if self.syntax and isinstance(self.content, str):
-            log.write(highlight(self.content, dark=bool(self.app.current_theme.dark)))
+            for line in highlight_lines(self.content, dark=bool(self.app.current_theme.dark)):
+                log.write(line)
         else:
             log.write(self.content)
         yield log

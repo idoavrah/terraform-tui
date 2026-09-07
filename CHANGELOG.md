@@ -73,9 +73,10 @@ before anything is called 1.0.
 - **Space on a module selects every resource under it** ([#82]). Expanding and
   collapsing moved to Enter, the arrow keys and the digit keys. The selection
   count now appears on the pane border.
-- **`/` searches plan output** ([#89]), highlighting matches in place rather
-  than filtering, since a diff is meaningless without its context. `n` and `N`
-  step through matches, and the title shows the position.
+- **`/` searches the plan and the resource view** ([#89]), highlighting matches
+  in place rather than filtering, since a diff or a definition is meaningless
+  without its context. `n` and `N` step through matches, and the title shows the
+  position. The tree keeps filtering, as before.
 - **`-f` / `--var-file` may be repeated** ([#62], [#85]), applied in order. The
   files are passed to `init` as well as to `plan`, which is what OpenTofu 1.8+
   needs to evaluate variables used in a `backend` block. `TFTUI_VAR_FILE` takes
@@ -85,6 +86,16 @@ before anything is called 1.0.
 - `Ctrl+A` clears the current selection.
 - Search is case-insensitive.
 
+### Release process
+
+Pushing to `main` now publishes, but only when the version in `pyproject.toml`
+is absent from PyPI *and* newer than everything published there. The workflow
+runs the full suite, publishes to TestPyPI then PyPI through trusted
+publishing, and creates the tag and GitHub release with notes taken from this
+file. Any other state - an unchanged version, a revert, a downgrade, or PyPI
+being unreachable - skips the pipeline. `scripts/should_release.py` makes that
+call and is unit tested.
+
 ### Internals
 
 - `src/` layout, PEP 621 metadata, hatchling build backend, uv lockfile.
@@ -92,7 +103,7 @@ before anything is called 1.0.
   dependency — the update check uses the standard library.
 - Terraform integration is separated from the UI: parsing and plan colouring are
   pure functions with no Textual import, and widgets never build argv.
-- 346 tests: unit, end-to-end through Textual's `Pilot`, and an integration suite
+- 369 tests: unit, end-to-end through Textual's `Pilot`, and an integration suite
   driving a real Terraform binary against a bundled example project.
 - CI across Linux, macOS and Windows on Python 3.10–3.13, plus integration runs
   against both Terraform and OpenTofu.

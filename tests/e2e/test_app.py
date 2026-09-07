@@ -884,3 +884,116 @@ async def test_slash_in_the_tree_still_filters(app_pilot) -> None:
         await pilot.press(char)
     await pilot.pause()
     assert app.state_tree.search == "mars"
+
+
+# ----------------------------------------- search within a resource, and reuse
+
+
+async def test_slash_searches_within_a_resource(app_pilot) -> None:
+    """`/` on an open resource searches it, rather than dropping back to the tree."""
+    app, pilot = app_pilot
+    _open_resource(app, "random_password.password")
+    await pilot.pause()
+
+    await pilot.press("slash")
+    for char in "min_lower":
+        await pilot.press(char)
+    await pilot.pause()
+
+    assert app.view == RESOURCE, "searching a resource must not leave it"
+    assert app.resource_view.needle == "min_lower"
+    assert app.resource_view.match_count == 1
+    assert "match 1/1" in str(app.switcher.border_title)
+
+
+async def test_resource_search_keeps_every_line(app_pilot) -> None:
+    app, pilot = app_pilot
+    _open_resource(app, "random_password.password")
+    await pilot.pause()
+    before = app.resource_view.fulltext.plain
+
+    await pilot.press("slash")
+    for char in "min":
+        await pilot.press(char)
+    await pilot.pause()
+
+    assert app.resource_view.fulltext.plain == before
+    assert app.resource_view.match_count > 1
+
+
+async def test_n_steps_through_resource_matches(app_pilot) -> None:
+    app, pilot = app_pilot
+    _open_resource(app, "random_password.password")
+    await pilot.pause()
+
+    await pilot.press("slash")
+    for char in "min":
+        await pilot.press(char)
+    await pilot.pause()
+    await pilot.press("escape")
+    await pilot.pause()
+
+    assert app.resource_view.match_position == 1
+    await pilot.press("n")
+    await pilot.pause()
+    assert app.resource_view.match_position == 2
+
+
+async def test_reopening_the_search_keeps_what_was_typed(app_pilot) -> None:
+    """Pressing / again must not wipe the box; it is how you refine a search."""
+    app, pilot = app_pilot
+    await pilot.press("slash")
+    for char in "mars":
+        await pilot.press(char)
+    await pilot.pause()
+
+    await pilot.press("escape")  # focus the tree
+    await pilot.pause()
+    await pilot.press("slash")  # back to the box
+    await pilot.pause()
+
+    assert app.search_input.value == "mars"
+    assert app.state_tree.search == "mars"
+
+    # ...and it can be extended in place.
+    for char in "xyz":
+        await pilot.press(char)
+    await pilot.pause()
+    assert app.search_input.value == "marsxyz"
+
+
+async def test_switching_pane_starts_a_fresh_search(app_pilot) -> None:
+    """A tree filter means nothing inside a plan, so changing pane resets it."""
+    app, pilot = app_pilot
+    await pilot.press("slash")
+    for char in "mars":
+        await pilot.press(char)
+    await pilot.pause()
+    await pilot.press("escape")
+    await pilot.pause()
+
+    await _make_a_plan(app, pilot)
+    await pilot.press("slash")
+    await pilot.pause()
+
+    assert app.search_input.value == ""
+    assert app.plan_view.needle == ""
+
+
+async def test_leaving_a_resource_clears_its_search(app_pilot) -> None:
+    app, pilot = app_pilot
+    _open_resource(app, "random_password.password")
+    await pilot.pause()
+    await pilot.press("slash")
+    for char in "min":
+        await pilot.press(char)
+    await pilot.pause()
+
+    await pilot.press("escape")  # out of the input
+    await pilot.pause()
+    await pilot.press("escape")  # out of the resource
+    await pilot.pause()
+
+    assert app.view == TREE
+    assert app.resource_view.needle == ""
+    assert app.search_input.value == ""
