@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 
 import pytest
 
@@ -11,6 +11,7 @@ from tftui.errors import ExecutableNotFoundError, InvalidExecutableError, Terraf
 from tftui.terraform.executor import (
     CommandResult,
     TerraformExecutor,
+    is_plausible_command,
     resolve_executable,
     target_args,
 )
@@ -27,7 +28,6 @@ from tftui.terraform.executor import (
         "$(whoami)",
         "`id`",
         "terraform\nrm -rf /",
-        "terra form",
         "",
         "   ",
     ],
@@ -50,6 +50,74 @@ def test_resolves_a_real_executable() -> None:
 
 def test_accepts_a_path_to_an_executable() -> None:
     assert resolve_executable(sys.executable) == sys.executable
+
+
+# The two path flavours are checked explicitly rather than only on the running
+# platform: an absolute Windows path was rejected outright, and CI on Linux and
+# macOS could not have caught it.
+
+
+@pytest.mark.parametrize(
+    "candidate",
+    [
+        r"D:\a\terraform-tui\.venv\Scripts\python.exe",
+        r"C:\Program Files\Terraform\terraform.exe",  # the usual install location
+        r"C:\tools\terraform.exe",
+        r"\\server\share\terraform.exe",  # UNC
+        r"..\tools\terraform.exe",
+        "terraform.exe",
+    ],
+)
+def test_accepts_real_windows_paths(candidate: str) -> None:
+    assert is_plausible_command(candidate, PureWindowsPath)
+
+
+@pytest.mark.parametrize(
+    "candidate",
+    [
+        "/usr/local/bin/terraform",
+        "/usr/bin/tofu",
+        "./bin/terraform",
+        "terraform",
+    ],
+)
+def test_accepts_real_posix_paths(candidate: str) -> None:
+    assert is_plausible_command(candidate, PurePosixPath)
+
+
+@pytest.mark.parametrize(
+    "hostile",
+    [
+        "terraform; rm -rf /",
+        "terraform && curl evil.example",
+        "$(whoami)",
+        "`id`",
+        "terraform\nrm -rf /",
+        "",
+    ],
+)
+@pytest.mark.parametrize("flavour", [PureWindowsPath, PurePosixPath])
+def test_shell_syntax_is_rejected_on_both_flavours(hostile: str, flavour: type) -> None:
+    assert not is_plausible_command(hostile, flavour)
+
+
+@pytest.mark.parametrize(
+    "hostile",
+    [
+        r"C:\tools\terra;form.exe",
+        r"C:\tools\$(id)\terraform.exe",
+        r"C:\tools\a|b\terraform.exe",
+    ],
+)
+def test_shell_syntax_inside_a_windows_path_is_rejected(hostile: str) -> None:
+    """The drive anchor is skipped, but every other component is still checked."""
+    assert not is_plausible_command(hostile, PureWindowsPath)
+
+
+def test_a_name_with_a_space_is_not_found_rather_than_invalid() -> None:
+    """Spaces are legal in a path, so this is a lookup failure, not a syntax one."""
+    with pytest.raises(ExecutableNotFoundError):
+        resolve_executable("terra form")
 
 
 # ---------------------------------------------------------------- arg passing

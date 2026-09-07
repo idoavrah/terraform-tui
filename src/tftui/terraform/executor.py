@@ -23,15 +23,16 @@ import shutil
 from collections.abc import AsyncIterator, Sequence
 from contextlib import suppress
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PurePath
 
 from tftui.errors import ExecutableNotFoundError, InvalidExecutableError, TerraformError
 
 logger = logging.getLogger(__name__)
 
-# A bare command name (terraform, tofu, terragrunt, terraform.exe) or a path to
-# one. Deliberately excludes every shell metacharacter.
-_EXECUTABLE_NAME = re.compile(r"^[A-Za-z0-9._+-]+$")
+# One component of a command name or of a path to one. Spaces are allowed
+# because `C:\Program Files\Terraform\terraform.exe` is the ordinary Windows
+# install location; every shell metacharacter is still excluded.
+_PATH_COMPONENT = re.compile(r"^[A-Za-z0-9._+ -]+$")
 
 
 @dataclass(frozen=True, slots=True)
@@ -57,6 +58,25 @@ class CommandResult:
         return self
 
 
+def is_plausible_command(candidate: str, flavour: type[PurePath] = PurePath) -> bool:
+    """Whether ``candidate`` looks like a command name, or a path to one.
+
+    ``flavour`` selects the path syntax and defaults to the running platform's.
+    Passing :class:`PureWindowsPath` or :class:`PurePosixPath` explicitly lets
+    either platform's behaviour be tested from the other.
+
+    The path's anchor - ``/`` on POSIX, ``C:\\`` or ``\\\\server\\share\\`` on
+    Windows - is excluded from the check. It comes from the path parser rather
+    than from the user, so it cannot smuggle anything in, and requiring it to
+    match a command-name pattern rejects every absolute Windows path.
+    """
+    if not candidate:
+        return False
+    path = flavour(candidate)
+    parts = path.parts[1:] if path.anchor else path.parts
+    return bool(parts) and all(_PATH_COMPONENT.match(part) for part in parts)
+
+
 def resolve_executable(executable: str) -> str:
     """Validate and resolve ``executable`` to an absolute path.
 
@@ -65,14 +85,7 @@ def resolve_executable(executable: str) -> str:
         ExecutableNotFoundError: if it cannot be found on PATH.
     """
     candidate = executable.strip()
-    if not candidate:
-        raise InvalidExecutableError(executable)
-
-    # Allow an explicit path (absolute or relative) as long as each component is sane.
-    parts = Path(candidate).parts
-    if not parts or not all(
-        _EXECUTABLE_NAME.match(part) or part in (os.sep, "/", "\\") for part in parts
-    ):
+    if not is_plausible_command(candidate):
         raise InvalidExecutableError(executable)
 
     for name in (candidate, f"{candidate}.exe"):

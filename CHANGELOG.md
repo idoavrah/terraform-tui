@@ -37,6 +37,10 @@ before anything is called 1.0.
   ([#91], thanks to @RafaelWO for finding and diagnosing it). A header must now
   match `# <address>:` anchored at both ends, so a binary blob in a
   `data.local_file` cannot be mistaken for one.
+- **Absolute paths to the executable work on Windows.** `--executable` was
+  validated component by component against a pattern that the drive anchor
+  (`C:\`) could never match, so every absolute Windows path was rejected — and
+  spaces were disallowed, which ruled out `C:\Program Files\...` as well.
 - **Runs on current Textual.** The application used APIs removed in Textual 1.0.
 
 ### Security
@@ -107,7 +111,7 @@ workflow.
   dependency — the update check uses the standard library.
 - Terraform integration is separated from the UI: parsing and plan colouring are
   pure functions with no Textual import, and widgets never build argv.
-- 369 tests: unit, end-to-end through Textual's `Pilot`, and an integration suite
+- 394 tests: unit, end-to-end through Textual's `Pilot`, and an integration suite
   driving a real Terraform binary against a bundled example project.
 - CI across Linux, macOS and Windows on Python 3.10–3.13, plus integration runs
   against both Terraform and OpenTofu.
