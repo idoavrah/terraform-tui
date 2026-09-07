@@ -35,6 +35,8 @@ src/tftui/
 ├── errors.py          the exception hierarchy the UI knows how to render
 ├── logging_setup.py   logging (silent unless -g is passed)
 ├── telemetry.py       opt-out usage tracking and the update check
+├── version.py         the installed version, or a dev fallback from a checkout
+├── data/              packaged data files
 ├── app.py             the Textual application: bindings and orchestration
 ├── terraform/         everything that knows what Terraform is
 │   ├── executor.py    async subprocess execution (no shell, ever)
@@ -42,7 +44,7 @@ src/tftui/
 │   ├── state.py       the state model and its parser
 │   ├── plan.py        plan colourising and summarising (pure, no Textual)
 │   └── client.py      high-level operations the UI calls
-├── widgets/           state tree, resource view, plan view, header
+├── widgets/           state tree, searchable resource and plan panes, header
 └── screens/           modal dialogs
 ```
 
@@ -55,7 +57,7 @@ enough that driving them with Textual's `Pilot` covers the rest.
 
 | Command                 | What it covers                                          |
 | ----------------------- | ------------------------------------------------------- |
-| `make test`             | Unit + end-to-end. No Terraform binary needed. ~25s      |
+| `make test`             | Unit + end-to-end. No Terraform binary needed. ~1 min    |
 | `make test-integration` | Drives a real `terraform` against `examples/terraform`   |
 | `make coverage`         | The above with an HTML coverage report                   |
 
@@ -103,7 +105,8 @@ step to remember and no release to create by hand.
 2. Merge to `main`.
 
 Every push to `main` runs the release workflow, which starts by asking
-`scripts/should_release.py` whether this version should ship. It ships only if
+`scripts/should_release.py` whether this version should ship - `make
+release-check` asks the same question locally. It ships only if
 the version is **not already on PyPI** *and* is **newer than everything
 published**. Any other answer — an unchanged version, a revert, a downgrade, or
 PyPI being unreachable — skips the whole pipeline after one cheap job.
@@ -128,6 +131,22 @@ build.
 
 The steps are ordered so nothing is tagged that was not published, and nothing
 is published that did not pass its tests.
+
+### Trusted publishing is bound to this file's *name*
+
+PyPI and TestPyPI match a trusted publisher on the workflow's **filename** and
+the **environment**, not on the workflow's `name:`. This repository therefore
+needs, on each site:
+
+| Site           | Workflow       | Environment  |
+| -------------- | -------------- | ------------ |
+| test.pypi.org  | `release.yaml` | `test`       |
+| pypi.org       | `release.yaml` | `production` |
+
+Renaming or moving `.github/workflows/release.yaml` invalidates those
+registrations, and the failure surfaces only at publish time, as
+`invalid-publisher: valid token, but no corresponding publisher`. If you rename
+it, update the publisher on both sites in the same change.
 
 **The human gate is a repository setting, not part of this file.** The PyPI
 publish targets the `production` GitHub environment; if that environment has

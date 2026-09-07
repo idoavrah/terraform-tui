@@ -34,9 +34,18 @@ def digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+#: What twine actually uploads. `uv build` also writes a .gitignore into the
+#: output directory, and that is not a distribution.
+DIST_SUFFIXES = (".whl", ".tar.gz")
+
+
 def local_files(dist: Path) -> dict[str, str]:
-    """Filename to sha256 for everything built into ``dist``."""
-    return {path.name: digest(path) for path in sorted(dist.iterdir()) if path.is_file()}
+    """Filename to sha256 for each distribution built into ``dist``."""
+    return {
+        path.name: digest(path)
+        for path in sorted(dist.iterdir())
+        if path.is_file() and path.name.endswith(DIST_SUFFIXES)
+    }
 
 
 def published_files() -> dict[str, str] | None:

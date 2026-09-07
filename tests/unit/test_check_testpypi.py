@@ -64,9 +64,24 @@ def test_one_conflicting_file_among_several_is_reported() -> None:
 
 def test_local_files_hashes_the_build(tmp_path: Path) -> None:
     (tmp_path / WHEEL).write_bytes(b"wheel")
+    (tmp_path / SDIST).write_bytes(b"sdist")
     (tmp_path / "sub").mkdir()  # directories are not distribution files
 
-    assert check_testpypi.local_files(tmp_path) == {WHEEL: hashlib.sha256(b"wheel").hexdigest()}
+    assert check_testpypi.local_files(tmp_path) == {
+        WHEEL: hashlib.sha256(b"wheel").hexdigest(),
+        SDIST: hashlib.sha256(b"sdist").hexdigest(),
+    }
+
+
+def test_local_files_ignores_what_is_not_a_distribution(tmp_path: Path) -> None:
+    """`uv build` writes a .gitignore into the output directory. Twine does not
+    upload it, so it must not be compared against TestPyPI either.
+    """
+    (tmp_path / WHEEL).write_bytes(b"wheel")
+    (tmp_path / ".gitignore").write_bytes(b"*\n")
+    (tmp_path / "notes.txt").write_bytes(b"scratch")
+
+    assert list(check_testpypi.local_files(tmp_path)) == [WHEEL]
 
 
 def test_main_passes_when_the_build_is_new(tmp_path: Path, monkeypatch, capsys) -> None:

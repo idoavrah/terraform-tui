@@ -27,7 +27,9 @@ their attributes by name.
 ## Filtering
 
 `/` filters on text in resource names *and* their definitions. Modules with no
-surviving children are pruned.
+surviving children are pruned. In a resource or a plan the same key highlights
+matches in place instead of filtering, since a definition or a diff means little
+without its surrounding context; `n` and `N` step through them.
 
 ![Filtering the tree](screenshots/04-search.svg)
 

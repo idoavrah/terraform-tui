@@ -47,8 +47,8 @@ Press `?` in the application for the full list.
 | `← → / h l` | Collapse and expand, or step in and out                      |
 | `Enter`     | View the resource, or expand the module                       |
 | `Esc`       | Back to the state tree                                       |
-| `/`         | Filter the tree, or search within a plan                      |
-| `n` `N`     | Next / previous match when searching a plan                   |
+| `/`         | Filter the tree, or search within a resource or plan          |
+| `n` `N`     | Next / previous match when searching a resource or plan       |
 | `0`–`9`     | Collapse the tree to a module depth (`0` expands everything) |
 | `Space`     | Select the resource — or, on a module, everything under it    |
 | `Ctrl+A`    | Clear the selection                                          |
