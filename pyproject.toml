@@ -56,6 +56,8 @@ dev = [
   "pre-commit>=4.0",
   # `textual console` and `textual run --dev` for debugging the UI.
   "textual-dev>=1.7",
+  # scripts/should_release.py reads pyproject.toml; tomllib is 3.11+.
+  "tomli>=2.0.1; python_version < '3.11'",
 ]
 
 [tool.hatch.build.targets.wheel]

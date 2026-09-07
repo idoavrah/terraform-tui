@@ -23,8 +23,12 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-import tomllib
 from packaging.version import InvalidVersion, Version
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:  # Python 3.10 is supported by the project, and predates tomllib.
+    import tomli as tomllib
 
 PYPI_URL = "https://pypi.org/pypi/tftui/json"
 TIMEOUT = 30.0
