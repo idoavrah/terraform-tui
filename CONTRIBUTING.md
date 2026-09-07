@@ -116,6 +116,16 @@ When it does ship, the workflow:
 4. creates the `v<version>` tag and a GitHub release, with notes taken from that
    version's `CHANGELOG.md` section, attaching the wheel and sdist.
 
+A filename on PyPI and TestPyPI is spent for good — it cannot be replaced, and
+deleting the release does not free it. The TestPyPI upload therefore uses
+`skip-existing`, so re-running a release for the same commit does not fail on
+files already there. Because that flag cannot tell an identical file from a
+*rebuilt* one claiming the same name, `scripts/check_testpypi.py` compares
+digests first: identical is fine, different stops the release and tells you to
+bump the version. So if you rework a version after it has reached TestPyPI,
+bump it rather than re-pushing — otherwise TestPyPI keeps serving the older
+build.
+
 The steps are ordered so nothing is tagged that was not published, and nothing
 is published that did not pass its tests.
 

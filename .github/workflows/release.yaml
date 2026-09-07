@@ -127,10 +127,19 @@ jobs:
     permissions:
       id-token: write  # trusted publishing; no API token is stored
     steps:
+      - uses: actions/checkout@v4
+
       - uses: actions/download-artifact@v4
         with:
           name: dist
           path: dist/
+
+      # `skip-existing` below lets a re-run of the same commit pass, but it
+      # would equally skip a *rebuilt* file whose name is already taken - and a
+      # filename on TestPyPI can never be replaced, so the run would go green
+      # while TestPyPI kept serving the older build. Compare digests first.
+      - name: Check TestPyPI would not be left stale
+        run: python scripts/check_testpypi.py dist
 
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:

@@ -100,6 +100,11 @@ file. Any other state - an unchanged version, a revert, a downgrade, or PyPI
 being unreachable - skips the pipeline. `scripts/should_release.py` makes that
 call and is unit tested.
 
+A filename on TestPyPI can never be replaced, so `scripts/check_testpypi.py`
+compares digests before that upload: an identical re-run passes, a rebuilt file
+claiming a taken name stops the release rather than being silently skipped and
+leaving TestPyPI serving the older build.
+
 Whether a human approves before PyPI depends on the `production` environment's
 *Required reviewers* rule, which is a repository setting rather than part of the
 workflow.
@@ -111,7 +116,7 @@ workflow.
   dependency — the update check uses the standard library.
 - Terraform integration is separated from the UI: parsing and plan colouring are
   pure functions with no Textual import, and widgets never build argv.
-- 395 tests: unit, end-to-end through Textual's `Pilot`, and an integration suite
+- 405 tests: unit, end-to-end through Textual's `Pilot`, and an integration suite
   driving a real Terraform binary against a bundled example project.
 - CI across Linux, macOS and Windows on Python 3.10–3.13, plus integration runs
   against both Terraform and OpenTofu.
