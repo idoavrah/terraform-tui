@@ -129,6 +129,22 @@ build.
 The steps are ordered so nothing is tagged that was not published, and nothing
 is published that did not pass its tests.
 
+### Trusted publishing is bound to this file's *name*
+
+PyPI and TestPyPI match a trusted publisher on the workflow's **filename** and
+the **environment**, not on the workflow's `name:`. This repository therefore
+needs, on each site:
+
+| Site           | Workflow       | Environment  |
+| -------------- | -------------- | ------------ |
+| test.pypi.org  | `release.yaml` | `test`       |
+| pypi.org       | `release.yaml` | `production` |
+
+Renaming or moving `.github/workflows/release.yaml` invalidates those
+registrations, and the failure surfaces only at publish time, as
+`invalid-publisher: valid token, but no corresponding publisher`. If you rename
+it, update the publisher on both sites in the same change.
+
 **The human gate is a repository setting, not part of this file.** The PyPI
 publish targets the `production` GitHub environment; if that environment has
 *Required reviewers* configured (Settings → Environments → production), the run
