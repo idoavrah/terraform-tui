@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.14.1
+
+### Fixed
+
+- **The help screen describes `/` and `n`/`N` correctly.** Both were listed as
+  searching the tree or a plan. Searching within a resource was added later and
+  never made it back into the key reference, so the application understated what
+  its own keys do. The README said the same thing and is corrected too.
+
+Nothing else changed in the application: no behaviour, no dependencies, no
+interfaces. 0.14.0 users lose nothing by staying on it.
+
+### Release process
+
+- `scripts/check_testpypi.py` now compares only the distributions. `uv build`
+  writes a `.gitignore` into its output directory, which twine does not upload,
+  so hashing it against TestPyPI was meaningless.
+
 ## 0.14.0
 
 A full rewrite. Same application, same keys, same flags — new internals.
