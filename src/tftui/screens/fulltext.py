@@ -4,12 +4,13 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from rich.syntax import Syntax
 from rich.text import Text
 from textual.app import ComposeResult
 from textual.binding import Binding, BindingType
 from textual.screen import ModalScreen
 from textual.widgets import RichLog
+
+from tftui.widgets.resource_view import highlight
 
 
 class FullTextScreen(ModalScreen[None]):
@@ -29,15 +30,7 @@ class FullTextScreen(ModalScreen[None]):
     def compose(self) -> ComposeResult:
         log = RichLog(auto_scroll=False, wrap=True, markup=False, id="fulltext")
         if self.syntax and isinstance(self.content, str):
-            log.write(
-                Syntax(
-                    self.content,
-                    "hcl",
-                    theme="ansi_dark",
-                    background_color="default",
-                    word_wrap=True,
-                )
-            )
+            log.write(highlight(self.content, dark=bool(self.app.current_theme.dark)))
         else:
             log.write(self.content)
         yield log

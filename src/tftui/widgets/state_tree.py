@@ -29,12 +29,14 @@ class StateTree(Tree[NodeData]):
     user's selection survives a search, a collapse and a full state refresh.
     """
 
+    # Tree itself binds only up/down and the shift+arrow variants, so left and
+    # right have to be bound here alongside their vim aliases.
     BINDINGS: ClassVar[list[BindingType]] = [
         Binding("space", "toggle_selection", "Select", show=False),
-        Binding("j", "cursor_down", "Down", show=False),
-        Binding("k", "cursor_up", "Up", show=False),
-        Binding("h", "go_left", "Left", show=False),
-        Binding("l", "go_right", "Right", show=False),
+        Binding("down,j", "cursor_down", "Down", show=False),
+        Binding("up,k", "cursor_up", "Up", show=False),
+        Binding("left,h", "go_left", "Left", show=False),
+        Binding("right,l", "go_right", "Right", show=False),
     ]
 
     class SelectionChanged(Message):

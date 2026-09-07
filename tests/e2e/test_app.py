@@ -115,14 +115,61 @@ async def test_escape_returns_to_the_tree(app_pilot) -> None:
     assert app.view == TREE
 
 
-async def test_vim_keys_move_the_cursor(app_pilot) -> None:
+@pytest.mark.parametrize(("down", "up"), [("j", "k"), ("down", "up")])
+async def test_arrow_and_vim_keys_move_the_cursor(app_pilot, down: str, up: str) -> None:
     app, pilot = app_pilot
     await pilot.press("1")
     start = app.state_tree.cursor_line
-    await pilot.press("j", "j")
+    await pilot.press(down, down)
     assert app.state_tree.cursor_line == start + 2
-    await pilot.press("k")
+    await pilot.press(up)
     assert app.state_tree.cursor_line == start + 1
+
+
+@pytest.mark.parametrize(("collapse", "expand"), [("h", "l"), ("left", "right")])
+async def test_arrow_and_vim_keys_collapse_and_expand(
+    app_pilot, collapse: str, expand: str
+) -> None:
+    """Textual's Tree binds neither plain left nor right, so tftui must."""
+    app, pilot = app_pilot
+    await pilot.press("1")
+
+    # Land on the first module, which is expandable.
+    await pilot.press(expand)
+    node = app.state_tree.cursor_node
+    while node is not None and not node.allow_expand:
+        await pilot.press("j")
+        node = app.state_tree.cursor_node
+    assert node is not None
+    assert node.allow_expand
+
+    if not node.is_expanded:
+        await pilot.press(expand)
+        await pilot.pause()
+    assert node.is_expanded
+
+    await pilot.press(collapse)
+    await pilot.pause()
+    assert not node.is_expanded
+
+
+@pytest.mark.parametrize("key", ["h", "left"])
+async def test_collapse_key_steps_out_to_the_parent(app_pilot, key: str) -> None:
+    app, pilot = app_pilot
+    await pilot.press("0")
+    # Descend into the first module, onto a child.
+    await pilot.press("j", "j")
+    node = app.state_tree.cursor_node
+    assert node is not None
+    parent = node.parent
+    assert parent is not None
+
+    if node.allow_expand and node.is_expanded:
+        await pilot.press(key)  # first press collapses
+        await pilot.pause()
+    await pilot.press(key)  # then steps out
+    await pilot.pause()
+    assert app.state_tree.cursor_line == parent.line
 
 
 async def test_collapse_levels(app_pilot) -> None:
@@ -501,3 +548,55 @@ def _open_resource(app, address: str):
     app.resource_view.show(resource, secrets=app.state_tree.loaded.secrets_for(address))
     app.switcher.current = RESOURCE
     return resource
+
+
+# ------------------------------------------------------------------ rendering
+
+
+def _backgrounds(widget) -> set:
+    """Every explicit background colour the widget's own content paints."""
+    return {
+        segment.style.bgcolor
+        for strip in widget.lines
+        for segment in strip
+        if segment.style is not None and segment.style.bgcolor is not None
+    }
+
+
+async def test_resource_view_paints_no_background_of_its_own(app_pilot) -> None:
+    """Syntax highlighting must inherit the pane's background.
+
+    Stamping a background onto the highlighted segments - even the terminal
+    "default" - leaves the code a different shade from the whitespace around it.
+    """
+    app, pilot = app_pilot
+    _open_resource(app, "random_password.password")
+    await pilot.pause()
+    assert app.resource_view.lines, "nothing was rendered"
+    assert _backgrounds(app.resource_view) == set()
+
+
+def _foregrounds(widget) -> set:
+    return {
+        segment.style.color
+        for strip in widget.lines
+        for segment in strip
+        if segment.style is not None and segment.style.color is not None
+    }
+
+
+async def test_resource_view_follows_the_theme(app_pilot) -> None:
+    """Toggling light/dark re-highlights the pane and keeps it background-free."""
+    app, pilot = app_pilot
+    _open_resource(app, "random_password.password")
+    await pilot.pause()
+    dark_colours = _foregrounds(app.resource_view)
+
+    await pilot.press("m")
+    await pilot.pause()
+    light_colours = _foregrounds(app.resource_view)
+
+    assert dark_colours
+    assert dark_colours != light_colours
+    assert app.resource_view.body  # content survived the re-render
+    assert _backgrounds(app.resource_view) == set()

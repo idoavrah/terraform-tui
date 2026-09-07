@@ -497,6 +497,9 @@ class TerraformTUI(App[str]):
 
     def action_toggle_theme(self) -> None:
         self.theme = LIGHT_THEME if self.theme == DARK_THEME else DARK_THEME
+        # Syntax highlighting is chosen per theme, so the resource pane has to
+        # be redrawn; nothing else on screen carries theme-dependent content.
+        self.resource_view.rerender()
 
     # -------------------------------------------------------------- teardown
 

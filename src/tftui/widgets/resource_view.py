@@ -10,6 +10,32 @@ from tftui.terraform.state import Resource
 from tftui.widgets.reflowing_log import ReflowingLog
 
 
+def syntax_theme(*, dark: bool) -> str:
+    """The Rich syntax theme matching the application's light or dark mode.
+
+    The ANSI themes are used deliberately: they emit the terminal's own palette
+    rather than fixed RGB values, so highlighted code sits inside the user's
+    colour scheme instead of fighting it.
+    """
+    return "ansi_dark" if dark else "ansi_light"
+
+
+def highlight(code: str, *, dark: bool) -> Syntax:
+    """Render ``code`` as HCL, with no background of its own.
+
+    ``background_color`` is deliberately not set. Passing it - even as
+    "default" - stamps an explicit background onto every segment, which then
+    overrides the pane's own background: the highlighted cells end up a
+    different shade from the whitespace around them.
+    """
+    return Syntax(
+        code,
+        "hcl",
+        theme=syntax_theme(dark=dark),
+        word_wrap=True,
+    )
+
+
 class ResourceView(ReflowingLog):
     """Shows one resource block, with sensitive values hidden until asked for.
 
@@ -41,18 +67,21 @@ class ResourceView(ReflowingLog):
         self.resource = resource
         self.revealed = revealed and bool(secrets)
         self._body = resource.reveal(secrets) if self.revealed else resource.body
-
-        self.reset_content()
-        self.append(
-            Syntax(
-                self._body,
-                "hcl",
-                theme="ansi_dark",
-                background_color="default",
-                word_wrap=True,
-            )
-        )
+        self._draw()
         self.scroll_home(animate=False)
+
+    def rerender(self) -> None:
+        """Redraw at the current theme. Called when light/dark mode is toggled."""
+        if self.resource is not None:
+            self._draw()
+
+    def _draw(self) -> None:
+        self.reset_content()
+        self.append(highlight(self._body, dark=self._dark))
+
+    @property
+    def _dark(self) -> bool:
+        return bool(self.app.current_theme.dark)
 
     @property
     def body(self) -> str:
