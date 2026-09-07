@@ -8,7 +8,7 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/stale@v9
+      - uses: actions/stale@v11
         with:
           stale-issue-message: "Issue marked as stale due to inactivity. It will be closed in 5 days if no further activity occurs."
           close-issue-message: "This issue was closed because it was marked as stale and has not had recent activity. Please re-open if needed."
