@@ -1,8 +1,11 @@
 # Changelog
 
-## 1.0.0
+## 0.14.0
 
 A full rewrite. Same application, same keys, same flags — new internals.
+
+Still a 0.x release: the internals are new enough to want real-world mileage
+before anything is called 1.0.
 
 ### Fixed
 

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tftui"
-version = "1.0.0"
+version = "0.14.0"
 description = "TFTUI - the Terraform terminal user interface"
 readme = "README.md"
 license = "Apache-2.0"
@@ -13,7 +13,7 @@ authors = [{ name = "Ido Avraham" }]
 requires-python = ">=3.10"
 keywords = ["terraform", "terragrunt", "opentofu", "tui", "textual", "infrastructure"]
 classifiers = [
-  "Development Status :: 5 - Production/Stable",
+  "Development Status :: 4 - Beta",
   "Environment :: Console",
   "Intended Audience :: System Administrators",
   "Intended Audience :: Developers",
@@ -159,3 +159,6 @@ tag_format = "v$version"
 version_scheme = "pep440"
 version_provider = "pep621"
 update_changelog_on_bump = true
+# Stay on 0.x: a breaking change bumps the minor, not the major, until the
+# project is deliberately released as 1.0.
+major_version_zero = true
