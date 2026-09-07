@@ -22,8 +22,8 @@ More screenshots: [docs/screenshots.md](docs/screenshots.md). The animated
 - Search across resource names *and* their definitions
 - Read a single resource with HCL syntax highlighting
 - Reveal sensitive values on demand
-- Select one or many resources and taint, untaint or remove them from state
-- Create plans — including targeted and destroy plans — in full colour, and apply them
+- Select one resource, or a whole module at a time, and taint, untaint or remove from state
+- Create plans — including targeted and destroy plans — in full colour, search them, and apply them
 - Switch workspaces without restarting
 - Works with Terraform, OpenTofu and wrappers such as Terragrunt
 
@@ -46,11 +46,12 @@ Press `?` in the application for the full list.
 | ----------- | ------------------------------------------------------------ |
 | `↑ ↓ / j k` | Move up and down                                             |
 | `← → / h l` | Collapse and expand, or step in and out                      |
-| `Enter`     | View the highlighted resource                                |
+| `Enter`     | View the resource, or expand the module                       |
 | `Esc`       | Back to the state tree                                       |
-| `/`         | Filter by text in resource names and definitions             |
+| `/`         | Filter the tree, or search within a plan                      |
+| `n` `N`     | Next / previous match when searching a plan                   |
 | `0`–`9`     | Collapse the tree to a module depth (`0` expands everything) |
-| `Space`     | Select or deselect the highlighted resource                  |
+| `Space`     | Select the resource — or, on a module, everything under it    |
 | `Ctrl+A`    | Clear the selection                                          |
 | `T` `U` `D` | Taint, untaint, or remove from state                         |
 | `P`         | Create a plan                                                |
@@ -71,7 +72,7 @@ Every option can be set with a flag or an environment variable. Flags win.
 | Flag                             | Environment variable           | Meaning                                       |
 | -------------------------------- | ------------------------------ | --------------------------------------------- |
 | `-e`, `--executable`             | `TFTUI_EXECUTABLE`             | Binary to drive (default `terraform`)         |
-| `-f`, `--var-file`               | `TFTUI_VAR_FILE`               | Default `-var-file` offered when planning     |
+| `-f`, `--var-file`               | `TFTUI_VAR_FILE`               | tfvars file; repeat the flag for several      |
 | `-C`, `--chdir`                  | `TFTUI_WORKING_DIR`            | Directory to run in (default current)         |
 | `-n`, `--no-init`                | `TFTUI_NO_INIT`                | Skip `terraform init` on startup              |
 | `-o`, `--offline`                | `TFTUI_OFFLINE`                | No outbound calls at all                      |
@@ -79,6 +80,24 @@ Every option can be set with a flag or an environment variable. Flags win.
 | `-l`, `--light-mode`             | `TFTUI_LIGHT_MODE`             | Start in the light theme                      |
 | `-g`, `--generate-debug-log`     | `TFTUI_DEBUG_LOG`              | Write `tftui.log` in the working directory    |
 | `-v`, `--version`                | —                              | Print the version and exit                    |
+
+### Several var-files
+
+Repeat `-f` as often as you need; the files are applied in order, so a later
+one overrides an earlier one. They are passed to `init` as well as to `plan`,
+which is what OpenTofu 1.8+ needs to evaluate variables used in a `backend`
+block.
+
+```bash
+tftui -f common.tfvars -f prod.tfvars
+```
+
+The environment variable takes a list separated by your platform's path
+separator (`:` on Linux and macOS, `;` on Windows):
+
+```bash
+export TFTUI_VAR_FILE="common.tfvars:prod.tfvars"
+```
 
 ### Using OpenTofu or Terragrunt
 

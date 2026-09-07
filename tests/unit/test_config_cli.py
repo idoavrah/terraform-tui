@@ -59,7 +59,7 @@ def test_env_values() -> None:
         }
     )
     assert settings.executable == "tofu"
-    assert settings.var_file == "prod.tfvars"
+    assert settings.var_files == ("prod.tfvars",)
     assert settings.working_dir == Path("/infra")
     assert settings.run_init is False
     assert settings.light_mode is True
@@ -82,8 +82,8 @@ def test_cli_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
     [
         (["-e", "tofu"], "executable", "tofu"),
         (["--executable", "terragrunt"], "executable", "terragrunt"),
-        (["-f", "a.tfvars"], "var_file", "a.tfvars"),
-        (["--var-file", "b.tfvars"], "var_file", "b.tfvars"),
+        (["-f", "a.tfvars"], "var_files", ("a.tfvars",)),
+        (["--var-file", "b.tfvars"], "var_files", ("b.tfvars",)),
         (["-n"], "run_init", False),
         (["--no-init"], "run_init", False),
         (["-o"], "offline", True),

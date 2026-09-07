@@ -16,7 +16,12 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from tftui.errors import TerraformError
-from tftui.terraform.executor import CommandResult, TerraformExecutor, target_args
+from tftui.terraform.executor import (
+    CommandResult,
+    TerraformExecutor,
+    target_args,
+    var_file_args,
+)
 from tftui.terraform.state import State, extract_sensitive_values, parse_state
 
 logger = logging.getLogger(__name__)
@@ -83,9 +88,15 @@ class TerraformClient:
         except (json.JSONDecodeError, AttributeError):
             return ""
 
-    async def init(self) -> CommandResult:
-        """Run ``terraform init``. Safe to call when already initialised."""
-        return await self._exec.run("init", "-no-color", "-input=false")
+    async def init(self, *, var_files: Sequence[str] = ()) -> CommandResult:
+        """Run ``terraform init``. Safe to call when already initialised.
+
+        Var-files are forwarded because OpenTofu 1.8 and later evaluate
+        variables early enough to use them in a ``backend`` block, and such a
+        configuration cannot be initialised without them. Terraform accepts the
+        flag too (it rejects genuinely unknown flags), so this is safe for both.
+        """
+        return await self._exec.run("init", "-no-color", "-input=false", *var_file_args(var_files))
 
     # ----------------------------------------------------------------- state
 
@@ -171,7 +182,7 @@ class TerraformClient:
     async def plan(
         self,
         *,
-        var_file: str | None = None,
+        var_files: Sequence[str] = (),
         targets: Sequence[str] = (),
         destroy: bool = False,
     ) -> AsyncIterator[str]:
@@ -190,8 +201,7 @@ class TerraformClient:
             "-detailed-exitcode",
             f"-out={plan_path}",
         ]
-        if var_file:
-            args.append(f"-var-file={var_file}")
+        args.extend(var_file_args(var_files))
         if destroy:
             args.append("-destroy")
         args.extend(target_args(targets))

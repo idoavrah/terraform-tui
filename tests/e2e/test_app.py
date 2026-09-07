@@ -677,3 +677,210 @@ async def test_logo_is_not_sheared_by_alignment(app_pilot) -> None:
 
     expected = normalise([len(line) - len(line.lstrip()) for line in source])
     assert normalise(rendered) == expected
+
+
+# ------------------------------------------------ module selection (issue #82)
+
+
+def _first_module_node(app):
+    for node in _walk(app.state_tree.root):
+        if isinstance(node.data, str):
+            return node
+    raise AssertionError("no module in the tree")
+
+
+def _resources_under(node) -> list:
+    return [
+        child.data
+        for child in _walk(node)
+        if hasattr(child.data, "is_actionable") and child.data.is_actionable
+    ]
+
+
+async def test_space_on_a_module_selects_everything_under_it(app_pilot) -> None:
+    """Issue #82: selecting a whole module by hand is the tedious case."""
+    app, pilot = app_pilot
+    await pilot.press("0")
+    node = _first_module_node(app)
+    expected = {resource.full_address for resource in _resources_under(node)}
+    assert len(expected) > 1, "need a module with several resources"
+
+    app.state_tree.cursor_line = node.line
+    await pilot.press("space")
+    await pilot.pause()
+
+    assert app.state_tree.selected == expected
+
+
+async def test_space_on_a_selected_module_deselects_it(app_pilot) -> None:
+    app, pilot = app_pilot
+    await pilot.press("0")
+    node = _first_module_node(app)
+    app.state_tree.cursor_line = node.line
+
+    await pilot.press("space")
+    await pilot.pause()
+    assert app.state_tree.selected
+
+    await pilot.press("space")
+    await pilot.pause()
+    assert app.state_tree.selected == set()
+
+
+async def test_partly_selected_module_selects_the_rest(app_pilot) -> None:
+    """Space on a half-selected module completes it rather than clearing it."""
+    app, pilot = app_pilot
+    await pilot.press("0")
+    node = _first_module_node(app)
+    resources = _resources_under(node)
+    app.state_tree.selected.add(resources[0].full_address)
+
+    app.state_tree.cursor_line = node.line
+    await pilot.press("space")
+    await pilot.pause()
+
+    assert app.state_tree.selected == {r.full_address for r in resources}
+
+
+async def test_module_selection_skips_data_sources(app_pilot) -> None:
+    app, pilot = app_pilot
+    await pilot.press("0")
+    node = _first_module_node(app)
+    app.state_tree.cursor_line = node.line
+    await pilot.press("space")
+    await pilot.pause()
+
+    chosen = [app.state_tree.state.resources[a] for a in app.state_tree.selected]
+    assert chosen
+    assert not any(resource.is_data for resource in chosen)
+
+
+async def test_module_selection_feeds_a_targeted_plan(app_pilot, stub) -> None:
+    app, pilot = app_pilot
+    await pilot.press("0")
+    node = _first_module_node(app)
+    app.state_tree.cursor_line = node.line
+    await pilot.press("space")
+    await pilot.pause()
+    selected = set(app.state_tree.selected)
+
+    await pilot.press("p")
+    await pilot.pause()
+    await pilot.press("enter")
+    for _ in range(300):
+        await pilot.pause(0.02)
+        if any(call[0] == "plan" for call in stub.calls):
+            break
+
+    plan = next(call for call in stub.calls if call[0] == "plan")
+    targeted = {arg.removeprefix("-target=") for arg in plan if arg.startswith("-target=")}
+    assert targeted == selected
+
+
+async def test_enter_still_expands_a_module(app_pilot) -> None:
+    """Space no longer toggles, so Enter must still open a module."""
+    app, pilot = app_pilot
+    await pilot.press("1")
+    node = _first_module_node(app)
+    app.state_tree.cursor_line = node.line
+    was_expanded = node.is_expanded
+
+    await pilot.press("enter")
+    await pilot.pause()
+    assert node.is_expanded is not was_expanded
+
+
+# ---------------------------------------------------- plan search (issue #89)
+
+
+async def test_slash_searches_within_the_plan(app_pilot) -> None:
+    """Issue #89: `/` should work on plan output, not only the tree."""
+    app, pilot = app_pilot
+    await _make_a_plan(app, pilot)
+
+    await pilot.press("slash")
+    for char in "local_file":
+        await pilot.press(char)
+    await pilot.pause()
+
+    assert app.view == PLAN, "searching must not leave the plan"
+    assert app.plan_view.needle == "local_file"
+    assert app.plan_view.match_count > 1
+    assert "match 1/" in str(app.switcher.border_title)
+
+
+async def test_plan_search_keeps_every_line(app_pilot) -> None:
+    """Matches are highlighted, not filtered: a diff needs its context."""
+    app, pilot = app_pilot
+    await _make_a_plan(app, pilot)
+    before = app.plan_view.fulltext.plain
+
+    await pilot.press("slash")
+    for char in "content":
+        await pilot.press(char)
+    await pilot.pause()
+
+    assert app.plan_view.fulltext.plain == before
+
+
+async def test_n_steps_through_plan_matches(app_pilot) -> None:
+    app, pilot = app_pilot
+    await _make_a_plan(app, pilot)
+
+    await pilot.press("slash")
+    for char in "local_file":
+        await pilot.press(char)
+    await pilot.pause()
+    await pilot.press("escape")  # leave the input, stay on the plan
+    await pilot.pause()
+
+    assert app.plan_view.match_position == 1
+    await pilot.press("n")
+    await pilot.pause()
+    assert app.plan_view.match_position == 2
+
+    await pilot.press("N")
+    await pilot.pause()
+    assert app.plan_view.match_position == 1
+
+
+async def test_plan_search_reports_no_match(app_pilot) -> None:
+    app, pilot = app_pilot
+    await _make_a_plan(app, pilot)
+
+    await pilot.press("slash")
+    for char in "zzzz":
+        await pilot.press(char)
+    await pilot.pause()
+
+    assert app.plan_view.match_count == 0
+    assert "no match" in str(app.switcher.border_title)
+    assert app.search_input.has_class("nomatch")
+
+
+async def test_leaving_the_plan_clears_its_search(app_pilot) -> None:
+    app, pilot = app_pilot
+    await _make_a_plan(app, pilot)
+    await pilot.press("slash")
+    for char in "local_file":
+        await pilot.press(char)
+    await pilot.pause()
+
+    await pilot.press("escape")  # out of the input
+    await pilot.pause()
+    await pilot.press("escape")  # out of the plan
+    await pilot.pause()
+
+    assert app.view == TREE
+    assert app.plan_view.needle == ""
+    assert not app.search_input.has_class("nomatch")
+
+
+async def test_slash_in_the_tree_still_filters(app_pilot) -> None:
+    """The tree keeps filtering; only the plan highlights in place."""
+    app, pilot = app_pilot
+    await pilot.press("slash")
+    for char in "mars":
+        await pilot.press(char)
+    await pilot.pause()
+    assert app.state_tree.search == "mars"

@@ -131,7 +131,7 @@ async def test_plan_passes_var_file_and_targets(client: TerraformClient, stub) -
     _ = [
         line
         async for line in client.plan(
-            var_file="prod.tfvars",
+            var_files=["prod.tfvars"],
             targets=['module.a["x"].random_integer.n', "local_file.foo"],
             destroy=True,
         )

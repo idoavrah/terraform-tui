@@ -30,6 +30,10 @@ class ReflowingLog(RichLog):
         super().__init__(**kwargs)
         self._content: list[RenderableType] = []
         self._rendered_width = 0
+        #: First rendered row of each item in ``_content``. Wrapping means one
+        #: item can occupy several rows, so this is what lets a caller scroll to
+        #: a particular item rather than guessing.
+        self._rows: list[int] = []
 
     def append(self, renderable: RenderableType) -> None:
         """Write ``renderable`` and remember it for future re-wrapping."""
@@ -43,11 +47,25 @@ class ReflowingLog(RichLog):
         if width != self._rendered_width:
             self._replay()
         else:
+            self._rows.append(len(self.lines))
             self.write(renderable, width=width)
+
+    def replace_content(self, renderables: list[RenderableType]) -> None:
+        """Swap the remembered content wholesale and redraw."""
+        self._content = list(renderables)
+        self._rendered_width = 0
+        self._replay()
+
+    def row_of(self, index: int) -> int | None:
+        """The first rendered row of content item ``index``, if it is known."""
+        if 0 <= index < len(self._rows):
+            return self._rows[index]
+        return None
 
     def reset_content(self) -> None:
         """Drop everything, on screen and remembered."""
         self._content.clear()
+        self._rows.clear()
         self._rendered_width = 0
         self.clear()
 
@@ -67,7 +85,9 @@ class ReflowingLog(RichLog):
         offset = self.scroll_offset.y
         follow, self.auto_scroll = self.auto_scroll, False
         self.clear()
+        self._rows = []
         for renderable in self._content:
+            self._rows.append(len(self.lines))
             self.write(renderable, width=width)
         self._rendered_width = width
         self.auto_scroll = follow

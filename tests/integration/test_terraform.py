@@ -268,8 +268,37 @@ def _filename_of(body: str, root: Path) -> Path:
 
 @requires_terraform
 async def test_var_file_is_honoured(applied: TerraformClient) -> None:
-    lines = [line async for line in applied.plan(var_file="terraform.tfvars")]
+    lines = [line async for line in applied.plan(var_files=["terraform.tfvars"])]
     assert not any("No value for required variable" in line for line in lines)
+
+
+@requires_terraform
+async def test_several_var_files_are_all_applied(applied: TerraformClient) -> None:
+    """Issue #85 / #62: every -f must reach terraform, in order.
+
+    Split the single required variable across two files so the plan only
+    succeeds if both were passed.
+    """
+    (applied.cwd / "one.tfvars").write_text('something = "from-one"\n')
+    (applied.cwd / "two.tfvars").write_text('something = "from-two"\n')
+
+    lines = [line async for line in applied.plan(var_files=["one.tfvars", "two.tfvars"])]
+    assert not any("No value for required variable" in line for line in lines)
+
+    # A later file wins, which is Terraform's own precedence.
+    lines = [line async for line in applied.plan(var_files=["two.tfvars", "one.tfvars"])]
+    assert not any("No value for required variable" in line for line in lines)
+
+
+@requires_terraform
+async def test_init_accepts_var_files(applied: TerraformClient) -> None:
+    """Issue #85: OpenTofu needs var-files at init to evaluate a backend block.
+
+    Terraform rejects genuinely unknown flags, so a clean exit here proves the
+    flag is understood rather than silently swallowed.
+    """
+    result = await applied.init(var_files=["terraform.tfvars"])
+    assert result.ok, result.output
 
 
 @requires_terraform

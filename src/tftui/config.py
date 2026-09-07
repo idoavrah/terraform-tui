@@ -11,6 +11,18 @@ import os
 from dataclasses import dataclass, replace
 from pathlib import Path
 
+
+def split_var_files(value: str | None) -> tuple[str, ...]:
+    """Split a ``TFTUI_VAR_FILE`` value into individual files.
+
+    Uses the platform list separator (``:`` on POSIX, ``;`` on Windows) so that
+    several files can be given in one variable.
+    """
+    if not value:
+        return ()
+    return tuple(part.strip() for part in value.split(os.pathsep) if part.strip())
+
+
 _TRUE = frozenset({"1", "true", "yes", "on"})
 _FALSE = frozenset({"0", "false", "no", "off", ""})
 
@@ -24,8 +36,12 @@ class Settings:
     executable: str = DEFAULT_EXECUTABLE
     """The Terraform-compatible binary to drive (terraform, tofu, terragrunt...)."""
 
-    var_file: str | None = None
-    """Default ``-var-file`` offered when creating a plan."""
+    var_files: tuple[str, ...] = ()
+    """Default ``-var-file`` arguments, in order, for init and plan.
+
+    OpenTofu 1.8 evaluates variables early enough to use them in a backend
+    block, so these are passed to ``init`` as well as to ``plan``.
+    """
 
     run_init: bool = True
     """Whether to run ``terraform init`` on startup."""
@@ -65,13 +81,13 @@ class Settings:
         settings = cls()
 
         executable = source.get("TFTUI_EXECUTABLE")
-        var_file = source.get("TFTUI_VAR_FILE")
+        var_files = source.get("TFTUI_VAR_FILE")
         working_dir = source.get("TFTUI_WORKING_DIR")
 
         return replace(
             settings,
             executable=executable or settings.executable,
-            var_file=var_file or settings.var_file,
+            var_files=split_var_files(var_files) or settings.var_files,
             working_dir=Path(working_dir) if working_dir else settings.working_dir,
             run_init=not _flag(source, "TFTUI_NO_INIT", default=False),
             offline=_flag(source, "TFTUI_OFFLINE", default=False),

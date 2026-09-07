@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import ClassVar
 
@@ -12,12 +14,14 @@ from textual.containers import Grid, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import Button, Checkbox, Input, Static
 
+from tftui.config import split_var_files
+
 
 @dataclass(frozen=True, slots=True)
 class PlanRequest:
     """What the user asked for when creating a plan."""
 
-    var_file: str
+    var_files: tuple[str, ...]
     targeted: bool
 
 
@@ -28,9 +32,11 @@ class PlanInputsScreen(ModalScreen[PlanRequest | None]):
         Binding("escape", "cancel", "Cancel", show=False),
     ]
 
-    def __init__(self, *, var_file: str | None, targets_available: bool, destroy: bool) -> None:
+    def __init__(
+        self, *, var_files: Sequence[str] = (), targets_available: bool, destroy: bool
+    ) -> None:
         super().__init__()
-        self._var_file = var_file or ""
+        self._var_files = os.pathsep.join(var_files)
         self._targets_available = targets_available
         self._destroy = destroy
 
@@ -42,8 +48,8 @@ class PlanInputsScreen(ModalScreen[PlanRequest | None]):
         )
         self.input = Input(
             id="varfile",
-            placeholder="Optional",
-            value=self._var_file,
+            placeholder=f"Optional; separate several with {os.pathsep!r}",
+            value=self._var_files,
         )
         self.checkbox = Checkbox(
             "Target only selected resources",
@@ -53,7 +59,7 @@ class PlanInputsScreen(ModalScreen[PlanRequest | None]):
         )
         yield Grid(
             question,
-            Horizontal(Static("Var-file:", id="varfilelabel"), self.input),
+            Horizontal(Static("Var-files:", id="varfilelabel"), self.input),
             self.checkbox,
             Button("Create", id="yes", variant="primary"),
             Button("Cancel", id="no"),
@@ -79,7 +85,7 @@ class PlanInputsScreen(ModalScreen[PlanRequest | None]):
     def _submit(self) -> None:
         self.dismiss(
             PlanRequest(
-                var_file=self.input.value.strip(),
+                var_files=split_var_files(self.input.value),
                 targeted=self.checkbox.value,
             )
         )

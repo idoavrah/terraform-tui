@@ -213,3 +213,52 @@ def test_tainted_flag_from_real_terraform_output() -> None:
     assert parsed.counts()["tainted"] == 1
     # The tainted resource must still be parsed, not skipped.
     assert len(parsed) == 96
+
+
+def test_content_lines_starting_with_hash_are_not_block_headers() -> None:
+    """Regression for PR #91 (thanks @RafaelWO).
+
+    Arbitrary file content can reach the state output - a `data.local_file`
+    holding binary data, in the reported case - producing a line that begins
+    with `#` at column 0. Treating any such line as a block header made the
+    previous parser call `line.rindex(":")` and die with
+    `ValueError: substring not found`, taking the whole application with it.
+
+    A header is now `# <address>:` anchored at both ends, so noise is skipped.
+    """
+    output = "\n".join(
+        [
+            "# random_integer.n:",
+            'resource "random_integer" "n" {',
+            '    id = "1"',
+            "}",
+            "",
+            "# data.local_file.raw:",
+            'data "local_file" "raw" {',
+            "    content = <<-EOT",
+            "#\ufffdu\u01b1\ufffd>\ufffdD\\x121\ufffd3k",
+            "    EOT",
+            "}",
+        ]
+    )
+
+    parsed = parse_state(output)
+
+    assert set(parsed.resources) == {"random_integer.n", "data.local_file.raw"}
+    assert "#\ufffdu" in parsed.resources["data.local_file.raw"].body
+
+
+@pytest.mark.parametrize(
+    "line",
+    [
+        "#not-a-header",
+        "# no trailing colon",
+        "#",
+        "# ",
+        "#!/bin/sh",
+        "# a comment: with a colon but leading text is fine",
+    ],
+)
+def test_lines_that_only_look_like_headers(line: str) -> None:
+    """Only the last of these is a plausible address, and none may crash."""
+    parse_state(f"{line}\n")  # must not raise

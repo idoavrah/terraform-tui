@@ -43,7 +43,9 @@ def build_parser() -> argparse.ArgumentParser:
         "-f",
         "--var-file",
         metavar="FILE",
-        help="tfvars filename to be used in planning",
+        action="append",
+        dest="var_files",
+        help="tfvars filename to use; repeat the flag for several files",
     )
     parser.add_argument(
         "-o",
@@ -98,8 +100,8 @@ def parse_args(argv: Sequence[str] | None = None) -> tuple[Settings, bool]:
 
     if args.executable:
         settings = replace(settings, executable=args.executable)
-    if args.var_file:
-        settings = replace(settings, var_file=args.var_file)
+    if args.var_files:
+        settings = replace(settings, var_files=tuple(args.var_files))
     if args.chdir:
         settings = replace(settings, working_dir=Path(args.chdir))
     if args.no_init:

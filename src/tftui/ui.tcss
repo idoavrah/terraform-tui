@@ -60,6 +60,11 @@ Screen {
     border: round $accent;
 }
 
+/* Searching a plan with nothing to find. */
+#search.nomatch {
+    border: round $error;
+}
+
 /* ----------------------------------------------------------------- content */
 
 #switcher {

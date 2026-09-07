@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import traceback
+from collections.abc import Sequence
 from typing import ClassVar
 
 from rich.text import Text
@@ -70,6 +71,8 @@ class TerraformTUI(App[str]):
         Binding("question_mark", "help", "Help", key_display="?"),
         Binding("q", "quit", "Quit"),
         Binding("ctrl+a", "clear_selection", "Clear selection", show=False),
+        Binding("n", "next_match", "Next match", show=False),
+        Binding("N", "previous_match", "Previous match", show=False),
         *[Binding(str(level), f"collapse({level})", show=False) for level in range(1, 10)],
     ]
 
@@ -85,6 +88,7 @@ class TerraformTUI(App[str]):
         self.telemetry = telemetry or NullTelemetry()
         self.error_message = ""
         self._pending_operation: Operation | None = None
+        self._searching_plan = False
 
     # --------------------------------------------------------------- compose
 
@@ -141,6 +145,8 @@ class TerraformTUI(App[str]):
 
     def _show(self, view: str, title: str = "") -> None:
         self.switcher.current = view
+        if view == TREE and not title:
+            title = _selection_title(len(self.state_tree.selected))
         self.switcher.border_title = title
 
     # --------------------------------------------------------------- startup
@@ -151,7 +157,7 @@ class TerraformTUI(App[str]):
         if self.settings.run_init:
             self.state_tree.loading = True
             self.notify(f"Running {self.client.executable} init")
-            result = await self.client.init()
+            result = await self.client.init(var_files=self.settings.var_files)
             if not result.ok:
                 self.state_tree.loading = False
                 self._fail(TftuiError(result.output))
@@ -212,17 +218,59 @@ class TerraformTUI(App[str]):
 
     @on(Input.Changed, "#search")
     def on_search_changed(self, event: Input.Changed) -> None:
+        """Filter the tree, or highlight within the plan, depending on the view."""
+        if self._searching_plan:
+            count = self.plan_view.search(event.value)
+            self.switcher.border_title = self._plan_title()
+            if event.value and not count:
+                self.search_input.add_class("nomatch")
+            else:
+                self.search_input.remove_class("nomatch")
+            return
         if self.state_tree.loading:
             return
         self.state_tree.rebuild(event.value.strip())
 
     @on(Input.Submitted, "#search")
     def on_search_submitted(self) -> None:
-        self.state_tree.focus()
+        if self._searching_plan:
+            self.plan_view.focus()
+        else:
+            self.state_tree.focus()
 
     def action_search(self) -> None:
-        self._show(TREE)
+        """Search: the tree filters, the plan highlights in place."""
+        if self.view == PLAN:
+            self._searching_plan = True
+            self.search_input.placeholder = "Search the plan…"
+        else:
+            self._searching_plan = False
+            self.search_input.placeholder = "Filter resources…"
+            self._show(TREE)
+        self.search_input.value = ""
         self.search_input.focus()
+
+    def action_next_match(self) -> None:
+        self._step_match(1)
+
+    def action_previous_match(self) -> None:
+        self._step_match(-1)
+
+    def _step_match(self, delta: int) -> None:
+        if self.view != PLAN or not self.plan_view.match_count:
+            return
+        self.plan_view.step_match(delta)
+        self.switcher.border_title = self._plan_title()
+
+    def _plan_title(self) -> str:
+        """The plan pane's title, with the search position appended if searching."""
+        title = self.plan_view.title
+        if not self.plan_view.needle:
+            return title
+        count = self.plan_view.match_count
+        if not count:
+            return f"{title}  -  no match"
+        return f"{title}  -  match {self.plan_view.match_position}/{count}"
 
     # ------------------------------------------------------------------ tree
 
@@ -237,11 +285,20 @@ class TerraformTUI(App[str]):
 
     @on(StateTree.SelectionChanged)
     def on_selection_changed(self, event: StateTree.SelectionChanged) -> None:
+        """Show the selection count on the pane border.
+
+        There is no Textual `Header` in this layout, so `sub_title` only ever
+        reaches the terminal's own title bar. Selecting a whole module can pick
+        up dozens of resources, most of them scrolled out of sight, so the count
+        needs somewhere on screen to live.
+        """
         self.sub_title = (
             f"v{__version__}{self.telemetry.update_suffix}"
             if not event.count
             else f"{event.count} selected"
         )
+        if self.view == TREE:
+            self.switcher.border_title = _selection_title(event.count)
 
     def action_noop(self) -> None:
         """Placeholder so Space shows in the footer; the tree handles the key."""
@@ -256,12 +313,20 @@ class TerraformTUI(App[str]):
 
     def action_go_back(self) -> None:
         if self.focused is self.search_input:
-            self.state_tree.focus()
+            (self.plan_view if self._searching_plan else self.state_tree).focus()
             return
         if self.view == TREE:
             return
+        if self.view == PLAN:
+            self._end_plan_search()
         self._show(TREE)
         self.state_tree.focus()
+
+    def _end_plan_search(self) -> None:
+        self._searching_plan = False
+        self.plan_view.clear_search()
+        self.search_input.remove_class("nomatch")
+        self.search_input.placeholder = "Filter resources…"
 
     # ------------------------------------------------------------ inspection
 
@@ -377,7 +442,7 @@ class TerraformTUI(App[str]):
         self._destroy_plan = destroy
         self.push_screen(
             PlanInputsScreen(
-                var_file=self.settings.var_file,
+                var_files=self.settings.var_files,
                 targets_available=bool(targets),
                 destroy=destroy,
             ),
@@ -392,24 +457,25 @@ class TerraformTUI(App[str]):
             if request.targeted
             else []
         )
-        self.create_plan(request.var_file or None, targets, destroy=self._destroy_plan)
+        self.create_plan(request.var_files, targets, destroy=self._destroy_plan)
 
     @work(exclusive=True, group="plan")
     async def create_plan(
         self,
-        var_file: str | None,
+        var_files: Sequence[str],
         targets: list[str],
         *,
         destroy: bool,
     ) -> None:
         view = self.plan_view
+        self._end_plan_search()
         view.begin(follow=False)
         self._show(PLAN, "Planning…")
         self.switcher.loading = True
         view.focus()
 
         first = True
-        async for line in self.client.plan(var_file=var_file, targets=targets, destroy=destroy):
+        async for line in self.client.plan(var_files=var_files, targets=targets, destroy=destroy):
             if first:
                 self.switcher.loading = False
                 first = False
@@ -444,6 +510,7 @@ class TerraformTUI(App[str]):
     @work(exclusive=True, group="plan")
     async def execute_apply(self) -> None:
         view = self.plan_view
+        self._end_plan_search()
         view.begin(follow=True)
         self._show(PLAN, "Applying…")
         self.switcher.loading = True
@@ -517,6 +584,12 @@ class TerraformTUI(App[str]):
             traceback.format_exception(type(error), error, error.__traceback__)
         )
         super()._handle_exception(error)
+
+
+def _selection_title(count: int) -> str:
+    if not count:
+        return ""
+    return f"{count} resource selected" if count == 1 else f"{count} resources selected"
 
 
 def _count(number: int) -> str:

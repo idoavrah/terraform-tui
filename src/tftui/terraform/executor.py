@@ -199,6 +199,14 @@ async def _wait_quietly(proc: asyncio.subprocess.Process) -> int:
         raise
 
 
+def var_file_args(var_files: Sequence[str]) -> list[str]:
+    """Render var-file paths as ``-var-file=`` arguments, in the order given.
+
+    Order matters: Terraform lets a later file override an earlier one.
+    """
+    return [f"-var-file={var_file}" for var_file in var_files]
+
+
 def target_args(targets: Sequence[str]) -> list[str]:
     """Render resource addresses as ``-target=`` arguments.
 

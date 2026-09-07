@@ -158,25 +158,58 @@ class StateTree(Tree[NodeData]):
         return [current] if current is not None and current.is_actionable else []
 
     def action_toggle_selection(self) -> None:
-        """Toggle selection of the resource under the cursor."""
+        """Select or deselect whatever the cursor is on.
+
+        On a resource that is one resource. On a module it is every actionable
+        resource beneath it, however deeply nested: selecting a whole module by
+        hand is the tedious case this exists to avoid. Expanding and collapsing
+        moved to Enter, the arrow keys and the digit keys.
+        """
         node = self.cursor_node
         if node is None:
             return
-        resource = node.data
-        if not isinstance(resource, Resource):
-            # Space on a module toggles it open, matching the tree's own default.
-            node.toggle()
+
+        data = node.data
+        if isinstance(data, Resource):
+            self._toggle_resources([data], [node])
+        elif isinstance(data, str):
+            self._toggle_module(node)
+
+    def _toggle_module(self, node: TreeNode[NodeData]) -> None:
+        """Select every actionable resource under ``node``, or clear them all."""
+        pairs = [
+            (child.data, child)
+            for child in self._walk(node)
+            if isinstance(child.data, Resource) and child.data.is_actionable
+        ]
+        if not pairs:
+            self.app.bell()
             return
-        if not resource.is_actionable:
+        self._toggle_resources([data for data, _ in pairs], [n for _, n in pairs])
+
+    def _toggle_resources(
+        self,
+        resources: list[Resource],
+        nodes: list[TreeNode[NodeData]],
+    ) -> None:
+        """Add all of ``resources`` to the selection, or remove them all.
+
+        Mixed selections resolve to "select the rest", which is what someone
+        pressing Space on a partly-selected module almost always wants.
+        """
+        actionable = [resource for resource in resources if resource.is_actionable]
+        if not actionable:
             self.app.bell()
             return
 
-        address = resource.full_address
-        if address in self.selected:
-            self.selected.discard(address)
+        addresses = [resource.full_address for resource in actionable]
+        if all(address in self.selected for address in addresses):
+            self.selected.difference_update(addresses)
         else:
-            self.selected.add(address)
-        self._restyle(node)
+            self.selected.update(addresses)
+
+        for node in nodes:
+            self._restyle(node)
         self.post_message(self.SelectionChanged(len(self.selected)))
 
     def clear_selection(self) -> None:

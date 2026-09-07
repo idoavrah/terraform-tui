@@ -28,6 +28,12 @@ A full rewrite. Same application, same keys, same flags — new internals.
   objects, which are discarded whenever the tree is rebuilt; they are now held
   as resource addresses.
 - **Listing workspaces no longer crashes** when `terraform workspace list` fails.
+- **A crash on startup at certain terminal sizes is gone** ([#92]). The old
+  resize handler touched a widget before it was assigned; layout is now CSS.
+- **File content that looks like a block header no longer breaks parsing**
+  ([#91], thanks to @RafaelWO for finding and diagnosing it). A header must now
+  match `# <address>:` anchored at both ends, so a binary blob in a
+  `data.local_file` cannot be mistaken for one.
 - **Runs on current Textual.** The application used APIs removed in Textual 1.0.
 
 ### Security
@@ -61,6 +67,16 @@ A full rewrite. Same application, same keys, same flags — new internals.
 
 ### Added
 
+- **Space on a module selects every resource under it** ([#82]). Expanding and
+  collapsing moved to Enter, the arrow keys and the digit keys. The selection
+  count now appears on the pane border.
+- **`/` searches plan output** ([#89]), highlighting matches in place rather
+  than filtering, since a diff is meaningless without its context. `n` and `N`
+  step through matches, and the title shows the position.
+- **`-f` / `--var-file` may be repeated** ([#62], [#85]), applied in order. The
+  files are passed to `init` as well as to `plan`, which is what OpenTofu 1.8+
+  needs to evaluate variables used in a `backend` block. `TFTUI_VAR_FILE` takes
+  a list separated by the platform path separator.
 - Every flag can now be set through a `TFTUI_*` environment variable.
 - `-C` / `--chdir` to run against another directory.
 - `Ctrl+A` clears the current selection.
@@ -73,7 +89,7 @@ A full rewrite. Same application, same keys, same flags — new internals.
   dependency — the update check uses the standard library.
 - Terraform integration is separated from the UI: parsing and plan colouring are
   pure functions with no Textual import, and widgets never build argv.
-- 218 tests: unit, end-to-end through Textual's `Pilot`, and an integration suite
+- 346 tests: unit, end-to-end through Textual's `Pilot`, and an integration suite
   driving a real Terraform binary against a bundled example project.
 - CI across Linux, macOS and Windows on Python 3.10–3.13, plus integration runs
   against both Terraform and OpenTofu.
@@ -84,6 +100,13 @@ A full rewrite. Same application, same keys, same flags — new internals.
 Every keybinding and command-line flag from 0.13 is preserved. The two-word
 handle used for usage tracking is derived exactly as before, so returning users
 keep their identity.
+
+[#62]: https://github.com/idoavrah/terraform-tui/issues/62
+[#82]: https://github.com/idoavrah/terraform-tui/issues/82
+[#85]: https://github.com/idoavrah/terraform-tui/issues/85
+[#89]: https://github.com/idoavrah/terraform-tui/issues/89
+[#91]: https://github.com/idoavrah/terraform-tui/pull/91
+[#92]: https://github.com/idoavrah/terraform-tui/issues/92
 
 ---
 
