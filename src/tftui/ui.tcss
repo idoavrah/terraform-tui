@@ -1,0 +1,233 @@
+/* tftui stylesheet.
+ *
+ * The layout is expressed entirely in CSS: the content area takes the
+ * remaining height with `1fr`, rather than the application arithmetically
+ * resizing it on every resize event.
+ */
+
+Screen {
+    layout: vertical;
+    background: $background;
+}
+
+/* ------------------------------------------------------------------ header */
+
+#header {
+    height: 9;
+    padding: 0 1;
+    border: round $primary;
+    border-title-align: center;
+    border-title-color: $accent;
+    background: $surface;
+}
+
+.header-box {
+    height: 100%;
+    padding: 0 1;
+    color: $text;
+}
+
+.header-labels {
+    width: auto;
+    text-align: right;
+    color: $text-muted;
+}
+
+.header-info {
+    width: 1fr;
+    text-overflow: ellipsis;
+}
+
+/* The logo is pre-formatted ASCII art whose lines differ in length, so it must
+ * stay left-aligned: aligning right shifts each line independently and shears
+ * the art. `width: auto` keeps it hugging the right-hand edge of the header. */
+.header-logo {
+    width: auto;
+    color: $accent;
+    text-align: left;
+}
+
+/* ------------------------------------------------------------------ search */
+
+#search {
+    height: 3;
+    margin: 0;
+    border: round $primary;
+    background: $surface;
+}
+
+#search:focus {
+    border: round $accent;
+}
+
+/* Searching a plan with nothing to find. */
+#search.nomatch {
+    border: round $error;
+}
+
+/* ----------------------------------------------------------------- content */
+
+#switcher {
+    height: 1fr;
+    border: round $primary;
+    border-title-align: center;
+    border-title-color: $accent;
+    background: $surface;
+    padding: 0 1;
+}
+
+#tree,
+#resource,
+#plan {
+    height: 100%;
+    width: 100%;
+    background: $surface;
+    scrollbar-size-vertical: 1;
+}
+
+#tree {
+    padding: 1 0 0 0;
+}
+
+#tree:focus > .tree--cursor {
+    background: $accent;
+    color: $text;
+}
+
+/* ------------------------------------------------------------------ modals */
+
+ModalScreen {
+    align: center middle;
+    background: $background 60%;
+}
+
+#yesno {
+    grid-size: 2 2;
+    grid-gutter: 1 2;
+    grid-rows: auto 3;
+    padding: 1 2;
+    width: 80;
+    max-width: 90%;
+    height: auto;
+    max-height: 80%;
+    border: thick $error;
+    background: $surface;
+}
+
+#yesno #questionbox {
+    column-span: 2;
+    height: auto;
+    max-height: 20;
+    background: $surface;
+    scrollbar-size-vertical: 1;
+}
+
+#yesno #question {
+    height: auto;
+    width: 100%;
+    background: $surface;
+    color: $text;
+}
+
+#yesno Button {
+    width: 100%;
+}
+
+#tfvars {
+    grid-size: 2 4;
+    grid-gutter: 1 2;
+    grid-rows: auto 3 3 3;
+    padding: 1 2;
+    width: 72;
+    max-width: 90%;
+    height: auto;
+    border: thick $primary;
+    background: $surface;
+}
+
+#tfvars #question {
+    column-span: 2;
+    height: auto;
+    text-align: center;
+}
+
+#tfvars Horizontal {
+    column-span: 2;
+    height: 3;
+}
+
+#tfvars #varfilelabel {
+    width: 12;
+    height: 3;
+    content-align: left middle;
+}
+
+#tfvars #varfile {
+    width: 1fr;
+}
+
+#tfvars #plantarget {
+    column-span: 2;
+    width: 100%;
+}
+
+#tfvars Button {
+    width: 100%;
+}
+
+#workspaces {
+    padding: 1 2;
+    width: 60;
+    max-width: 90%;
+    height: auto;
+    max-height: 80%;
+    border: thick $primary;
+    background: $surface;
+}
+
+#workspaces #question {
+    height: auto;
+    text-align: center;
+}
+
+#workspaces #workspacelist {
+    height: auto;
+    max-height: 16;
+    margin-bottom: 1;
+    border: round $primary;
+    background: $surface;
+}
+
+#workspaces Button {
+    width: 100%;
+}
+
+#help {
+    grid-size: 1 2;
+    grid-rows: 1fr 3;
+    grid-gutter: 1;
+    padding: 1 2;
+    width: 92;
+    max-width: 95%;
+    height: auto;
+    max-height: 90%;
+    border: thick $primary;
+    background: $surface;
+}
+
+#help #helptable {
+    height: auto;
+    max-height: 32;
+    background: $surface;
+}
+
+#help Button {
+    width: 100%;
+}
+
+#fulltext {
+    width: 100%;
+    height: 100%;
+    padding: 0 1;
+    background: $surface;
+}

@@ -1,0 +1,1230 @@
+# data.local_file.saturn[0]:
+data "local_file" "saturn" {
+    content              = <<-EOT
+        seed
+    EOT
+    content_base64       = "c2VlZAo="
+    content_base64sha256 = "SmaJQZsAsRcAybYka8+ok2yPXh6CTbOn5XAw4tHBpoQ="
+    content_base64sha512 = "IfqFXhugczxYyE6yR+/MJxAx3VJQGYS8QAccwmtVk48N3yQlqteh5hEBjnKMZ0h2QEReXZI7mabRjjVWUX6oug=="
+    content_md5          = "0dabe0ac327240bfa13585fcab742c67"
+    content_sha1         = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+    content_sha256       = "4a6689419b00b11700c9b6246bcfa8936c8f5e1e824db3a7e57030e2d1c1a684"
+    content_sha512       = "21fa855e1ba0733c58c84eb247efcc271031dd52501984bc40071cc26b55938f0ddf2425aad7a1e611018e728c67487640445e5d923b99a6d18e3556517ea8ba"
+    filename             = "./seed.txt"
+    id                   = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+}
+
+# data.local_file.saturn[1]:
+data "local_file" "saturn" {
+    content              = <<-EOT
+        seed
+    EOT
+    content_base64       = "c2VlZAo="
+    content_base64sha256 = "SmaJQZsAsRcAybYka8+ok2yPXh6CTbOn5XAw4tHBpoQ="
+    content_base64sha512 = "IfqFXhugczxYyE6yR+/MJxAx3VJQGYS8QAccwmtVk48N3yQlqteh5hEBjnKMZ0h2QEReXZI7mabRjjVWUX6oug=="
+    content_md5          = "0dabe0ac327240bfa13585fcab742c67"
+    content_sha1         = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+    content_sha256       = "4a6689419b00b11700c9b6246bcfa8936c8f5e1e824db3a7e57030e2d1c1a684"
+    content_sha512       = "21fa855e1ba0733c58c84eb247efcc271031dd52501984bc40071cc26b55938f0ddf2425aad7a1e611018e728c67487640445e5d923b99a6d18e3556517ea8ba"
+    filename             = "./seed.txt"
+    id                   = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+}
+
+# data.local_file.saturn[2]:
+data "local_file" "saturn" {
+    content              = <<-EOT
+        seed
+    EOT
+    content_base64       = "c2VlZAo="
+    content_base64sha256 = "SmaJQZsAsRcAybYka8+ok2yPXh6CTbOn5XAw4tHBpoQ="
+    content_base64sha512 = "IfqFXhugczxYyE6yR+/MJxAx3VJQGYS8QAccwmtVk48N3yQlqteh5hEBjnKMZ0h2QEReXZI7mabRjjVWUX6oug=="
+    content_md5          = "0dabe0ac327240bfa13585fcab742c67"
+    content_sha1         = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+    content_sha256       = "4a6689419b00b11700c9b6246bcfa8936c8f5e1e824db3a7e57030e2d1c1a684"
+    content_sha512       = "21fa855e1ba0733c58c84eb247efcc271031dd52501984bc40071cc26b55938f0ddf2425aad7a1e611018e728c67487640445e5d923b99a6d18e3556517ea8ba"
+    filename             = "./seed.txt"
+    id                   = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+}
+
+# random_integer.random_number:
+resource "random_integer" "random_number" {
+    id     = "5"
+    max    = 100
+    min    = 1
+    result = 5
+}
+
+# random_password.password:
+resource "random_password" "password" {
+    bcrypt_hash = (sensitive value)
+    id          = "none"
+    length      = 16
+    lower       = true
+    min_lower   = 0
+    min_numeric = 0
+    min_special = 0
+    min_upper   = 0
+    number      = true
+    numeric     = true
+    result      = (sensitive value)
+    special     = true
+    upper       = true
+}
+
+# time_static.example:
+resource "time_static" "example" {
+    day     = 6
+    hour    = 15
+    id      = "2026-09-06T15:38:53Z"
+    minute  = 38
+    month   = 9
+    rfc3339 = "2026-09-06T15:38:53Z"
+    second  = 53
+    unix    = 1788709133
+    year    = 2026
+}
+
+
+# module.colons["another:string:with:colons"].data.local_file.pluto[0]:
+data "local_file" "pluto" {
+    content              = <<-EOT
+        seed
+    EOT
+    content_base64       = "c2VlZAo="
+    content_base64sha256 = "SmaJQZsAsRcAybYka8+ok2yPXh6CTbOn5XAw4tHBpoQ="
+    content_base64sha512 = "IfqFXhugczxYyE6yR+/MJxAx3VJQGYS8QAccwmtVk48N3yQlqteh5hEBjnKMZ0h2QEReXZI7mabRjjVWUX6oug=="
+    content_md5          = "0dabe0ac327240bfa13585fcab742c67"
+    content_sha1         = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+    content_sha256       = "4a6689419b00b11700c9b6246bcfa8936c8f5e1e824db3a7e57030e2d1c1a684"
+    content_sha512       = "21fa855e1ba0733c58c84eb247efcc271031dd52501984bc40071cc26b55938f0ddf2425aad7a1e611018e728c67487640445e5d923b99a6d18e3556517ea8ba"
+    filename             = "modules/alpha/seed.txt"
+    id                   = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+}
+
+# module.colons["another:string:with:colons"].data.local_file.pluto[1]:
+data "local_file" "pluto" {
+    content              = <<-EOT
+        seed
+    EOT
+    content_base64       = "c2VlZAo="
+    content_base64sha256 = "SmaJQZsAsRcAybYka8+ok2yPXh6CTbOn5XAw4tHBpoQ="
+    content_base64sha512 = "IfqFXhugczxYyE6yR+/MJxAx3VJQGYS8QAccwmtVk48N3yQlqteh5hEBjnKMZ0h2QEReXZI7mabRjjVWUX6oug=="
+    content_md5          = "0dabe0ac327240bfa13585fcab742c67"
+    content_sha1         = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+    content_sha256       = "4a6689419b00b11700c9b6246bcfa8936c8f5e1e824db3a7e57030e2d1c1a684"
+    content_sha512       = "21fa855e1ba0733c58c84eb247efcc271031dd52501984bc40071cc26b55938f0ddf2425aad7a1e611018e728c67487640445e5d923b99a6d18e3556517ea8ba"
+    filename             = "modules/alpha/seed.txt"
+    id                   = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+}
+
+# module.colons["another:string:with:colons"].random_integer.jupiter[0]:
+resource "random_integer" "jupiter" {
+    id     = "15"
+    max    = 100
+    min    = 1
+    result = 15
+}
+
+# module.colons["another:string:with:colons"].random_integer.jupiter[1]:
+resource "random_integer" "jupiter" {
+    id     = "16"
+    max    = 100
+    min    = 1
+    result = 16
+}
+
+# module.colons["another:string:with:colons"].random_integer.jupiter[2]:
+resource "random_integer" "jupiter" {
+    id     = "46"
+    max    = 100
+    min    = 1
+    result = 46
+}
+
+# module.colons["another:string:with:colons"].random_integer.jupiter[3]:
+resource "random_integer" "jupiter" {
+    id     = "100"
+    max    = 100
+    min    = 1
+    result = 100
+}
+
+# module.colons["another:string:with:colons"].random_integer.jupiter[4]:
+resource "random_integer" "jupiter" {
+    id     = "15"
+    max    = 100
+    min    = 1
+    result = 15
+}
+
+# module.colons["another:string:with:colons"].random_password.password:
+resource "random_password" "password" {
+    bcrypt_hash = (sensitive value)
+    id          = "none"
+    length      = 16
+    lower       = true
+    min_lower   = 0
+    min_numeric = 0
+    min_special = 0
+    min_upper   = 0
+    number      = true
+    numeric     = true
+    result      = (sensitive value)
+    special     = true
+    upper       = true
+}
+
+
+# module.colons["another:string:with:colons"].module.venus[0].local_file.foo["#1"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #1
+    EOT
+    content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk="
+    content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q=="
+    content_md5          = "772bec392e4610d7a741c7dc75189c61"
+    content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+    content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9"
+    content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/colons-1-venus0_#1.txt"
+    id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+}
+
+# module.colons["another:string:with:colons"].module.venus[0].local_file.foo["#2"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #2
+    EOT
+    content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM="
+    content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw=="
+    content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49"
+    content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+    content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053"
+    content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/colons-1-venus0_#2.txt"
+    id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+}
+
+# module.colons["another:string:with:colons"].module.venus[0].local_file.foo["#3"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #3
+    EOT
+    content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ="
+    content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA=="
+    content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba"
+    content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+    content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4"
+    content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/colons-1-venus0_#3.txt"
+    id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+}
+
+
+# module.colons["another:string:with:colons"].module.venus[0].module.uranus.random_integer.mars["e.f"]:
+resource "random_integer" "mars" {
+    id     = "6"
+    max    = 100
+    min    = 1
+    result = 6
+}
+
+# module.colons["another:string:with:colons"].module.venus[0].module.uranus.random_integer.mars["g.h"]:
+resource "random_integer" "mars" {
+    id     = "79"
+    max    = 100
+    min    = 1
+    result = 79
+}
+
+
+# module.colons["another:string:with:colons"].module.venus[1].local_file.foo["#1"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #1
+    EOT
+    content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk="
+    content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q=="
+    content_md5          = "772bec392e4610d7a741c7dc75189c61"
+    content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+    content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9"
+    content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/colons-1-venus1_#1.txt"
+    id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+}
+
+# module.colons["another:string:with:colons"].module.venus[1].local_file.foo["#2"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #2
+    EOT
+    content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM="
+    content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw=="
+    content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49"
+    content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+    content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053"
+    content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/colons-1-venus1_#2.txt"
+    id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+}
+
+# module.colons["another:string:with:colons"].module.venus[1].local_file.foo["#3"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #3
+    EOT
+    content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ="
+    content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA=="
+    content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba"
+    content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+    content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4"
+    content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/colons-1-venus1_#3.txt"
+    id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+}
+
+
+# module.colons["another:string:with:colons"].module.venus[1].module.uranus.random_integer.mars["e.f"]:
+resource "random_integer" "mars" {
+    id     = "25"
+    max    = 100
+    min    = 1
+    result = 25
+}
+
+# module.colons["another:string:with:colons"].module.venus[1].module.uranus.random_integer.mars["g.h"]:
+resource "random_integer" "mars" {
+    id     = "89"
+    max    = 100
+    min    = 1
+    result = 89
+}
+
+
+# module.colons["string:with:colons"].data.local_file.pluto[0]:
+data "local_file" "pluto" {
+    content              = <<-EOT
+        seed
+    EOT
+    content_base64       = "c2VlZAo="
+    content_base64sha256 = "SmaJQZsAsRcAybYka8+ok2yPXh6CTbOn5XAw4tHBpoQ="
+    content_base64sha512 = "IfqFXhugczxYyE6yR+/MJxAx3VJQGYS8QAccwmtVk48N3yQlqteh5hEBjnKMZ0h2QEReXZI7mabRjjVWUX6oug=="
+    content_md5          = "0dabe0ac327240bfa13585fcab742c67"
+    content_sha1         = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+    content_sha256       = "4a6689419b00b11700c9b6246bcfa8936c8f5e1e824db3a7e57030e2d1c1a684"
+    content_sha512       = "21fa855e1ba0733c58c84eb247efcc271031dd52501984bc40071cc26b55938f0ddf2425aad7a1e611018e728c67487640445e5d923b99a6d18e3556517ea8ba"
+    filename             = "modules/alpha/seed.txt"
+    id                   = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+}
+
+# module.colons["string:with:colons"].data.local_file.pluto[1]:
+data "local_file" "pluto" {
+    content              = <<-EOT
+        seed
+    EOT
+    content_base64       = "c2VlZAo="
+    content_base64sha256 = "SmaJQZsAsRcAybYka8+ok2yPXh6CTbOn5XAw4tHBpoQ="
+    content_base64sha512 = "IfqFXhugczxYyE6yR+/MJxAx3VJQGYS8QAccwmtVk48N3yQlqteh5hEBjnKMZ0h2QEReXZI7mabRjjVWUX6oug=="
+    content_md5          = "0dabe0ac327240bfa13585fcab742c67"
+    content_sha1         = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+    content_sha256       = "4a6689419b00b11700c9b6246bcfa8936c8f5e1e824db3a7e57030e2d1c1a684"
+    content_sha512       = "21fa855e1ba0733c58c84eb247efcc271031dd52501984bc40071cc26b55938f0ddf2425aad7a1e611018e728c67487640445e5d923b99a6d18e3556517ea8ba"
+    filename             = "modules/alpha/seed.txt"
+    id                   = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+}
+
+# module.colons["string:with:colons"].random_integer.jupiter[0]:
+resource "random_integer" "jupiter" {
+    id     = "89"
+    max    = 100
+    min    = 1
+    result = 89
+}
+
+# module.colons["string:with:colons"].random_integer.jupiter[1]:
+resource "random_integer" "jupiter" {
+    id     = "38"
+    max    = 100
+    min    = 1
+    result = 38
+}
+
+# module.colons["string:with:colons"].random_integer.jupiter[2]:
+resource "random_integer" "jupiter" {
+    id     = "33"
+    max    = 100
+    min    = 1
+    result = 33
+}
+
+# module.colons["string:with:colons"].random_integer.jupiter[3]:
+resource "random_integer" "jupiter" {
+    id     = "6"
+    max    = 100
+    min    = 1
+    result = 6
+}
+
+# module.colons["string:with:colons"].random_integer.jupiter[4]:
+resource "random_integer" "jupiter" {
+    id     = "17"
+    max    = 100
+    min    = 1
+    result = 17
+}
+
+# module.colons["string:with:colons"].random_password.password:
+resource "random_password" "password" {
+    bcrypt_hash = (sensitive value)
+    id          = "none"
+    length      = 16
+    lower       = true
+    min_lower   = 0
+    min_numeric = 0
+    min_special = 0
+    min_upper   = 0
+    number      = true
+    numeric     = true
+    result      = (sensitive value)
+    special     = true
+    upper       = true
+}
+
+
+# module.colons["string:with:colons"].module.venus[0].local_file.foo["#1"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #1
+    EOT
+    content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk="
+    content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q=="
+    content_md5          = "772bec392e4610d7a741c7dc75189c61"
+    content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+    content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9"
+    content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/colons-0-venus0_#1.txt"
+    id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+}
+
+# module.colons["string:with:colons"].module.venus[0].local_file.foo["#2"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #2
+    EOT
+    content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM="
+    content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw=="
+    content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49"
+    content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+    content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053"
+    content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/colons-0-venus0_#2.txt"
+    id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+}
+
+# module.colons["string:with:colons"].module.venus[0].local_file.foo["#3"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #3
+    EOT
+    content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ="
+    content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA=="
+    content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba"
+    content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+    content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4"
+    content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/colons-0-venus0_#3.txt"
+    id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+}
+
+
+# module.colons["string:with:colons"].module.venus[0].module.uranus.random_integer.mars["e.f"]:
+resource "random_integer" "mars" {
+    id     = "97"
+    max    = 100
+    min    = 1
+    result = 97
+}
+
+# module.colons["string:with:colons"].module.venus[0].module.uranus.random_integer.mars["g.h"]:
+resource "random_integer" "mars" {
+    id     = "56"
+    max    = 100
+    min    = 1
+    result = 56
+}
+
+
+# module.colons["string:with:colons"].module.venus[1].local_file.foo["#1"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #1
+    EOT
+    content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk="
+    content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q=="
+    content_md5          = "772bec392e4610d7a741c7dc75189c61"
+    content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+    content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9"
+    content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/colons-0-venus1_#1.txt"
+    id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+}
+
+# module.colons["string:with:colons"].module.venus[1].local_file.foo["#2"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #2
+    EOT
+    content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM="
+    content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw=="
+    content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49"
+    content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+    content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053"
+    content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/colons-0-venus1_#2.txt"
+    id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+}
+
+# module.colons["string:with:colons"].module.venus[1].local_file.foo["#3"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #3
+    EOT
+    content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ="
+    content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA=="
+    content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba"
+    content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+    content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4"
+    content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/colons-0-venus1_#3.txt"
+    id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+}
+
+
+# module.colons["string:with:colons"].module.venus[1].module.uranus.random_integer.mars["e.f"]:
+resource "random_integer" "mars" {
+    id     = "33"
+    max    = 100
+    min    = 1
+    result = 33
+}
+
+# module.colons["string:with:colons"].module.venus[1].module.uranus.random_integer.mars["g.h"]:
+resource "random_integer" "mars" {
+    id     = "76"
+    max    = 100
+    min    = 1
+    result = 76
+}
+
+
+# module.dots["another.string.with.dots"].data.local_file.pluto[0]:
+data "local_file" "pluto" {
+    content              = <<-EOT
+        seed
+    EOT
+    content_base64       = "c2VlZAo="
+    content_base64sha256 = "SmaJQZsAsRcAybYka8+ok2yPXh6CTbOn5XAw4tHBpoQ="
+    content_base64sha512 = "IfqFXhugczxYyE6yR+/MJxAx3VJQGYS8QAccwmtVk48N3yQlqteh5hEBjnKMZ0h2QEReXZI7mabRjjVWUX6oug=="
+    content_md5          = "0dabe0ac327240bfa13585fcab742c67"
+    content_sha1         = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+    content_sha256       = "4a6689419b00b11700c9b6246bcfa8936c8f5e1e824db3a7e57030e2d1c1a684"
+    content_sha512       = "21fa855e1ba0733c58c84eb247efcc271031dd52501984bc40071cc26b55938f0ddf2425aad7a1e611018e728c67487640445e5d923b99a6d18e3556517ea8ba"
+    filename             = "modules/alpha/seed.txt"
+    id                   = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+}
+
+# module.dots["another.string.with.dots"].data.local_file.pluto[1]:
+data "local_file" "pluto" {
+    content              = <<-EOT
+        seed
+    EOT
+    content_base64       = "c2VlZAo="
+    content_base64sha256 = "SmaJQZsAsRcAybYka8+ok2yPXh6CTbOn5XAw4tHBpoQ="
+    content_base64sha512 = "IfqFXhugczxYyE6yR+/MJxAx3VJQGYS8QAccwmtVk48N3yQlqteh5hEBjnKMZ0h2QEReXZI7mabRjjVWUX6oug=="
+    content_md5          = "0dabe0ac327240bfa13585fcab742c67"
+    content_sha1         = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+    content_sha256       = "4a6689419b00b11700c9b6246bcfa8936c8f5e1e824db3a7e57030e2d1c1a684"
+    content_sha512       = "21fa855e1ba0733c58c84eb247efcc271031dd52501984bc40071cc26b55938f0ddf2425aad7a1e611018e728c67487640445e5d923b99a6d18e3556517ea8ba"
+    filename             = "modules/alpha/seed.txt"
+    id                   = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+}
+
+# module.dots["another.string.with.dots"].random_integer.jupiter[0]:
+resource "random_integer" "jupiter" {
+    id     = "37"
+    max    = 100
+    min    = 1
+    result = 37
+}
+
+# module.dots["another.string.with.dots"].random_integer.jupiter[1]:
+resource "random_integer" "jupiter" {
+    id     = "22"
+    max    = 100
+    min    = 1
+    result = 22
+}
+
+# module.dots["another.string.with.dots"].random_integer.jupiter[2]:
+resource "random_integer" "jupiter" {
+    id     = "68"
+    max    = 100
+    min    = 1
+    result = 68
+}
+
+# module.dots["another.string.with.dots"].random_integer.jupiter[3]:
+resource "random_integer" "jupiter" {
+    id     = "4"
+    max    = 100
+    min    = 1
+    result = 4
+}
+
+# module.dots["another.string.with.dots"].random_integer.jupiter[4]:
+resource "random_integer" "jupiter" {
+    id     = "11"
+    max    = 100
+    min    = 1
+    result = 11
+}
+
+# module.dots["another.string.with.dots"].random_password.password:
+resource "random_password" "password" {
+    bcrypt_hash = (sensitive value)
+    id          = "none"
+    length      = 16
+    lower       = true
+    min_lower   = 0
+    min_numeric = 0
+    min_special = 0
+    min_upper   = 0
+    number      = true
+    numeric     = true
+    result      = (sensitive value)
+    special     = true
+    upper       = true
+}
+
+
+# module.dots["another.string.with.dots"].module.venus[0].local_file.foo["#1"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #1
+    EOT
+    content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk="
+    content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q=="
+    content_md5          = "772bec392e4610d7a741c7dc75189c61"
+    content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+    content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9"
+    content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/dots-1-venus0_#1.txt"
+    id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+}
+
+# module.dots["another.string.with.dots"].module.venus[0].local_file.foo["#2"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #2
+    EOT
+    content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM="
+    content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw=="
+    content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49"
+    content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+    content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053"
+    content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/dots-1-venus0_#2.txt"
+    id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+}
+
+# module.dots["another.string.with.dots"].module.venus[0].local_file.foo["#3"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #3
+    EOT
+    content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ="
+    content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA=="
+    content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba"
+    content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+    content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4"
+    content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/dots-1-venus0_#3.txt"
+    id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+}
+
+
+# module.dots["another.string.with.dots"].module.venus[0].module.uranus.random_integer.mars["e.f"]:
+resource "random_integer" "mars" {
+    id     = "97"
+    max    = 100
+    min    = 1
+    result = 97
+}
+
+# module.dots["another.string.with.dots"].module.venus[0].module.uranus.random_integer.mars["g.h"]:
+resource "random_integer" "mars" {
+    id     = "22"
+    max    = 100
+    min    = 1
+    result = 22
+}
+
+
+# module.dots["another.string.with.dots"].module.venus[1].local_file.foo["#1"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #1
+    EOT
+    content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk="
+    content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q=="
+    content_md5          = "772bec392e4610d7a741c7dc75189c61"
+    content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+    content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9"
+    content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/dots-1-venus1_#1.txt"
+    id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+}
+
+# module.dots["another.string.with.dots"].module.venus[1].local_file.foo["#2"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #2
+    EOT
+    content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM="
+    content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw=="
+    content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49"
+    content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+    content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053"
+    content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/dots-1-venus1_#2.txt"
+    id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+}
+
+# module.dots["another.string.with.dots"].module.venus[1].local_file.foo["#3"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #3
+    EOT
+    content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ="
+    content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA=="
+    content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba"
+    content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+    content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4"
+    content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/dots-1-venus1_#3.txt"
+    id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+}
+
+
+# module.dots["another.string.with.dots"].module.venus[1].module.uranus.random_integer.mars["e.f"]:
+resource "random_integer" "mars" {
+    id     = "6"
+    max    = 100
+    min    = 1
+    result = 6
+}
+
+# module.dots["another.string.with.dots"].module.venus[1].module.uranus.random_integer.mars["g.h"]:
+resource "random_integer" "mars" {
+    id     = "98"
+    max    = 100
+    min    = 1
+    result = 98
+}
+
+
+# module.dots["string.with.dots"].data.local_file.pluto[0]:
+data "local_file" "pluto" {
+    content              = <<-EOT
+        seed
+    EOT
+    content_base64       = "c2VlZAo="
+    content_base64sha256 = "SmaJQZsAsRcAybYka8+ok2yPXh6CTbOn5XAw4tHBpoQ="
+    content_base64sha512 = "IfqFXhugczxYyE6yR+/MJxAx3VJQGYS8QAccwmtVk48N3yQlqteh5hEBjnKMZ0h2QEReXZI7mabRjjVWUX6oug=="
+    content_md5          = "0dabe0ac327240bfa13585fcab742c67"
+    content_sha1         = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+    content_sha256       = "4a6689419b00b11700c9b6246bcfa8936c8f5e1e824db3a7e57030e2d1c1a684"
+    content_sha512       = "21fa855e1ba0733c58c84eb247efcc271031dd52501984bc40071cc26b55938f0ddf2425aad7a1e611018e728c67487640445e5d923b99a6d18e3556517ea8ba"
+    filename             = "modules/alpha/seed.txt"
+    id                   = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+}
+
+# module.dots["string.with.dots"].data.local_file.pluto[1]:
+data "local_file" "pluto" {
+    content              = <<-EOT
+        seed
+    EOT
+    content_base64       = "c2VlZAo="
+    content_base64sha256 = "SmaJQZsAsRcAybYka8+ok2yPXh6CTbOn5XAw4tHBpoQ="
+    content_base64sha512 = "IfqFXhugczxYyE6yR+/MJxAx3VJQGYS8QAccwmtVk48N3yQlqteh5hEBjnKMZ0h2QEReXZI7mabRjjVWUX6oug=="
+    content_md5          = "0dabe0ac327240bfa13585fcab742c67"
+    content_sha1         = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+    content_sha256       = "4a6689419b00b11700c9b6246bcfa8936c8f5e1e824db3a7e57030e2d1c1a684"
+    content_sha512       = "21fa855e1ba0733c58c84eb247efcc271031dd52501984bc40071cc26b55938f0ddf2425aad7a1e611018e728c67487640445e5d923b99a6d18e3556517ea8ba"
+    filename             = "modules/alpha/seed.txt"
+    id                   = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+}
+
+# module.dots["string.with.dots"].random_integer.jupiter[0]:
+resource "random_integer" "jupiter" {
+    id     = "54"
+    max    = 100
+    min    = 1
+    result = 54
+}
+
+# module.dots["string.with.dots"].random_integer.jupiter[1]:
+resource "random_integer" "jupiter" {
+    id     = "14"
+    max    = 100
+    min    = 1
+    result = 14
+}
+
+# module.dots["string.with.dots"].random_integer.jupiter[2]:
+resource "random_integer" "jupiter" {
+    id     = "81"
+    max    = 100
+    min    = 1
+    result = 81
+}
+
+# module.dots["string.with.dots"].random_integer.jupiter[3]:
+resource "random_integer" "jupiter" {
+    id     = "59"
+    max    = 100
+    min    = 1
+    result = 59
+}
+
+# module.dots["string.with.dots"].random_integer.jupiter[4]:
+resource "random_integer" "jupiter" {
+    id     = "18"
+    max    = 100
+    min    = 1
+    result = 18
+}
+
+# module.dots["string.with.dots"].random_password.password:
+resource "random_password" "password" {
+    bcrypt_hash = (sensitive value)
+    id          = "none"
+    length      = 16
+    lower       = true
+    min_lower   = 0
+    min_numeric = 0
+    min_special = 0
+    min_upper   = 0
+    number      = true
+    numeric     = true
+    result      = (sensitive value)
+    special     = true
+    upper       = true
+}
+
+
+# module.dots["string.with.dots"].module.venus[0].local_file.foo["#1"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #1
+    EOT
+    content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk="
+    content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q=="
+    content_md5          = "772bec392e4610d7a741c7dc75189c61"
+    content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+    content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9"
+    content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/dots-0-venus0_#1.txt"
+    id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+}
+
+# module.dots["string.with.dots"].module.venus[0].local_file.foo["#2"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #2
+    EOT
+    content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM="
+    content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw=="
+    content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49"
+    content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+    content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053"
+    content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/dots-0-venus0_#2.txt"
+    id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+}
+
+# module.dots["string.with.dots"].module.venus[0].local_file.foo["#3"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #3
+    EOT
+    content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ="
+    content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA=="
+    content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba"
+    content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+    content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4"
+    content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/dots-0-venus0_#3.txt"
+    id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+}
+
+
+# module.dots["string.with.dots"].module.venus[0].module.uranus.random_integer.mars["e.f"]:
+resource "random_integer" "mars" {
+    id     = "59"
+    max    = 100
+    min    = 1
+    result = 59
+}
+
+# module.dots["string.with.dots"].module.venus[0].module.uranus.random_integer.mars["g.h"]:
+resource "random_integer" "mars" {
+    id     = "89"
+    max    = 100
+    min    = 1
+    result = 89
+}
+
+
+# module.dots["string.with.dots"].module.venus[1].local_file.foo["#1"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #1
+    EOT
+    content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk="
+    content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q=="
+    content_md5          = "772bec392e4610d7a741c7dc75189c61"
+    content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+    content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9"
+    content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/dots-0-venus1_#1.txt"
+    id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+}
+
+# module.dots["string.with.dots"].module.venus[1].local_file.foo["#2"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #2
+    EOT
+    content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM="
+    content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw=="
+    content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49"
+    content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+    content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053"
+    content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/dots-0-venus1_#2.txt"
+    id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+}
+
+# module.dots["string.with.dots"].module.venus[1].local_file.foo["#3"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #3
+    EOT
+    content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ="
+    content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA=="
+    content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba"
+    content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+    content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4"
+    content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/dots-0-venus1_#3.txt"
+    id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+}
+
+
+# module.dots["string.with.dots"].module.venus[1].module.uranus.random_integer.mars["e.f"]:
+resource "random_integer" "mars" {
+    id     = "63"
+    max    = 100
+    min    = 1
+    result = 63
+}
+
+# module.dots["string.with.dots"].module.venus[1].module.uranus.random_integer.mars["g.h"]:
+resource "random_integer" "mars" {
+    id     = "1"
+    max    = 100
+    min    = 1
+    result = 1
+}
+
+
+# module.mercury.data.local_file.pluto[0]:
+data "local_file" "pluto" {
+    content              = <<-EOT
+        seed
+    EOT
+    content_base64       = "c2VlZAo="
+    content_base64sha256 = "SmaJQZsAsRcAybYka8+ok2yPXh6CTbOn5XAw4tHBpoQ="
+    content_base64sha512 = "IfqFXhugczxYyE6yR+/MJxAx3VJQGYS8QAccwmtVk48N3yQlqteh5hEBjnKMZ0h2QEReXZI7mabRjjVWUX6oug=="
+    content_md5          = "0dabe0ac327240bfa13585fcab742c67"
+    content_sha1         = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+    content_sha256       = "4a6689419b00b11700c9b6246bcfa8936c8f5e1e824db3a7e57030e2d1c1a684"
+    content_sha512       = "21fa855e1ba0733c58c84eb247efcc271031dd52501984bc40071cc26b55938f0ddf2425aad7a1e611018e728c67487640445e5d923b99a6d18e3556517ea8ba"
+    filename             = "modules/alpha/seed.txt"
+    id                   = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+}
+
+# module.mercury.data.local_file.pluto[1]:
+data "local_file" "pluto" {
+    content              = <<-EOT
+        seed
+    EOT
+    content_base64       = "c2VlZAo="
+    content_base64sha256 = "SmaJQZsAsRcAybYka8+ok2yPXh6CTbOn5XAw4tHBpoQ="
+    content_base64sha512 = "IfqFXhugczxYyE6yR+/MJxAx3VJQGYS8QAccwmtVk48N3yQlqteh5hEBjnKMZ0h2QEReXZI7mabRjjVWUX6oug=="
+    content_md5          = "0dabe0ac327240bfa13585fcab742c67"
+    content_sha1         = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+    content_sha256       = "4a6689419b00b11700c9b6246bcfa8936c8f5e1e824db3a7e57030e2d1c1a684"
+    content_sha512       = "21fa855e1ba0733c58c84eb247efcc271031dd52501984bc40071cc26b55938f0ddf2425aad7a1e611018e728c67487640445e5d923b99a6d18e3556517ea8ba"
+    filename             = "modules/alpha/seed.txt"
+    id                   = "27a3608bfce6595de32ebe1eb4f1f853d8a09859"
+}
+
+# module.mercury.random_integer.jupiter[0]:
+resource "random_integer" "jupiter" {
+    id     = "40"
+    max    = 100
+    min    = 1
+    result = 40
+}
+
+# module.mercury.random_integer.jupiter[1]:
+resource "random_integer" "jupiter" {
+    id     = "75"
+    max    = 100
+    min    = 1
+    result = 75
+}
+
+# module.mercury.random_integer.jupiter[2]:
+resource "random_integer" "jupiter" {
+    id     = "14"
+    max    = 100
+    min    = 1
+    result = 14
+}
+
+# module.mercury.random_integer.jupiter[3]:
+resource "random_integer" "jupiter" {
+    id     = "37"
+    max    = 100
+    min    = 1
+    result = 37
+}
+
+# module.mercury.random_integer.jupiter[4]:
+resource "random_integer" "jupiter" {
+    id     = "18"
+    max    = 100
+    min    = 1
+    result = 18
+}
+
+# module.mercury.random_password.password:
+resource "random_password" "password" {
+    bcrypt_hash = (sensitive value)
+    id          = "none"
+    length      = 16
+    lower       = true
+    min_lower   = 0
+    min_numeric = 0
+    min_special = 0
+    min_upper   = 0
+    number      = true
+    numeric     = true
+    result      = (sensitive value)
+    special     = true
+    upper       = true
+}
+
+
+# module.mercury.module.venus[0].local_file.foo["#1"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #1
+    EOT
+    content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk="
+    content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q=="
+    content_md5          = "772bec392e4610d7a741c7dc75189c61"
+    content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+    content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9"
+    content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/mercury-venus0_#1.txt"
+    id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+}
+
+# module.mercury.module.venus[0].local_file.foo["#2"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #2
+    EOT
+    content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM="
+    content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw=="
+    content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49"
+    content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+    content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053"
+    content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/mercury-venus0_#2.txt"
+    id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+}
+
+# module.mercury.module.venus[0].local_file.foo["#3"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #3
+    EOT
+    content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ="
+    content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA=="
+    content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba"
+    content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+    content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4"
+    content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/mercury-venus0_#3.txt"
+    id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+}
+
+
+# module.mercury.module.venus[0].module.uranus.random_integer.mars["e.f"]:
+resource "random_integer" "mars" {
+    id     = "25"
+    max    = 100
+    min    = 1
+    result = 25
+}
+
+# module.mercury.module.venus[0].module.uranus.random_integer.mars["g.h"]:
+resource "random_integer" "mars" {
+    id     = "46"
+    max    = 100
+    min    = 1
+    result = 46
+}
+
+
+# module.mercury.module.venus[1].local_file.foo["#1"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #1
+    EOT
+    content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk="
+    content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q=="
+    content_md5          = "772bec392e4610d7a741c7dc75189c61"
+    content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+    content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9"
+    content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/mercury-venus1_#1.txt"
+    id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534"
+}
+
+# module.mercury.module.venus[1].local_file.foo["#2"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #2
+    EOT
+    content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM="
+    content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw=="
+    content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49"
+    content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+    content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053"
+    content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/mercury-venus1_#2.txt"
+    id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321"
+}
+
+# module.mercury.module.venus[1].local_file.foo["#3"]:
+resource "local_file" "foo" {
+    content              = <<-EOT
+        #3
+    EOT
+    content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ="
+    content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA=="
+    content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba"
+    content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+    content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4"
+    content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8"
+    directory_permission = "0777"
+    file_permission      = "0777"
+    filename             = "./generated/mercury-venus1_#3.txt"
+    id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb"
+}
+
+
+# module.mercury.module.venus[1].module.uranus.random_integer.mars["e.f"]:
+resource "random_integer" "mars" {
+    id     = "4"
+    max    = 100
+    min    = 1
+    result = 4
+}
+
+# module.mercury.module.venus[1].module.uranus.random_integer.mars["g.h"]:
+resource "random_integer" "mars" {
+    id     = "97"
+    max    = 100
+    min    = 1
+    result = 97
+}
+
+
+Outputs:
+
+greeting = "hello nothing"

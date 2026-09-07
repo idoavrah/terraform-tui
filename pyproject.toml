@@ -1,40 +1,166 @@
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.poetry]
+[project]
 name = "tftui"
-version = "0.13.4"
-description = "Terraform Textual User Interface"
-authors = ["Ido Avraham"]
-license = "Apache-2.0"
+version = "0.14.0"
+description = "TFTUI - the Terraform terminal user interface"
 readme = "README.md"
-repository = "https://github.com/idoavrah/terraform-tui"
-keywords = ["terraform", "tui"]
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "Ido Avraham" }]
+requires-python = ">=3.10"
+keywords = ["terraform", "terragrunt", "opentofu", "tui", "textual", "infrastructure"]
 classifiers = [
-    "License :: OSI Approved :: Apache Software License",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: System Administrators",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: System :: Systems Administration",
+  "Topic :: Terminals",
+  "Typing :: Typed",
 ]
-packages = [
-    { include = "tftui" },
+dependencies = [
+  "textual>=1.0,<9",
+  "pyperclip>=1.9,<2",
+  # Usage tracking is opt-out, so the client must be present by default. It is
+  # imported lazily, on first use, so opting out never pays its import cost.
+  "posthog>=3.7,<8",
 ]
-include = ["tftui/ui.tcss"]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-textual = "^0.44.1"
-posthog = "^3.1.0"
-requests = "^2.31.0"
-pyperclip = "^1.8.2"
+[project.urls]
+Homepage = "https://github.com/idoavrah/terraform-tui"
+Repository = "https://github.com/idoavrah/terraform-tui"
+Issues = "https://github.com/idoavrah/terraform-tui/issues"
+Discussions = "https://github.com/idoavrah/terraform-tui/discussions"
+Changelog = "https://github.com/idoavrah/terraform-tui/blob/main/CHANGELOG.md"
 
-[tool.poetry.scripts]
-tftui = 'tftui.__main__:main'
+[project.scripts]
+tftui = "tftui.__main__:main"
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3",
+  "pytest-asyncio>=0.24",
+  "pytest-cov>=6.0",
+  "mypy>=1.13",
+  "ruff>=0.8",
+  "pre-commit>=4.0",
+  # `textual console` and `textual run --dev` for debugging the UI.
+  "textual-dev>=1.7",
+  # scripts/should_release.py reads pyproject.toml; tomllib is 3.11+.
+  "tomli>=2.0.1; python_version < '3.11'",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tftui"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/tests", "/README.md", "/CHANGELOG.md", "/LICENSE"]
+
+[tool.uv]
+default-groups = ["dev"]
+
+# ---------------------------------------------------------------- ruff ------
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+  "E",    # pycodestyle errors
+  "W",    # pycodestyle warnings
+  "F",    # pyflakes
+  "I",    # isort
+  "N",    # pep8-naming
+  "UP",   # pyupgrade
+  "B",    # flake8-bugbear
+  "A",    # flake8-builtins
+  "C4",   # flake8-comprehensions
+  "DTZ",  # flake8-datetimez
+  "PIE",  # flake8-pie
+  "PT",   # flake8-pytest-style
+  "RET",  # flake8-return
+  "SIM",  # flake8-simplify
+  "PTH",  # flake8-use-pathlib
+  "RUF",  # ruff-specific
+  "S",    # flake8-bandit (security)
+  "ASYNC",
+]
+ignore = [
+  "S603",  # subprocess call - we deliberately shell out to terraform, never with shell=True
+  "S607",  # start process with partial path - the executable is user-configured by design
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests: asserts and dummy secrets are expected, and a blocking filesystem call
+# in an async test is not a responsiveness problem.
+"tests/**" = ["S101", "S105", "S106", "S108", "ASYNC240"]
+"scripts/**" = ["S101", "T201"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["tftui"]
+
+# ---------------------------------------------------------------- mypy ------
+
+[tool.mypy]
+python_version = "3.10"
+files = ["src/tftui"]
+strict = true
+warn_unreachable = true
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
+
+[[tool.mypy.overrides]]
+module = ["pyperclip", "posthog"]
+ignore_missing_imports = true
+
+# -------------------------------------------------------------- pytest ------
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = [
+  "--strict-markers",
+  "--strict-config",
+  "-ra",
+]
+markers = [
+  "integration: tests that shell out to a real terraform binary (deselect with '-m \"not integration\"')",
+]
+filterwarnings = ["error", "ignore::DeprecationWarning"]
+
+[tool.coverage.run]
+source = ["src/tftui"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+  "raise NotImplementedError",
+  "if __name__ == .__main__.:",
+]
+
+# --------------------------------------------------------- commitizen -------
 
 [tool.commitizen]
 name = "cz_conventional_commits"
 tag_format = "v$version"
 version_scheme = "pep440"
-version_provider = "poetry"
+version_provider = "pep621"
 update_changelog_on_bump = true
+# Stay on 0.x: a breaking change bumps the minor, not the major, until the
+# project is deliberately released as 1.0.
 major_version_zero = true

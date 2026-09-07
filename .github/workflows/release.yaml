@@ -1,0 +1,211 @@
+name: Release
+
+# Every push to main is a release candidate. The `check` job decides whether
+# this particular push is actually a release: it is, only if the version in
+# pyproject.toml is not already on PyPI *and* is newer than the newest version
+# there. Everything downstream is skipped otherwise, so ordinary commits cost
+# one cheap job and nothing else.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Evaluate the version but publish nothing"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+env:
+  TFTUI_OFFLINE: "1"
+
+jobs:
+  check:
+    name: Should this publish?
+    runs-on: ubuntu-latest
+    outputs:
+      release: ${{ steps.decide.outputs.release }}
+      version: ${{ steps.decide.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      # tomllib needs 3.11+, so the interpreter is pinned rather than left to
+      # whatever the runner image happens to ship.
+      - name: Compare the packaged version with PyPI
+        id: decide
+        run: >-
+          uv run --no-project --python 3.12 --with packaging
+          python scripts/should_release.py
+
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    needs: check
+    if: needs.check.outputs.release == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Lint and types
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+          uv run mypy
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+          terraform_wrapper: false
+
+      - name: Initialise the example project
+        working-directory: examples/terraform
+        run: terraform init -input=false -no-color
+
+      # A tagged release must not ship code that fails its own tests.
+      - name: Test
+        run: uv run pytest
+
+  build:
+    name: Build distribution
+    runs-on: ubuntu-latest
+    needs: [check, verify]
+    if: needs.check.outputs.release == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Build
+        run: uv build
+
+      - name: Check metadata
+        run: uvx twine check dist/*
+
+      - name: Verify the wheel installs and runs
+        run: |
+          uv venv /tmp/verify
+          VIRTUAL_ENV=/tmp/verify uv pip install dist/*.whl
+          expected='${{ needs.check.outputs.version }}'
+          installed="$(/tmp/verify/bin/tftui --version | sed -n 's/^tftui v\(.*\)$/\1/p')"
+          echo "installed: '${installed}'  expected: '${expected}'"
+          if [ "$installed" != "$expected" ]; then
+            echo "::error::built '${installed}', expected '${expected}'"
+            exit 1
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish-test:
+    name: Publish to TestPyPI
+    runs-on: ubuntu-latest
+    needs: [check, build]
+    if: needs.check.outputs.release == 'true' && inputs.dry_run != true
+    environment: test
+    permissions:
+      id-token: write  # trusted publishing; no API token is stored
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      # `skip-existing` below lets a re-run of the same commit pass, but it
+      # would equally skip a *rebuilt* file whose name is already taken - and a
+      # filename on TestPyPI can never be replaced, so the run would go green
+      # while TestPyPI kept serving the older build. Compare digests first.
+      - name: Check TestPyPI would not be left stale
+        run: python scripts/check_testpypi.py dist
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+
+  publish:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: [check, publish-test]
+    if: needs.check.outputs.release == 'true' && inputs.dry_run != true
+    # `production` is where a required-reviewer rule, if the repository has one,
+    # pauses the run for a human. Concurrency is scoped to this job rather than
+    # the workflow: a run waiting on that approval would otherwise hold the
+    # group and stall the cheap version check on every later push to main.
+    environment: production
+    concurrency:
+      group: release-pypi
+      cancel-in-progress: false
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    name: Tag and release on GitHub
+    runs-on: ubuntu-latest
+    needs: [check, publish]
+    if: needs.check.outputs.release == 'true' && inputs.dry_run != true
+    permissions:
+      contents: write  # to create the tag and the release
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Extract this version's changelog section
+        id: notes
+        run: |
+          version="${{ needs.check.outputs.version }}"
+          # Everything between this version's heading and the next one.
+          awk -v v="## $version" '
+            $0 == v {found = 1; next}
+            found && /^## / {exit}
+            found {print}
+          ' CHANGELOG.md | sed -e :a -e '/^[[:space:]-]*$/{$d;N;ba' -e '}' > release-notes.md
+          if [ ! -s release-notes.md ]; then
+            echo "No changelog entry for $version." > release-notes.md
+          fi
+          echo "--- release notes ---"
+          cat release-notes.md
+
+      - name: Create the tag and release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${{ needs.check.outputs.version }}"
+          gh release create "v${version}" dist/* \
+            --title "v${version}" \
+            --notes-file release-notes.md \
+            --target "${{ github.sha }}"

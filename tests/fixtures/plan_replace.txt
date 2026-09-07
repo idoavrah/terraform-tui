@@ -1,0 +1,514 @@
+data.local_file.saturn[1]: Reading...
+data.local_file.saturn[0]: Reading...
+data.local_file.saturn[2]: Reading...
+module.colons["another:string:with:colons"].data.local_file.pluto[0]: Reading...
+module.colons["another:string:with:colons"].data.local_file.pluto[1]: Reading...
+module.colons["string:with:colons"].data.local_file.pluto[1]: Reading...
+module.colons["string:with:colons"].data.local_file.pluto[0]: Reading...
+data.local_file.saturn[0]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+data.local_file.saturn[1]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.colons["another:string:with:colons"].data.local_file.pluto[0]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.colons["another:string:with:colons"].data.local_file.pluto[1]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+data.local_file.saturn[2]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.colons["string:with:colons"].data.local_file.pluto[0]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.colons["string:with:colons"].data.local_file.pluto[1]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.colons["another:string:with:colons"].module.venus[1].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+module.colons["string:with:colons"].module.venus[0].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+module.colons["string:with:colons"].module.venus[0].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.colons["another:string:with:colons"].module.venus[1].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.colons["string:with:colons"].module.venus[1].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+module.colons["another:string:with:colons"].module.venus[0].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+module.colons["another:string:with:colons"].module.venus[0].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.colons["string:with:colons"].module.venus[1].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.colons["another:string:with:colons"].module.venus[1].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.colons["another:string:with:colons"].module.venus[0].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.colons["string:with:colons"].module.venus[0].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.colons["string:with:colons"].module.venus[1].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.mercury.data.local_file.pluto[1]: Reading...
+module.dots["string.with.dots"].module.venus[0].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.dots["another.string.with.dots"].module.venus[1].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.dots["string.with.dots"].module.venus[1].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.mercury.data.local_file.pluto[1]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.mercury.data.local_file.pluto[0]: Reading...
+module.mercury.data.local_file.pluto[0]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.dots["another.string.with.dots"].module.venus[0].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+module.dots["another.string.with.dots"].module.venus[1].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.dots["another.string.with.dots"].module.venus[1].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+module.dots["another.string.with.dots"].module.venus[0].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.dots["string.with.dots"].module.venus[0].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.dots["string.with.dots"].module.venus[1].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.dots["another.string.with.dots"].module.venus[0].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.dots["string.with.dots"].module.venus[1].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+module.mercury.module.venus[1].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+module.mercury.module.venus[1].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.dots["string.with.dots"].module.venus[0].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+module.mercury.module.venus[1].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.mercury.module.venus[0].local_file.foo["#1"]: Refreshing state... [id=8538374ae7bd3bdd1450e8773aea07db2857c534]
+module.mercury.module.venus[0].local_file.foo["#3"]: Refreshing state... [id=a143367f4adc6e20d502ad4212901c3ae1f1e8fb]
+module.mercury.module.venus[0].local_file.foo["#2"]: Refreshing state... [id=6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321]
+module.dots["string.with.dots"].data.local_file.pluto[0]: Reading...
+module.dots["string.with.dots"].data.local_file.pluto[0]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.dots["string.with.dots"].data.local_file.pluto[1]: Reading...
+module.dots["another.string.with.dots"].data.local_file.pluto[1]: Reading...
+module.dots["another.string.with.dots"].data.local_file.pluto[1]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.dots["another.string.with.dots"].data.local_file.pluto[0]: Reading...
+time_static.example: Refreshing state... [id=2026-09-06T15:38:53Z]
+module.dots["string.with.dots"].random_password.password: Refreshing state... [id=none]
+module.dots["another.string.with.dots"].data.local_file.pluto[0]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.dots["string.with.dots"].data.local_file.pluto[1]: Read complete after 0s [id=27a3608bfce6595de32ebe1eb4f1f853d8a09859]
+module.dots["another.string.with.dots"].random_password.password: Refreshing state... [id=none]
+module.colons["another:string:with:colons"].module.venus[0].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=6]
+random_integer.random_number: Refreshing state... [id=5]
+module.colons["string:with:colons"].random_password.password: Refreshing state... [id=none]
+module.colons["string:with:colons"].module.venus[1].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=33]
+random_password.password: Refreshing state... [id=none]
+module.colons["string:with:colons"].module.venus[0].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=97]
+module.colons["another:string:with:colons"].module.venus[1].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=89]
+module.colons["another:string:with:colons"].module.venus[1].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=25]
+module.colons["string:with:colons"].module.venus[0].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=56]
+module.colons["string:with:colons"].module.venus[1].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=76]
+module.colons["another:string:with:colons"].module.venus[0].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=79]
+module.colons["another:string:with:colons"].random_integer.jupiter[4]: Refreshing state... [id=15]
+module.colons["another:string:with:colons"].random_integer.jupiter[3]: Refreshing state... [id=100]
+module.colons["string:with:colons"].random_integer.jupiter[2]: Refreshing state... [id=33]
+module.colons["another:string:with:colons"].random_integer.jupiter[2]: Refreshing state... [id=46]
+module.colons["another:string:with:colons"].random_integer.jupiter[0]: Refreshing state... [id=15]
+module.colons["string:with:colons"].random_integer.jupiter[0]: Refreshing state... [id=89]
+module.colons["string:with:colons"].random_integer.jupiter[3]: Refreshing state... [id=6]
+module.colons["string:with:colons"].random_integer.jupiter[1]: Refreshing state... [id=38]
+module.mercury.random_password.password: Refreshing state... [id=none]
+module.colons["another:string:with:colons"].random_integer.jupiter[1]: Refreshing state... [id=16]
+module.mercury.random_integer.jupiter[1]: Refreshing state... [id=75]
+module.colons["string:with:colons"].random_integer.jupiter[4]: Refreshing state... [id=17]
+module.mercury.random_integer.jupiter[2]: Refreshing state... [id=14]
+module.mercury.random_integer.jupiter[4]: Refreshing state... [id=18]
+module.mercury.random_integer.jupiter[3]: Refreshing state... [id=37]
+module.mercury.random_integer.jupiter[0]: Refreshing state... [id=40]
+module.dots["another.string.with.dots"].random_integer.jupiter[0]: Refreshing state... [id=37]
+module.colons["another:string:with:colons"].random_password.password: Refreshing state... [id=none]
+module.mercury.module.venus[1].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=97]
+module.dots["string.with.dots"].random_integer.jupiter[0]: Refreshing state... [id=54]
+module.dots["another.string.with.dots"].random_integer.jupiter[4]: Refreshing state... [id=11]
+module.dots["string.with.dots"].random_integer.jupiter[4]: Refreshing state... [id=18]
+module.dots["string.with.dots"].random_integer.jupiter[1]: Refreshing state... [id=14]
+module.dots["string.with.dots"].random_integer.jupiter[3]: Refreshing state... [id=59]
+module.dots["another.string.with.dots"].random_integer.jupiter[2]: Refreshing state... [id=68]
+module.dots["another.string.with.dots"].random_integer.jupiter[1]: Refreshing state... [id=22]
+module.dots["another.string.with.dots"].random_integer.jupiter[3]: Refreshing state... [id=4]
+module.dots["string.with.dots"].random_integer.jupiter[2]: Refreshing state... [id=81]
+module.mercury.module.venus[1].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=4]
+module.mercury.module.venus[0].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=25]
+module.dots["string.with.dots"].module.venus[1].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=63]
+module.dots["another.string.with.dots"].module.venus[1].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=98]
+module.dots["another.string.with.dots"].module.venus[0].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=97]
+module.mercury.module.venus[0].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=46]
+module.dots["another.string.with.dots"].module.venus[1].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=6]
+module.dots["string.with.dots"].module.venus[0].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=89]
+module.dots["string.with.dots"].module.venus[1].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=1]
+module.dots["another.string.with.dots"].module.venus[0].module.uranus.random_integer.mars["g.h"]: Refreshing state... [id=22]
+module.dots["string.with.dots"].module.venus[0].module.uranus.random_integer.mars["e.f"]: Refreshing state... [id=59]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+-/+ destroy and then create replacement
+
+Terraform will perform the following actions:
+
+  # module.colons["another:string:with:colons"].module.venus[0].local_file.foo["#1"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk=" -> (known after apply)
+      ~ content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q==" -> (known after apply)
+      ~ content_md5          = "772bec392e4610d7a741c7dc75189c61" -> (known after apply)
+      ~ content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+      ~ content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9" -> (known after apply)
+      ~ content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.colons["another:string:with:colons"].module.venus[0].local_file.foo["#2"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM=" -> (known after apply)
+      ~ content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw==" -> (known after apply)
+      ~ content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49" -> (known after apply)
+      ~ content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+      ~ content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053" -> (known after apply)
+      ~ content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.colons["another:string:with:colons"].module.venus[0].local_file.foo["#3"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ=" -> (known after apply)
+      ~ content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA==" -> (known after apply)
+      ~ content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba" -> (known after apply)
+      ~ content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+      ~ content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4" -> (known after apply)
+      ~ content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.colons["another:string:with:colons"].module.venus[1].local_file.foo["#1"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk=" -> (known after apply)
+      ~ content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q==" -> (known after apply)
+      ~ content_md5          = "772bec392e4610d7a741c7dc75189c61" -> (known after apply)
+      ~ content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+      ~ content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9" -> (known after apply)
+      ~ content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.colons["another:string:with:colons"].module.venus[1].local_file.foo["#2"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM=" -> (known after apply)
+      ~ content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw==" -> (known after apply)
+      ~ content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49" -> (known after apply)
+      ~ content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+      ~ content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053" -> (known after apply)
+      ~ content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.colons["another:string:with:colons"].module.venus[1].local_file.foo["#3"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ=" -> (known after apply)
+      ~ content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA==" -> (known after apply)
+      ~ content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba" -> (known after apply)
+      ~ content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+      ~ content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4" -> (known after apply)
+      ~ content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.colons["string:with:colons"].module.venus[0].local_file.foo["#1"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk=" -> (known after apply)
+      ~ content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q==" -> (known after apply)
+      ~ content_md5          = "772bec392e4610d7a741c7dc75189c61" -> (known after apply)
+      ~ content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+      ~ content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9" -> (known after apply)
+      ~ content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.colons["string:with:colons"].module.venus[0].local_file.foo["#2"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM=" -> (known after apply)
+      ~ content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw==" -> (known after apply)
+      ~ content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49" -> (known after apply)
+      ~ content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+      ~ content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053" -> (known after apply)
+      ~ content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.colons["string:with:colons"].module.venus[0].local_file.foo["#3"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ=" -> (known after apply)
+      ~ content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA==" -> (known after apply)
+      ~ content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba" -> (known after apply)
+      ~ content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+      ~ content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4" -> (known after apply)
+      ~ content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.colons["string:with:colons"].module.venus[1].local_file.foo["#1"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk=" -> (known after apply)
+      ~ content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q==" -> (known after apply)
+      ~ content_md5          = "772bec392e4610d7a741c7dc75189c61" -> (known after apply)
+      ~ content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+      ~ content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9" -> (known after apply)
+      ~ content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.colons["string:with:colons"].module.venus[1].local_file.foo["#2"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM=" -> (known after apply)
+      ~ content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw==" -> (known after apply)
+      ~ content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49" -> (known after apply)
+      ~ content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+      ~ content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053" -> (known after apply)
+      ~ content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.colons["string:with:colons"].module.venus[1].local_file.foo["#3"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ=" -> (known after apply)
+      ~ content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA==" -> (known after apply)
+      ~ content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba" -> (known after apply)
+      ~ content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+      ~ content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4" -> (known after apply)
+      ~ content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.dots["another.string.with.dots"].module.venus[0].local_file.foo["#1"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk=" -> (known after apply)
+      ~ content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q==" -> (known after apply)
+      ~ content_md5          = "772bec392e4610d7a741c7dc75189c61" -> (known after apply)
+      ~ content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+      ~ content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9" -> (known after apply)
+      ~ content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.dots["another.string.with.dots"].module.venus[0].local_file.foo["#2"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM=" -> (known after apply)
+      ~ content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw==" -> (known after apply)
+      ~ content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49" -> (known after apply)
+      ~ content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+      ~ content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053" -> (known after apply)
+      ~ content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.dots["another.string.with.dots"].module.venus[0].local_file.foo["#3"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ=" -> (known after apply)
+      ~ content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA==" -> (known after apply)
+      ~ content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba" -> (known after apply)
+      ~ content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+      ~ content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4" -> (known after apply)
+      ~ content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.dots["another.string.with.dots"].module.venus[1].local_file.foo["#1"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk=" -> (known after apply)
+      ~ content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q==" -> (known after apply)
+      ~ content_md5          = "772bec392e4610d7a741c7dc75189c61" -> (known after apply)
+      ~ content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+      ~ content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9" -> (known after apply)
+      ~ content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.dots["another.string.with.dots"].module.venus[1].local_file.foo["#2"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM=" -> (known after apply)
+      ~ content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw==" -> (known after apply)
+      ~ content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49" -> (known after apply)
+      ~ content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+      ~ content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053" -> (known after apply)
+      ~ content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.dots["another.string.with.dots"].module.venus[1].local_file.foo["#3"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ=" -> (known after apply)
+      ~ content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA==" -> (known after apply)
+      ~ content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba" -> (known after apply)
+      ~ content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+      ~ content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4" -> (known after apply)
+      ~ content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.dots["string.with.dots"].module.venus[0].local_file.foo["#1"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk=" -> (known after apply)
+      ~ content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q==" -> (known after apply)
+      ~ content_md5          = "772bec392e4610d7a741c7dc75189c61" -> (known after apply)
+      ~ content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+      ~ content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9" -> (known after apply)
+      ~ content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.dots["string.with.dots"].module.venus[0].local_file.foo["#2"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM=" -> (known after apply)
+      ~ content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw==" -> (known after apply)
+      ~ content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49" -> (known after apply)
+      ~ content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+      ~ content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053" -> (known after apply)
+      ~ content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.dots["string.with.dots"].module.venus[0].local_file.foo["#3"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ=" -> (known after apply)
+      ~ content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA==" -> (known after apply)
+      ~ content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba" -> (known after apply)
+      ~ content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+      ~ content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4" -> (known after apply)
+      ~ content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.dots["string.with.dots"].module.venus[1].local_file.foo["#1"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk=" -> (known after apply)
+      ~ content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q==" -> (known after apply)
+      ~ content_md5          = "772bec392e4610d7a741c7dc75189c61" -> (known after apply)
+      ~ content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+      ~ content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9" -> (known after apply)
+      ~ content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.dots["string.with.dots"].module.venus[1].local_file.foo["#2"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM=" -> (known after apply)
+      ~ content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw==" -> (known after apply)
+      ~ content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49" -> (known after apply)
+      ~ content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+      ~ content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053" -> (known after apply)
+      ~ content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.dots["string.with.dots"].module.venus[1].local_file.foo["#3"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ=" -> (known after apply)
+      ~ content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA==" -> (known after apply)
+      ~ content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba" -> (known after apply)
+      ~ content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+      ~ content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4" -> (known after apply)
+      ~ content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.mercury.module.venus[0].local_file.foo["#1"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk=" -> (known after apply)
+      ~ content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q==" -> (known after apply)
+      ~ content_md5          = "772bec392e4610d7a741c7dc75189c61" -> (known after apply)
+      ~ content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+      ~ content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9" -> (known after apply)
+      ~ content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.mercury.module.venus[0].local_file.foo["#2"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM=" -> (known after apply)
+      ~ content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw==" -> (known after apply)
+      ~ content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49" -> (known after apply)
+      ~ content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+      ~ content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053" -> (known after apply)
+      ~ content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.mercury.module.venus[0].local_file.foo["#3"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ=" -> (known after apply)
+      ~ content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA==" -> (known after apply)
+      ~ content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba" -> (known after apply)
+      ~ content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+      ~ content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4" -> (known after apply)
+      ~ content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.mercury.module.venus[1].local_file.foo["#1"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "m3k7j/UghigJBllrK8mKuakFuo9jSZIAHAtI+ukhdKk=" -> (known after apply)
+      ~ content_base64sha512 = "/cPHIbmKkuXry/u6LA8smiHgLJBjqCLempARSX5IyXLZK4ys8yZ2/MYyPVg4slFYvhhWH64mQP/sNpBd9YnM5Q==" -> (known after apply)
+      ~ content_md5          = "772bec392e4610d7a741c7dc75189c61" -> (known after apply)
+      ~ content_sha1         = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+      ~ content_sha256       = "9b793b8ff52086280906596b2bc98ab9a905ba8f634992001c0b48fae92174a9" -> (known after apply)
+      ~ content_sha512       = "fdc3c721b98a92e5ebcbfbba2c0f2c9a21e02c9063a822de9a9011497e48c972d92b8cacf32676fcc6323d5838b25158be18561fae2640ffec36905df589cce5" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "8538374ae7bd3bdd1450e8773aea07db2857c534" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.mercury.module.venus[1].local_file.foo["#2"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "a066mpUianxDrDgV38DCj0TIz5GOhOTnFk/+3opSkFM=" -> (known after apply)
+      ~ content_base64sha512 = "zMjHS6tbhiYGYt6CpyrtYiSyCqybg9brVc9vfJGhDIeKP2jwWmgj0X7GBhULMqlccYn5weTnyIYGmKUw4aCmSw==" -> (known after apply)
+      ~ content_md5          = "6fbe7a9a86356e1b16381cdef7bc5d49" -> (known after apply)
+      ~ content_sha1         = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+      ~ content_sha256       = "6b4eba9a95226a7c43ac3815dfc0c28f44c8cf918e84e4e7164ffede8a529053" -> (known after apply)
+      ~ content_sha512       = "ccc8c74bab5b86260662de82a72aed6224b20aac9b83d6eb55cf6f7c91a10c878a3f68f05a6823d17ec606150b32a95c7189f9c1e4e7c8860698a530e1a0a64b" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "6d5cbbec1ac2d1056bf915bfd96e53b63b7ad321" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.mercury.module.venus[1].local_file.foo["#3"] must be replaced
+-/+ resource "local_file" "foo" {
+      ~ content_base64sha256 = "p7h1czMIWAJB3ypuWz7P1Tw+NoCMNtAn378O8XMmNvQ=" -> (known after apply)
+      ~ content_base64sha512 = "Mn4+q+0f7oul3pr7yxei+kbuoawMG5zyzCBsHoPVknBd8MAFNuwGSbqdrqsfk2wYua7EFnWMQiuzPkMJ2cr9qA==" -> (known after apply)
+      ~ content_md5          = "5a10afc5697bae7f8d2fde9d5d2859ba" -> (known after apply)
+      ~ content_sha1         = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+      ~ content_sha256       = "a7b875733308580241df2a6e5b3ecfd53c3e36808c36d027dfbf0ef1732636f4" -> (known after apply)
+      ~ content_sha512       = "327e3eabed1fee8ba5de9afbcb17a2fa46eea1ac0c1b9cf2cc206c1e83d592705df0c00536ec0649ba9daeab1f936c18b9aec416758c422bb33e4309d9cafda8" -> (known after apply)
+      ~ file_permission      = "0777" -> "0644" # forces replacement
+      ~ id                   = "a143367f4adc6e20d502ad4212901c3ae1f1e8fb" -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+Plan: 30 to add, 0 to change, 30 to destroy.
+
+─────────────────────────────────────────────────────────────────────────────
+
+Saved the plan to: /tmp/tmp.OkmAPaW8dS/replace.plan
+
+To perform exactly these actions, run the following command to apply:
+    terraform apply "/tmp/tmp.OkmAPaW8dS/replace.plan"
