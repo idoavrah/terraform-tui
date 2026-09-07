@@ -4,7 +4,8 @@ repos:
     rev: v5.0.0
     hooks:
       - id: check-added-large-files
-        args: ["--maxkb=3300"]
+        # Screenshots are the largest thing committed, at ~140kb each.
+        args: ["--maxkb=512"]
       - id: check-merge-conflict
       - id: check-toml
       - id: check-yaml

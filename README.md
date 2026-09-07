@@ -13,8 +13,7 @@ without leaving the terminal.
 
 ![The state tree](docs/screenshots/01-state-tree.svg)
 
-More screenshots: [docs/screenshots.md](docs/screenshots.md). The animated
-[demo](demo/tftui.gif) still shows the 0.13 interface and is due a re-record.
+More screenshots: [docs/screenshots.md](docs/screenshots.md)
 
 ## Features
 

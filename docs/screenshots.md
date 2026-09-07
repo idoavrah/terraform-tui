@@ -51,18 +51,3 @@ defaults to *No*.
 ## Workspaces
 
 ![Switching workspace](screenshots/09-workspaces.svg)
-
----
-
-## Re-recording the animated demo
-
-`demo/tftui.gif` predates 1.0 and shows the old interface. To replace it,
-record with [asciinema](https://asciinema.org) and convert with
-[agg](https://github.com/asciinema/agg):
-
-```bash
-make example-apply
-cd examples/terraform
-asciinema rec ../../demo/tftui.cast -c "tftui --offline --no-init"
-agg ../../demo/tftui.cast ../../demo/tftui.gif
-```
