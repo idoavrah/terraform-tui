@@ -19,6 +19,7 @@ from tftui.screens.help import HelpScreen
 from tftui.screens.plan_inputs import PlanInputsScreen
 from tftui.screens.workspace import WorkspaceScreen
 from tftui.terraform.client import TerraformClient
+from tftui.widgets.header import LOGO
 
 SIZE = (150, 45)
 
@@ -383,6 +384,34 @@ async def test_apply_without_a_plan_is_refused(app_pilot, stub) -> None:
     assert not any(call[0] == "apply" for call in stub.calls)
 
 
+async def test_apply_leaves_the_output_on_screen(app_pilot) -> None:
+    """After applying, the output stays readable instead of snapping to the tree.
+
+    The state still has to be reloaded, because the apply changed it.
+    """
+    app, pilot = app_pilot
+    await _make_a_plan(app, pilot)
+
+    await pilot.press("a")
+    await pilot.pause()
+    await pilot.press("y")
+    for _ in range(300):
+        await pilot.pause(0.02)
+        if "Apply complete" in str(app.switcher.border_title):
+            break
+
+    assert app.view == PLAN, "apply output was replaced by the tree"
+    assert "Apply complete!" in app.plan_view.fulltext.plain
+    # The tree was still refreshed behind the scenes.
+    assert len(app.state_tree.state) == 96
+    assert not app.state_tree.loading
+
+    # Escape is the way back, as the border title says.
+    await pilot.press("escape")
+    await pilot.pause()
+    assert app.view == TREE
+
+
 async def test_apply_confirms_then_runs(app_pilot, stub) -> None:
     app, pilot = app_pilot
     await pilot.press("p")
@@ -525,6 +554,18 @@ async def test_refresh_reloads_state(app_pilot, stub) -> None:
 # --------------------------------------------------------------------- helpers
 
 
+async def _make_a_plan(app, pilot) -> None:
+    """Create a plan through the UI and wait for it to finish."""
+    await pilot.press("p")
+    await pilot.pause()
+    await pilot.press("enter")
+    for _ in range(300):
+        await pilot.pause(0.02)
+        if app.client.plan_file is not None:
+            return
+    raise AssertionError("plan never completed")
+
+
 def _walk(node):
     for child in node.children:
         yield child
@@ -600,3 +641,39 @@ async def test_resource_view_follows_the_theme(app_pilot) -> None:
     assert dark_colours != light_colours
     assert app.resource_view.body  # content survived the re-render
     assert _backgrounds(app.resource_view) == set()
+
+
+# --------------------------------------------------------------------- header
+
+
+def _screen_lines(app) -> list[str]:
+    return [
+        "".join(segment.text for segment in strip)
+        for strip in app.screen._compositor.render_strips()
+    ]
+
+
+async def test_logo_is_not_sheared_by_alignment(app_pilot) -> None:
+    """The banner is pre-formatted art; its lines must keep their relative offsets.
+
+    Its five lines differ in length, so aligning them individually (right or
+    centre) shifts each by a different amount and shears the lettering.
+    """
+    app, pilot = app_pilot
+    await pilot.pause()
+
+    source = LOGO.rstrip("\n").split("\n")
+    lines = _screen_lines(app)
+
+    rendered: list[int] = []
+    for line in source:
+        art = line.strip()
+        row = next((row for row in lines if art in row), None)
+        assert row is not None, f"logo line not found on screen: {art!r}"
+        rendered.append(row.index(art))
+
+    def normalise(values: list[int]) -> list[int]:
+        return [value - min(values) for value in values]
+
+    expected = normalise([len(line) - len(line.lstrip()) for line in source])
+    assert normalise(rendered) == expected

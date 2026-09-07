@@ -38,10 +38,13 @@ Screen {
     text-overflow: ellipsis;
 }
 
+/* The logo is pre-formatted ASCII art whose lines differ in length, so it must
+ * stay left-aligned: aligning right shifts each line independently and shears
+ * the art. `width: auto` keeps it hugging the right-hand edge of the header. */
 .header-logo {
     width: auto;
     color: $accent;
-    text-align: right;
+    text-align: left;
 }
 
 /* ------------------------------------------------------------------ search */

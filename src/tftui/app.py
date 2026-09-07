@@ -173,7 +173,13 @@ class TerraformTUI(App[str]):
     async def reload_state(self) -> None:
         await self._load_state()
 
-    async def _load_state(self) -> None:
+    async def _load_state(self, *, show_tree: bool = True) -> None:
+        """Reload the state into the tree.
+
+        ``show_tree`` is false after an apply: the state has changed and the
+        tree must be rebuilt, but the user is still reading the apply output
+        and should not be thrown back to the tree mid-sentence.
+        """
         tree = self.state_tree
         tree.loading = True
         self.search_input.value = ""
@@ -186,8 +192,9 @@ class TerraformTUI(App[str]):
 
         tree.load(loaded)
         tree.loading = False
-        self._show(TREE)
-        tree.focus()
+        if show_tree:
+            self._show(TREE)
+            tree.focus()
         self.telemetry.capture("refreshed state", size=str(len(loaded.state)))
 
         if loaded.state.is_empty:
@@ -450,8 +457,10 @@ class TerraformTUI(App[str]):
             view.feed(line)
 
         self.switcher.loading = False
-        self.switcher.border_title = "Apply complete"
-        await self._load_state()
+        self.switcher.border_title = "Apply complete - press Escape for the tree"
+        # Refresh the tree behind the scenes; the output stays on screen to read.
+        await self._load_state(show_tree=False)
+        view.focus()
 
     # ------------------------------------------------------------ workspaces
 
