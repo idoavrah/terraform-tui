@@ -104,7 +104,7 @@ jobs:
 
       - name: Set up OpenTofu
         if: matrix.tool.name == 'opentofu'
-        uses: opentofu/setup-opentofu@v1
+        uses: opentofu/setup-opentofu@v2
         with:
           tofu_version: "1.8.5"
           tofu_wrapper: false
