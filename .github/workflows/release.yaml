@@ -18,12 +18,6 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  # Never let two releases run at once; a half-published version is the one
-  # state that cannot be rolled back.
-  group: release
-  cancel-in-progress: false
-
 env:
   TFTUI_OFFLINE: "1"
 
@@ -148,7 +142,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: [check, publish-test]
     if: needs.check.outputs.release == 'true' && inputs.dry_run != true
+    # `production` is where a required-reviewer rule, if the repository has one,
+    # pauses the run for a human. Concurrency is scoped to this job rather than
+    # the workflow: a run waiting on that approval would otherwise hold the
+    # group and stall the cheap version check on every later push to main.
     environment: production
+    concurrency:
+      group: release-pypi
+      cancel-in-progress: false
     permissions:
       id-token: write
     steps:

@@ -119,6 +119,13 @@ When it does ship, the workflow:
 The steps are ordered so nothing is tagged that was not published, and nothing
 is published that did not pass its tests.
 
+**The human gate is a repository setting, not part of this file.** The PyPI
+publish targets the `production` GitHub environment; if that environment has
+*Required reviewers* configured (Settings → Environments → production), the run
+pauses there until someone approves, and the tag and GitHub release — which come
+after it — wait too. Without that rule, merging publishes straight through.
+Check the setting rather than assuming either way.
+
 Run the workflow manually with **dry run** ticked to see what it would decide
 and build without publishing anything.
 

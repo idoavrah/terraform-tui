@@ -96,6 +96,10 @@ file. Any other state - an unchanged version, a revert, a downgrade, or PyPI
 being unreachable - skips the pipeline. `scripts/should_release.py` makes that
 call and is unit tested.
 
+Whether a human approves before PyPI depends on the `production` environment's
+*Required reviewers* rule, which is a repository setting rather than part of the
+workflow.
+
 ### Internals
 
 - `src/` layout, PEP 621 metadata, hatchling build backend, uv lockfile.
