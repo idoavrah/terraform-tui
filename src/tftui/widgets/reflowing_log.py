@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from rich.console import RenderableType
-from textual.events import Resize
+from textual.events import Resize, Show
 from textual.widgets import RichLog
 
 
@@ -74,6 +74,21 @@ class ReflowingLog(RichLog):
 
     def on_resize(self, event: Resize) -> None:
         del event
+        self._render_if_stale()
+
+    def on_show(self, event: Show) -> None:
+        """Render anything written while this pane was hidden.
+
+        Content written to a hidden pane cannot be laid out, so it is buffered
+        and drawn once a width is known. Waiting only for a resize makes that
+        depend on event ordering; becoming visible is the other moment a width
+        first becomes available, and it is the one that matters when a pane is
+        filled in before the switcher brings it forward.
+        """
+        del event
+        self._render_if_stale()
+
+    def _render_if_stale(self) -> None:
         if self._current_width() != self._rendered_width:
             self._replay()
 

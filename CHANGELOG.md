@@ -111,7 +111,7 @@ workflow.
   dependency — the update check uses the standard library.
 - Terraform integration is separated from the UI: parsing and plan colouring are
   pure functions with no Textual import, and widgets never build argv.
-- 394 tests: unit, end-to-end through Textual's `Pilot`, and an integration suite
+- 395 tests: unit, end-to-end through Textual's `Pilot`, and an integration suite
   driving a real Terraform binary against a bundled example project.
 - CI across Linux, macOS and Windows on Python 3.10–3.13, plus integration runs
   against both Terraform and OpenTofu.

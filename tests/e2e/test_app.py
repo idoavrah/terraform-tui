@@ -584,11 +584,28 @@ def _select_first_managed(app):
 
 
 def _open_resource(app, address: str):
-    """Open ``address`` in the resource view, as pressing Enter on it would."""
+    """Open ``address`` in the resource view, as pressing Enter on it would.
+
+    Mirrors the application: render first, then bring the pane forward.
+    """
     resource = app.state_tree.state.resources[address]
     app.resource_view.show(resource, secrets=app.state_tree.loaded.secrets_for(address))
     app.switcher.current = RESOURCE
     return resource
+
+
+async def _rendered(pane, pilot):
+    """Wait until ``pane`` has drawn something.
+
+    A pane filled in before the switcher brings it forward has no width yet, so
+    its content is buffered until one arrives. How many ticks that takes is a
+    property of the machine, not of the behaviour under test.
+    """
+    for _ in range(200):
+        if pane.lines:
+            return pane
+        await pilot.pause(0.02)
+    raise AssertionError(f"{pane!r} never rendered")
 
 
 # ------------------------------------------------------------------ rendering
@@ -612,8 +629,7 @@ async def test_resource_view_paints_no_background_of_its_own(app_pilot) -> None:
     """
     app, pilot = app_pilot
     _open_resource(app, "random_password.password")
-    await pilot.pause()
-    assert app.resource_view.lines, "nothing was rendered"
+    await _rendered(app.resource_view, pilot)
     assert _backgrounds(app.resource_view) == set()
 
 
@@ -630,7 +646,7 @@ async def test_resource_view_follows_the_theme(app_pilot) -> None:
     """Toggling light/dark re-highlights the pane and keeps it background-free."""
     app, pilot = app_pilot
     _open_resource(app, "random_password.password")
-    await pilot.pause()
+    await _rendered(app.resource_view, pilot)
     dark_colours = _foregrounds(app.resource_view)
 
     await pilot.press("m")
@@ -893,7 +909,7 @@ async def test_slash_searches_within_a_resource(app_pilot) -> None:
     """`/` on an open resource searches it, rather than dropping back to the tree."""
     app, pilot = app_pilot
     _open_resource(app, "random_password.password")
-    await pilot.pause()
+    await _rendered(app.resource_view, pilot)
 
     await pilot.press("slash")
     for char in "min_lower":
@@ -909,7 +925,7 @@ async def test_slash_searches_within_a_resource(app_pilot) -> None:
 async def test_resource_search_keeps_every_line(app_pilot) -> None:
     app, pilot = app_pilot
     _open_resource(app, "random_password.password")
-    await pilot.pause()
+    await _rendered(app.resource_view, pilot)
     before = app.resource_view.fulltext.plain
 
     await pilot.press("slash")
@@ -924,7 +940,7 @@ async def test_resource_search_keeps_every_line(app_pilot) -> None:
 async def test_n_steps_through_resource_matches(app_pilot) -> None:
     app, pilot = app_pilot
     _open_resource(app, "random_password.password")
-    await pilot.pause()
+    await _rendered(app.resource_view, pilot)
 
     await pilot.press("slash")
     for char in "min":
@@ -997,3 +1013,23 @@ async def test_leaving_a_resource_clears_its_search(app_pilot) -> None:
     assert app.view == TREE
     assert app.resource_view.needle == ""
     assert app.search_input.value == ""
+
+
+async def test_a_pane_filled_while_hidden_renders_when_shown(app_pilot) -> None:
+    """Content written to a hidden pane must appear once it is brought forward.
+
+    A hidden pane has no width, so what is written to it is buffered until one
+    is known. Relying only on a resize to deliver that makes rendering depend on
+    event ordering, which differs between machines; becoming visible is the
+    other point at which a width first exists.
+    """
+    app, pilot = app_pilot
+    resource = app.state_tree.state.resources["random_password.password"]
+
+    assert app.view == TREE
+    app.resource_view.show(resource, secrets={})
+    assert not app.resource_view.lines, "a hidden pane cannot have laid anything out"
+
+    app.switcher.current = RESOURCE
+    await _rendered(app.resource_view, pilot)
+    assert app.resource_view.body.startswith('resource "random_password"')
