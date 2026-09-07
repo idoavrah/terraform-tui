@@ -88,6 +88,10 @@ these files, and the script prints a reminder to that effect.
   a list, and resource addresses are passed verbatim.
 - Anything that could write a secret to disk belongs in a private temporary
   directory, not the user's working directory.
+- Do not commit `examples/terraform/.terraform.lock.hcl`. Provider versions are
+  already pinned exactly in the configuration, and a lock file only carries
+  checksums for the platforms and provider source it was generated against — a
+  committed one breaks `terraform init` for everyone else.
 
 ## Releasing
 

@@ -174,6 +174,11 @@ uv.lock.bak
 
 # Terraform working files in the bundled example project
 **/.terraform/
+# The example project pins exact provider versions in its own configuration,
+# so the lock file adds nothing but platform-specific checksums. Committing one
+# breaks `terraform init` for anyone whose platform or provider source differs
+# from whoever generated it.
+examples/terraform/.terraform.lock.hcl
 *.tfstate
 *.tfstate.*
 *.tfplan
