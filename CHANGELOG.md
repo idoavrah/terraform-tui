@@ -1,5 +1,24 @@
 # Changelog
 
+## Unreleased
+
+### Internals
+
+- **Encrypted state is covered by tests** ([#90]). It already worked, and for a
+  reason worth pinning down: tftui parses the output of `show` rather than
+  reading a state file, and the Terraform process inherits the environment
+  untouched, so `TF_ENCRYPTION` reaches it. That makes the support an emergent
+  property of the executor rather than a feature — one that could be broken by
+  a well-meaning change to how the child environment is built, and would then
+  look like a parsing bug.
+
+  Three integration tests against real OpenTofu: that the state on disk is
+  genuinely encrypted, that tftui reads it, and that removing the key produces a
+  reported error rather than an empty tree. Skipped unless the binary under test
+  is OpenTofu 1.7+.
+
+[#90]: https://github.com/idoavrah/terraform-tui/issues/90
+
 ## 0.14.1
 
 ### Fixed

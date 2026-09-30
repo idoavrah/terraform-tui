@@ -120,6 +120,17 @@ Terraform state routinely contains secrets, so tftui is deliberate about them:
 - tftui never invokes a shell. Terraform is executed directly with an argument
   list, so resource addresses containing quotes, spaces or `$` are safe.
 
+### Encrypted state
+
+Supported, with nothing to configure. tftui never reads a state file — it parses
+the output of `show` — and the Terraform process inherits your environment
+untouched, so `TF_ENCRYPTION` and your cloud credentials reach it exactly as they
+would in a shell.
+
+If `tofu show` decrypts your state in a terminal, `tftui -e tofu` in that same
+directory does too. Without the key the error is reported rather than swallowed,
+so a decryption failure does not masquerade as an empty state.
+
 ## Usage tracking
 
 - tftui uses [PostHog](https://posthog.com) to understand how the tool is used.
