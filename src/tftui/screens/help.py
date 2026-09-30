@@ -31,6 +31,7 @@ KEYS: tuple[tuple[str, str, str], ...] = (
     ("X", "Reveal sensitive values in the resource view", "Inspect"),
     ("F", "Full screen; hold Shift or Option to select text with the mouse", "Inspect"),
     ("C", "Copy the resource name or definition to the clipboard", "Inspect"),
+    ("I", "Run init, showing its output on screen", "Session"),
     ("R", "Refresh the state tree", "Session"),
     ("W", "Switch workspace", "Session"),
     ("M", "Toggle light and dark mode", "Session"),

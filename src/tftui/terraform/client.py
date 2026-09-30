@@ -98,6 +98,19 @@ class TerraformClient:
         """
         return await self._exec.run("init", "-no-color", "-input=false", *var_file_args(var_files))
 
+    async def init_stream(
+        self, *, var_files: Sequence[str] = (), sink: list[int] | None = None
+    ) -> AsyncIterator[str]:
+        """Stream ``terraform init`` line by line, for showing in the UI.
+
+        Same command as :meth:`init`; this form exists because init can take a
+        while to download providers, and a pane filling with its output is far
+        more reassuring than a spinner. ``sink`` receives the exit code.
+        """
+        args = ["init", "-no-color", "-input=false", *var_file_args(var_files)]
+        async for line in self._exec.stream_with_result(*args, sink=sink):
+            yield line
+
     # ----------------------------------------------------------------- state
 
     async def load_state(self) -> LoadedState:

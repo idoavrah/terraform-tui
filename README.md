@@ -59,10 +59,22 @@ Press `?` in the application for the full list.
 | `X`         | Reveal sensitive values                                      |
 | `F`         | Full screen (hold Shift or Option to select text)            |
 | `C`         | Copy to clipboard                                            |
+| `I`         | Run init, showing its output on screen                       |
 | `R`         | Refresh state                                                |
 | `W`         | Switch workspace                                             |
 | `M`         | Toggle light and dark mode                                   |
 | `Q`         | Quit                                                         |
+
+### Initialising
+
+`terraform init` runs on startup unless you pass `-n`, and its output appears on
+screen rather than behind a spinner — provider downloads can take a while, and a
+filling pane is more reassuring than a stalled one. If it fails, the output stays
+up instead of the program exiting with it.
+
+`I` runs init at any time. And if the state cannot be read at all — usually an
+uninitialised directory, missing providers or a stale lock file — tftui offers to
+run init and retry rather than exiting and leaving you to work out the remedy.
 
 ## Configuration
 

@@ -1,5 +1,27 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- **`terraform init` can be run from the interface** ([#88]). `I` runs it at any
+  time, and its output is streamed into the output pane rather than hidden behind
+  a notification — a provider download can take a while, and a filling pane says
+  more than a spinner. Startup init streams the same way.
+
+### Fixed
+
+- **A failed init no longer takes the application down with it.** It used to exit
+  with the error, wiping the very output that explained the failure; the output
+  now stays on screen.
+- **An unreadable state offers init instead of exiting.** Missing providers or a
+  lock file that does not match the configuration are almost always an
+  uninitialised directory, so tftui now asks whether to run init and retry. The
+  offer is made once per session: having already run init, a second failure is a
+  real error rather than a missing one.
+
+[#88]: https://github.com/idoavrah/terraform-tui/issues/88
+
 ## 0.14.1
 
 ### Fixed

@@ -33,6 +33,7 @@ EXPECTED: tuple[tuple[str, type], ...] = (
     ("u", TerraformTUI),
     ("c", TerraformTUI),
     ("r", TerraformTUI),
+    ("i", TerraformTUI),
     ("p", TerraformTUI),
     ("a", TerraformTUI),
     ("ctrl+d", TerraformTUI),

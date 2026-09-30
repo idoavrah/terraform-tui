@@ -67,6 +67,7 @@ class TerraformTUI(App[str]):
         Binding("u", "untaint", "Untaint"),
         Binding("c", "copy", "Copy"),
         Binding("r", "reload", "Reload"),
+        Binding("i", "init", "Init"),
         Binding("p", "plan", "Plan"),
         Binding("a", "apply", "Apply"),
         Binding("ctrl+d", "destroy", "Destroy"),
@@ -94,6 +95,14 @@ class TerraformTUI(App[str]):
         self.settings = settings
         self.telemetry = telemetry or NullTelemetry()
         self.error_message = ""
+        self._init_ran = False
+        """Whether init has been run this session, successfully or not.
+
+        Guards the offer below: having already tried, a second failure is a real
+        error rather than a directory that was never initialised.
+        """
+        self._state_error: Exception | None = None
+        """The state-load failure being offered init as a remedy, if any."""
         self._pending_operation: Operation | None = None
         #: Which pane the search box is currently driving.
         self._search_target = TREE
@@ -168,17 +177,66 @@ class TerraformTUI(App[str]):
     @work(exclusive=True, group="state")
     async def startup(self) -> None:
         """Initialise Terraform if asked to, then load the state."""
-        if self.settings.run_init:
-            self.state_tree.loading = True
-            self.notify(f"Running {self.client.executable} init")
-            result = await self.client.init(var_files=self.settings.var_files)
-            if not result.ok:
-                self.state_tree.loading = False
-                self._fail(TftuiError(result.output))
-                return
+        if self.settings.run_init and not await self._run_init():
+            # The output is on screen and says why. Exiting here would wipe it,
+            # which is exactly what made a failed init so unhelpful before.
+            return
 
         await self._load_state()
         self.refresh_workspace()
+
+    async def _run_init(self) -> bool:
+        """Run init, streaming its output into the plan pane. True if it worked.
+
+        Init can take a long time downloading providers, so its output goes on
+        screen rather than behind a notification - which is the ask in #88.
+        """
+        view = self.plan_view
+        self._clear_search()
+        view.begin(follow=True, styled=False)
+        self._show(PLAN, f"{self.client.executable} init")
+        self.switcher.loading = True
+        view.focus()
+
+        codes: list[int] = []
+        first = True
+        async for line in self.client.init_stream(var_files=self.settings.var_files, sink=codes):
+            if first:
+                self.switcher.loading = False
+                first = False
+            view.feed(line)
+
+        self.switcher.loading = False
+        self._init_ran = True
+        ok = bool(codes) and codes[0] == 0
+        self.telemetry.capture("ran init", ok=str(ok))
+
+        if ok:
+            self.notify("Initialised.")
+        else:
+            self.switcher.border_title = (
+                f"{self.client.executable} init failed - press Escape for the tree"
+            )
+            self.notify("init failed. Its output is on screen.", severity="error")
+        return ok
+
+    def action_init(self) -> None:
+        """Run init on demand, from anywhere."""
+        self.initialise()
+
+    @work(exclusive=True, group="state")
+    async def initialise(self) -> None:
+        """Run init on demand, then refresh the state without stealing the screen."""
+        if not await self._run_init():
+            return
+        self.switcher.border_title = (
+            f"{self.client.executable} init complete - press Escape for the tree"
+        )
+        # The output is the point of running this by hand, so keep it up and
+        # rebuild the tree behind it, the way apply does.
+        await self._load_state(show_tree=False)
+        self.refresh_workspace()
+        self.plan_view.focus()
 
     @work(exclusive=True, group="workspace")
     async def refresh_workspace(self) -> None:
@@ -207,6 +265,12 @@ class TerraformTUI(App[str]):
             loaded = await self.client.load_state()
         except TftuiError as error:
             tree.loading = False
+            if not self._init_ran:
+                # Almost always an uninitialised directory: providers missing, or
+                # a lock file that does not match. Offering init beats exiting
+                # with the error and making the user work out the remedy.
+                self._offer_init(error)
+                return
             self._fail(error)
             return
 
@@ -222,6 +286,25 @@ class TerraformTUI(App[str]):
                 "No resources in state. You can still create a plan with 'p'.",
                 severity="warning",
             )
+
+    def _offer_init(self, error: Exception) -> None:
+        """Ask whether to run init, having failed to read the state without it."""
+        question = Text.from_markup(
+            f"[b]Could not read the state.[/b]\n\n{_first_line(str(error))}\n\n"
+            f"Run [b]{self.client.executable} init[/b] and try again?"
+        )
+        self._state_error = error
+        self.push_screen(ConfirmScreen(question), self._init_answer)
+
+    def _init_answer(self, confirmed: bool | None) -> None:
+        error = self._state_error
+        self._state_error = None
+        if confirmed:
+            self.initialise()
+            return
+        # Declining is a decision, not a crash, but the state still cannot be
+        # read - so exit saying why, rather than sitting on an empty tree.
+        self._fail(error if error is not None else TftuiError("Could not read the state."))
 
     def _fail(self, error: Exception) -> None:
         """Abort with a user-facing message rather than a traceback."""

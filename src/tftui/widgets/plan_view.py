@@ -40,18 +40,30 @@ class PlanView(SearchableLog):
         )
         self.styler = PlanStyler()
         self._seen_banner = False
+        self._styled = True
 
     # ------------------------------------------------------------- streaming
 
-    def begin(self, *, follow: bool) -> None:
-        """Prepare for a new run. ``follow`` scrolls to the tail, as apply wants."""
+    def begin(self, *, follow: bool, styled: bool = True) -> None:
+        """Prepare for a new run. ``follow`` scrolls to the tail, as apply wants.
+
+        ``styled`` is false for output that is not a plan - ``init``, say. Plan
+        colouring reads ``+``/``-``/``~`` as change markers and keeps a running
+        change count, both of which are meaningless for other commands and would
+        mislabel their output.
+        """
         self.styler.reset()
         self._seen_banner = False
+        self._styled = styled
         self.auto_scroll = follow
         self.clear_lines()
 
     def feed(self, line: str) -> None:
         """Append one line of output."""
+        if not self._styled:
+            self.add_line(Text(line))
+            return
+
         # Terraform prints refresh chatter before the plan proper; once the real
         # plan starts, drop what came before so the pane opens on the diff.
         if not self._seen_banner and is_banner(line):

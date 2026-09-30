@@ -1033,3 +1033,117 @@ async def test_a_pane_filled_while_hidden_renders_when_shown(app_pilot) -> None:
     app.switcher.current = RESOURCE
     await _rendered(app.resource_view, pilot)
     assert app.resource_view.body.startswith('resource "random_password"')
+
+
+# ------------------------------------------------- init in the UI (issue #88)
+
+
+async def test_i_runs_init_and_shows_its_output(app_pilot, stub) -> None:
+    """The ask in #88: init should be runnable from the interface, with output."""
+    app, pilot = app_pilot
+    stub.responses[("init",)] = (0, "Initializing provider plugins...\nSuccess!")
+
+    await pilot.press("i")
+    for _ in range(100):
+        if any(call[0] == "init" for call in stub.calls) and not app.switcher.loading:
+            break
+        await pilot.pause(0.02)
+
+    assert any(call[0] == "init" for call in stub.calls)
+    assert app.view == PLAN
+    assert "Initializing provider plugins" in app.plan_view.fulltext.plain
+    assert "Success!" in app.plan_view.fulltext.plain
+
+
+async def test_init_output_is_not_coloured_as_a_plan(app_pilot, stub) -> None:
+    """Plan colouring reads +/-/~ as change markers and counts them.
+
+    Init output contains such characters incidentally ('- Installing ...'), and
+    styling it as a diff would both miscolour the text and invent a change count.
+    """
+    app, pilot = app_pilot
+    stub.responses[("init",)] = (0, "- Installing hashicorp/random v3.6.3...\n- Installed")
+
+    await pilot.press("i")
+    for _ in range(100):
+        if app.plan_view.fulltext.plain and not app.switcher.loading:
+            break
+        await pilot.pause(0.02)
+
+    assert "- Installing hashicorp/random" in app.plan_view.fulltext.plain
+    assert app.plan_view.styler.summary == ""
+
+
+async def test_a_failing_init_keeps_its_output_on_screen(client, stub) -> None:
+    """It used to exit, wiping the very output that explained the failure."""
+    stub.responses[("init",)] = (1, "Error: Failed to query available provider packages")
+    settings = Settings(run_init=True, offline=True, usage_tracking=False)
+
+    app = TerraformTUI(client, settings)
+    async with app.run_test(size=SIZE) as pilot:
+        for _ in range(150):
+            if app.plan_view.fulltext.plain and not app.switcher.loading:
+                break
+            await pilot.pause(0.02)
+
+        assert app.is_running, "a failed init must not take the application down"
+        assert app.view == PLAN
+        assert "Failed to query available provider packages" in app.plan_view.fulltext.plain
+
+
+async def test_unreadable_state_offers_init_rather_than_exiting(client, stub) -> None:
+    """An uninitialised directory is the common cause, and init is the remedy."""
+    stub.responses[("show", "-no-color")] = (1, "Error: Failed to load plugin schemas")
+    settings = Settings(run_init=False, offline=True, usage_tracking=False)
+
+    app = TerraformTUI(client, settings)
+    async with app.run_test(size=SIZE) as pilot:
+        for _ in range(150):
+            if isinstance(app.screen, ConfirmScreen):
+                break
+            await pilot.pause(0.02)
+
+        assert isinstance(app.screen, ConfirmScreen), "expected an offer to run init"
+        assert app.is_running
+
+
+async def test_accepting_the_offer_runs_init_then_reloads(client, stub, state_text) -> None:
+    """Saying yes must actually recover: init, then a second attempt at the state."""
+    stub.responses[("show", "-no-color")] = (1, "Error: Failed to load plugin schemas")
+    settings = Settings(run_init=False, offline=True, usage_tracking=False)
+
+    app = TerraformTUI(client, settings)
+    async with app.run_test(size=SIZE) as pilot:
+        for _ in range(150):
+            if isinstance(app.screen, ConfirmScreen):
+                break
+            await pilot.pause(0.02)
+
+        # The directory is initialised now, so the state reads cleanly.
+        stub.responses[("show", "-no-color")] = (0, state_text)
+        await pilot.press("y")
+
+        for _ in range(200):
+            if len(app.state_tree.state):
+                break
+            await pilot.pause(0.02)
+
+        assert any(call[0] == "init" for call in stub.calls)
+        assert len(app.state_tree.state) == 96
+        assert app.is_running
+
+
+async def test_the_offer_is_made_only_once(client, stub) -> None:
+    """Having already run init, a second failure is a real error, not a missing init."""
+    stub.responses[("show", "-no-color")] = (1, "Error: Failed to load plugin schemas")
+    settings = Settings(run_init=True, offline=True, usage_tracking=False)
+
+    app = TerraformTUI(client, settings)
+    async with app.run_test(size=SIZE) as pilot:
+        for _ in range(150):
+            if not app.is_running:
+                break
+            await pilot.pause(0.02)
+
+        # init ran at startup, so the failure is reported rather than offered again.
+        assert not isinstance(app.screen, ConfirmScreen)
