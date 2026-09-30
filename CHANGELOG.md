@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+### Added
+
+- **`-V` / `--var` sets an input variable** ([#85]), exported as `TF_VAR_<name>`
+  for every command tftui runs. Repeat the flag for several; the value is taken
+  verbatim after the first `=`, so JSON objects survive intact.
+
+  This is what a `backend` block referring to a variable actually needs.
+  Forwarding `-var-file` to `init` was not enough: verified against OpenTofu
+  1.8.5 and 1.11.0 that `show` and `state list` reject `-var-file` outright, so
+  they still fail after a successful `init` — and that an exported `TF_VAR_*`
+  makes both work. Four integration tests pin that down, skipped unless the
+  binary under test is OpenTofu 1.8+.
+
+  Exporting `TF_VAR_*` by hand already worked, since the environment is inherited;
+  an explicit `--var` outranks it.
+
+[#85]: https://github.com/idoavrah/terraform-tui/issues/85
+
 ### Fixed
 
 - **A failed state read no longer leaves a `terraform show -json` process

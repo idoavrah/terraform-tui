@@ -23,7 +23,8 @@ def build_parser() -> argparse.ArgumentParser:
             "Every flag can also be set through an environment variable "
             "(TFTUI_EXECUTABLE, TFTUI_VAR_FILE, TFTUI_NO_INIT, TFTUI_OFFLINE, "
             "TFTUI_DISABLE_USAGE_TRACKING, TFTUI_LIGHT_MODE, TFTUI_DEBUG_LOG, "
-            "TFTUI_WORKING_DIR). Flags win over the environment. Enjoy!"
+            "TFTUI_WORKING_DIR). Flags win over the environment. Input variables can "
+            "also be exported as TF_VAR_* directly. Enjoy!"
         ),
     )
     parser.add_argument(
@@ -46,6 +47,18 @@ def build_parser() -> argparse.ArgumentParser:
         action="append",
         dest="var_files",
         help="tfvars filename to use; repeat the flag for several files",
+    )
+    parser.add_argument(
+        "-V",
+        "--var",
+        metavar="NAME=VALUE",
+        action="append",
+        dest="variables",
+        help=(
+            "set an input variable; repeat for several. Exported as TF_VAR_NAME, "
+            "so it reaches every command - which is what a backend block that "
+            "refers to a variable needs, since show and state list reject -var-file"
+        ),
     )
     parser.add_argument(
         "-o",
@@ -102,6 +115,8 @@ def parse_args(argv: Sequence[str] | None = None) -> tuple[Settings, bool]:
         settings = replace(settings, executable=args.executable)
     if args.var_files:
         settings = replace(settings, var_files=tuple(args.var_files))
+    if args.variables:
+        settings = replace(settings, variables=tuple(args.variables))
     if args.chdir:
         settings = replace(settings, working_dir=Path(args.chdir))
     if args.no_init:

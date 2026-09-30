@@ -20,7 +20,7 @@ import logging
 import os
 import re
 import shutil
-from collections.abc import AsyncIterator, Sequence
+from collections.abc import AsyncIterator, Mapping, Sequence
 from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path, PurePath
@@ -105,10 +105,13 @@ class TerraformExecutor:
         *,
         cwd: Path | None = None,
         resolve: bool = True,
+        variables: Mapping[str, str] | None = None,
     ) -> None:
         self.name = executable
         self.path = resolve_executable(executable) if resolve else executable
         self.cwd = Path(cwd) if cwd is not None else Path.cwd()
+        self.variables = dict(variables or {})
+        """Input variables to export as ``TF_VAR_*`` for every command."""
 
     def build(self, *args: str) -> tuple[str, ...]:
         """Build the full argv for ``args``, with the resolved executable in front."""
@@ -120,6 +123,12 @@ class TerraformExecutor:
         env.setdefault("TF_IN_AUTOMATION", "1")
         env.setdefault("TF_INPUT", "0")
         env.setdefault("CHECKPOINT_DISABLE", "1")
+        # TF_VAR_* is the only way to get a variable to *every* command: `show`
+        # and `state list` reject -var-file outright, yet OpenTofu's early
+        # evaluation still needs the variables a `backend` block refers to.
+        # Set rather than setdefault: an explicit --var outranks the environment.
+        for name, value in self.variables.items():
+            env[f"TF_VAR_{name}"] = value
         return env
 
     async def run(self, *args: str, check: bool = False) -> CommandResult:

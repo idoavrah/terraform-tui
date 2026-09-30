@@ -8,8 +8,12 @@ existed before keeps its short and long form.
 from __future__ import annotations
 
 import os
+import re
+from collections.abc import Sequence
 from dataclasses import dataclass, replace
 from pathlib import Path
+
+from tftui.errors import InvalidVariableError
 
 
 def split_var_files(value: str | None) -> tuple[str, ...]:
@@ -21,6 +25,30 @@ def split_var_files(value: str | None) -> tuple[str, ...]:
     if not value:
         return ()
     return tuple(part.strip() for part in value.split(os.pathsep) if part.strip())
+
+
+#: A Terraform input variable name. Deliberately strict: the value becomes an
+#: environment variable name, so anything exotic would produce an unusable one.
+_VAR_NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_-]*$")
+
+
+def parse_variables(assignments: Sequence[str]) -> dict[str, str]:
+    """Turn ``name=value`` strings into a mapping, rejecting malformed ones.
+
+    Later assignments win, matching how Terraform treats a repeated ``-var``.
+    The value is taken verbatim after the first ``=``, so JSON objects and values
+    containing ``=`` both survive intact.
+    """
+    variables: dict[str, str] = {}
+    for assignment in assignments:
+        name, separator, value = assignment.partition("=")
+        name = name.strip()
+        if not separator:
+            raise InvalidVariableError(f"{assignment!r} is not name=value")
+        if not _VAR_NAME.match(name):
+            raise InvalidVariableError(f"{name!r} is not a valid variable name")
+        variables[name] = value
+    return variables
 
 
 _TRUE = frozenset({"1", "true", "yes", "on"})
@@ -61,6 +89,14 @@ class Settings:
     working_dir: Path | None = None
     """Directory to run Terraform in. Defaults to the current directory."""
 
+    variables: tuple[str, ...] = ()
+    """``name=value`` assignments, exported as ``TF_VAR_*`` for every command.
+
+    Unlike ``-var-file``, which ``show`` and ``state list`` reject, an exported
+    ``TF_VAR_*`` reaches every command - which is what a configuration whose
+    ``backend`` block refers to a variable needs.
+    """
+
     @property
     def telemetry_enabled(self) -> bool:
         """Usage tracking only happens when it is enabled *and* we are online."""
@@ -69,6 +105,11 @@ class Settings:
     @property
     def version_check_enabled(self) -> bool:
         return not self.offline
+
+    @property
+    def variable_map(self) -> dict[str, str]:
+        """The variables as a mapping. Raises :class:`InvalidVariableError` if malformed."""
+        return parse_variables(self.variables)
 
     @property
     def directory(self) -> Path:

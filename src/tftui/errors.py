@@ -30,6 +30,14 @@ class InvalidExecutableError(TftuiError):
         self.executable = executable
 
 
+class InvalidVariableError(TftuiError):
+    """A ``--var`` assignment that is not a usable ``name=value`` pair.
+
+    Reported rather than skipped: a variable silently dropped would surface much
+    later as Terraform complaining that it was never provided.
+    """
+
+
 class TerraformError(TftuiError):
     """A terraform invocation exited non-zero."""
 

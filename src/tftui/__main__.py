@@ -64,7 +64,9 @@ def _build_client(settings: Settings) -> TerraformClient:
     directory = settings.directory
     if not directory.is_dir():
         raise TftuiError(f"Working directory {directory} does not exist.")
-    executor = TerraformExecutor(settings.executable, cwd=directory)
+    executor = TerraformExecutor(
+        settings.executable, cwd=directory, variables=settings.variable_map
+    )
     return TerraformClient(executor)
 
 

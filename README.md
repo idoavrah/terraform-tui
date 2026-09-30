@@ -72,6 +72,7 @@ Every option can be set with a flag or an environment variable. Flags win.
 | -------------------------------- | ------------------------------ | --------------------------------------------- |
 | `-e`, `--executable`             | `TFTUI_EXECUTABLE`             | Binary to drive (default `terraform`)         |
 | `-f`, `--var-file`               | `TFTUI_VAR_FILE`               | tfvars file; repeat the flag for several      |
+| `-V`, `--var`                    | `TF_VAR_<name>`                | `name=value` input variable; repeat for several |
 | `-C`, `--chdir`                  | `TFTUI_WORKING_DIR`            | Directory to run in (default current)         |
 | `-n`, `--no-init`                | `TFTUI_NO_INIT`                | Skip `terraform init` on startup              |
 | `-o`, `--offline`                | `TFTUI_OFFLINE`                | No outbound calls at all                      |
@@ -97,6 +98,25 @@ separator (`:` on Linux and macOS, `;` on Windows):
 ```bash
 export TFTUI_VAR_FILE="common.tfvars:prod.tfvars"
 ```
+
+### Backends that use variables
+
+OpenTofu 1.8+ evaluates variables early enough to use them inside a `backend`
+block. Those variables are needed by **every** command, and `terraform show` and
+`terraform state list` reject `-var-file` outright — so a var-file alone is not
+enough, however correct your `init` was. Use `-V` / `--var`, which tftui exports
+as `TF_VAR_<name>` for everything it runs:
+
+```bash
+tftui -e tofu --var 'tofu_backend={hostname="app.terraform.io",organization="acme"}'
+```
+
+Exporting `TF_VAR_*` yourself works just as well, since the environment is passed
+through untouched. `--var` exists so you do not have to.
+
+| Flag | Environment variable | Meaning |
+| ---- | -------------------- | ------- |
+| `-V`, `--var` | `TF_VAR_<name>` | one input variable; repeat the flag for several |
 
 ### Using OpenTofu or Terragrunt
 
