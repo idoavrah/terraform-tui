@@ -7,6 +7,7 @@ talks to it in terms of resources and plans, never in terms of argv.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import logging
 import shutil
@@ -113,11 +114,11 @@ class TerraformClient:
         try:
             text_result = await text_task
         except BaseException:
-            json_task.cancel()
+            await _abandon(json_task)
             raise
 
         if not text_result.ok:
-            json_task.cancel()
+            await _abandon(json_task)
             raise TerraformError(text_result.command, text_result.returncode, text_result.output)
 
         state = parse_state(text_result.output)
@@ -253,3 +254,17 @@ class TerraformClient:
             self._plan_dir = Path(tempfile.mkdtemp(prefix="tftui-"))
         self.discard_plan()
         return self._plan_dir / "tftui.plan"
+
+
+async def _abandon(task: asyncio.Task[CommandResult]) -> None:
+    """Cancel a task and wait for it to actually finish.
+
+    Cancelling only *requests* cancellation. Without awaiting it, the task never
+    resumes, so the subprocess it started is never terminated or reaped: the
+    transport is finalised later by the garbage collector, which on a closed loop
+    is an unraisable exception. Awaiting lets the executor's own CancelledError
+    handler run and kill the child.
+    """
+    task.cancel()
+    with contextlib.suppress(asyncio.CancelledError):
+        await task

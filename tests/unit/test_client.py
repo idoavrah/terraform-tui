@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import asyncio
 from pathlib import Path
 
 import pytest
 
 from tftui.errors import TerraformError
 from tftui.terraform.client import DELETE, TAINT, UNTAINT, TerraformClient
+from tftui.terraform.executor import CommandResult
 
 
 async def test_load_state_parses_and_collects_secrets(client: TerraformClient) -> None:
@@ -205,3 +207,58 @@ async def test_cleanup_removes_the_private_directory(client: TerraformClient) ->
     client.cleanup()
     assert not plan_dir.exists()
     client.cleanup()  # idempotent
+
+
+class _SlowJsonExecutor:
+    """Fails the text read immediately while the JSON read is still in flight.
+
+    The default stub returns instantly, so the JSON task is already finished by
+    the time it is cancelled - which hides the bug entirely. The race only exists
+    while that task is genuinely running.
+    """
+
+    def __init__(self) -> None:
+        self.name = "terraform"
+        self.path = "/usr/bin/terraform"
+        self.cwd = Path("/tmp/project")
+        self.observed_cancel = False
+
+    def build(self, *args: str) -> tuple[str, ...]:
+        return (self.path, *args)
+
+    async def run(self, *args: str, check: bool = False) -> CommandResult:
+        if args[:2] == ("show", "-json"):
+            try:
+                await asyncio.sleep(10)
+            except asyncio.CancelledError:
+                # Where the real executor terminates and reaps the child.
+                self.observed_cancel = True
+                raise
+        return CommandResult(self.build(*args), 1, "Error: Failed to load plugin schemas")
+
+
+async def test_a_failed_state_load_waits_for_the_json_read_to_stop() -> None:
+    """Cancelling a task is not enough: it has to be awaited.
+
+    `load_state` runs `show` and `show -json` concurrently and cancels the JSON
+    read when the text read fails. Cancellation only *requests* that the task
+    stop - until it is awaited the coroutine never resumes, so the executor's own
+    cleanup never runs and the subprocess it started is neither terminated nor
+    reaped. Its transport is then finalised by the garbage collector, which on a
+    closed event loop surfaces as an unraisable exception.
+    """
+    executor = _SlowJsonExecutor()
+    client = TerraformClient(executor)  # type: ignore[arg-type]
+
+    with pytest.raises(TerraformError):
+        await client.load_state()
+
+    assert executor.observed_cancel, "the JSON read was abandoned without being stopped"
+
+    pending = [
+        task
+        for task in asyncio.all_tasks()
+        if task is not asyncio.current_task() and not task.done()
+    ]
+    assert pending == [], f"left {len(pending)} task(s) running"
+    client.cleanup()

@@ -138,7 +138,7 @@ class TerraformExecutor:
         try:
             stdout, _ = await proc.communicate()
         except asyncio.CancelledError:
-            _terminate(proc)
+            await _terminate_and_reap(proc)
             raise
 
         output = stdout.decode("utf-8", errors="replace")
@@ -202,6 +202,22 @@ def _terminate(proc: asyncio.subprocess.Process) -> None:
     if proc.returncode is None:
         with suppress(ProcessLookupError):  # may have exited on its own already
             proc.terminate()
+
+
+async def _terminate_and_reap(proc: asyncio.subprocess.Process) -> None:
+    """Terminate a subprocess we are abandoning, and wait for it to be reaped.
+
+    Signalling is not enough. An unreaped child leaves its transport for the
+    garbage collector to finalise, and if the event loop has closed by then that
+    surfaces as an unraisable exception. The streaming path already waits in a
+    ``finally``; this is the one-shot path's equivalent.
+
+    Cancellation is suppressed while waiting: we are already unwinding a cancel,
+    and the process has been signalled, so the only thing left is to collect it.
+    """
+    _terminate(proc)
+    with suppress(asyncio.CancelledError, ProcessLookupError):
+        await proc.wait()
 
 
 async def _wait_quietly(proc: asyncio.subprocess.Process) -> int:

@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- **A failed state read no longer leaves a `terraform show -json` process
+  behind.** The two reads run concurrently and the JSON one is cancelled when
+  the text one fails, but cancelling a task only *requests* that it stop: until
+  it is awaited the coroutine never resumes, so the executor's cleanup never
+  runs and the subprocess is neither terminated nor reaped. Every failed state
+  load leaked one, and retrying — which the UI invites you to do — leaked
+  another each time.
+
+  Two things were wrong, and both are fixed. The cancelled task was never
+  awaited, so it never resumed to clean up; and the executor's own cancellation
+  path signalled the child with `terminate()` without ever waiting for it, so
+  even once it resumed the process was killed but not collected. The streaming
+  path already waited in a `finally`; the one-shot path now does the same.
+
 ## 0.14.1
 
 ### Fixed

@@ -232,3 +232,36 @@ async def test_automation_env_vars_are_set(python_executor: TerraformExecutor) -
         "-c", "import os; print(os.environ['TF_IN_AUTOMATION'], os.environ['TF_INPUT'])"
     )
     assert result.output.strip() == "1 0"
+
+
+async def test_a_cancelled_run_reaps_its_child(monkeypatch) -> None:
+    """Terminating is not collecting.
+
+    A signalled but unreaped child leaves its transport to the garbage
+    collector, and if the event loop has closed by then Python reports an
+    unraisable exception. Uses /bin/sleep so the test needs no Terraform.
+    """
+    import asyncio
+
+    captured: list[asyncio.subprocess.Process] = []
+    started = asyncio.Event()
+    real = asyncio.create_subprocess_exec
+
+    async def spy(*args: object, **kwargs: object) -> asyncio.subprocess.Process:
+        proc = await real(*args, **kwargs)  # type: ignore[arg-type]
+        captured.append(proc)
+        started.set()
+        return proc
+
+    monkeypatch.setattr(asyncio, "create_subprocess_exec", spy)
+
+    executor = TerraformExecutor("/bin/sleep", resolve=False, cwd=Path.cwd())
+    task = asyncio.create_task(executor.run("30"))
+    await asyncio.wait_for(started.wait(), timeout=10)
+
+    task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await task
+
+    proc = captured[0]
+    assert proc.returncode is not None, "the child was signalled but never collected"
