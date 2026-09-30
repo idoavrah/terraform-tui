@@ -5,7 +5,7 @@ from __future__ import annotations
 import sys
 
 from tftui.app import TerraformTUI
-from tftui.cli import parse_args, version_banner
+from tftui.cli import resolve, version_banner
 from tftui.config import Settings
 from tftui.errors import TftuiError
 from tftui.logging_setup import configure_logging
@@ -24,7 +24,12 @@ Bye!
 
 def main(argv: list[str] | None = None) -> int:
     """Run tftui. Returns the process exit code."""
-    settings, wants_version = parse_args(argv)
+    settings, wants_version, config_warnings = resolve(argv)
+
+    # A mistake in a config file is otherwise invisible: the setting simply does
+    # not take effect, and there is nothing on screen to say why.
+    for warning in config_warnings:
+        print(f"tftui: {warning}", file=sys.stderr)
 
     telemetry = Telemetry(
         enabled=settings.telemetry_enabled,

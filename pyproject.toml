@@ -34,6 +34,8 @@ dependencies = [
   # Usage tracking is opt-out, so the client must be present by default. It is
   # imported lazily, on first use, so opting out never pays its import cost.
   "posthog>=3.7,<8",
+  # Config files are TOML; tomllib is 3.11+, so 3.10 needs the backport.
+  "tomli>=2.0.1; python_version < '3.11'",
 ]
 
 [project.urls]
@@ -56,8 +58,6 @@ dev = [
   "pre-commit>=4.0",
   # `textual console` and `textual run --dev` for debugging the UI.
   "textual-dev>=1.7",
-  # scripts/should_release.py reads pyproject.toml; tomllib is 3.11+.
-  "tomli>=2.0.1; python_version < '3.11'",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -121,7 +121,7 @@ warn_unreachable = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 
 [[tool.mypy.overrides]]
-module = ["pyperclip", "posthog"]
+module = ["pyperclip", "posthog", "tomli"]
 ignore_missing_imports = true
 
 # -------------------------------------------------------------- pytest ------

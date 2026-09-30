@@ -80,6 +80,40 @@ Every option can be set with a flag or an environment variable. Flags win.
 | `-g`, `--generate-debug-log`     | `TFTUI_DEBUG_LOG`              | Write `tftui.log` in the working directory    |
 | `-v`, `--version`                | —                              | Print the version and exit                    |
 
+### Configuration files
+
+Two optional TOML files, so you do not have to retype the same flags. Neither is
+required.
+
+| File | Scope |
+| ---- | ----- |
+| `.tftui.toml` beside your Terraform files | that one project |
+| `~/.config/tftui/config.toml` (or `$XDG_CONFIG_HOME/tftui/config.toml`) | you, everywhere |
+
+Keys are the long flag names without the dashes; the `snake_case` spelling of
+each works too.
+
+```toml
+# .tftui.toml
+executable = "tofu"
+var-file = ["../deployments/common.tfvars", "../deployments/prod.tfvars"]
+no-init = true
+```
+
+The full precedence order, lowest to highest:
+
+```
+defaults  <  user file  <  project file  <  TFTUI_* environment  <  flags
+```
+
+So a config file can never stop a flag from doing what it says, and a flag you
+did not pass will not quietly undo the file. `chdir` is accepted only in the user
+file — in a project file it would be circular, since the file is found *because*
+the working directory is already known.
+
+An unrecognised key or a wrong type is reported on stderr rather than ignored,
+because a typo in a config file is otherwise invisible.
+
 ### Several var-files
 
 Repeat `-f` as often as you need; the files are applied in order, so a later

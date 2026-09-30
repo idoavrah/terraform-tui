@@ -1835,6 +1835,7 @@ dependencies = [
     { name = "posthog" },
     { name = "pyperclip" },
     { name = "textual" },
+    { name = "tomli", marker = "python_full_version < '3.11'" },
 ]
 
 [package.dev-dependencies]
@@ -1846,7 +1847,6 @@ dev = [
     { name = "pytest-cov" },
     { name = "ruff" },
     { name = "textual-dev" },
-    { name = "tomli", marker = "python_full_version < '3.11'" },
 ]
 
 [package.metadata]
@@ -1854,6 +1854,7 @@ requires-dist = [
     { name = "posthog", specifier = ">=3.7,<8" },
     { name = "pyperclip", specifier = ">=1.9,<2" },
     { name = "textual", specifier = ">=1.0,<9" },
+    { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0.1" },
 ]
 
 [package.metadata.requires-dev]
@@ -1865,7 +1866,6 @@ dev = [
     { name = "pytest-cov", specifier = ">=6.0" },
     { name = "ruff", specifier = ">=0.8" },
     { name = "textual-dev", specifier = ">=1.7" },
-    { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0.1" },
 ]
 
 [[package]]

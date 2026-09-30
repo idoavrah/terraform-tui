@@ -1,5 +1,27 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- **Configuration files** ([#84]). A `.tftui.toml` beside your Terraform files
+  for per-project settings, and `~/.config/tftui/config.toml` (honouring
+  `XDG_CONFIG_HOME`) for preferences that follow you between projects. Keys are
+  the long flag names; `snake_case` is accepted too. Neither file is required.
+
+  They sit at the bottom of the precedence order — `defaults < user file <
+  project file < TFTUI_* environment < flags` — so a file can never stop a flag
+  from doing what it says. Boolean flags now default to "not passed" rather than
+  `False`, which is what stops a flag you did not type from silently resetting
+  the file's value.
+
+  `chdir` is accepted only in the user file; in a project file it would be
+  circular. An unknown key, a wrong type or unparseable TOML is reported on
+  stderr and skipped, rather than being ignored silently or taking the
+  application down.
+
+[#84]: https://github.com/idoavrah/terraform-tui/issues/84
+
 ## 0.14.1
 
 ### Fixed

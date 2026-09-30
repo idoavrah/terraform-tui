@@ -30,8 +30,9 @@ make example-clean   # tear it back down
 ```
 src/tftui/
 ├── __main__.py        entry point: wires settings, logging, telemetry, client
-├── cli.py             argument parsing
-├── config.py          Settings, resolved from defaults + env + flags
+├── cli.py             argument parsing, and the precedence order
+├── config.py          Settings, and what the environment asks of them
+├── config_file.py     optional .tftui.toml / ~/.config/tftui/config.toml
 ├── errors.py          the exception hierarchy the UI knows how to render
 ├── logging_setup.py   logging (silent unless -g is passed)
 ├── telemetry.py       opt-out usage tracking and the update check

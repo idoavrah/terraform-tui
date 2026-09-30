@@ -10,6 +10,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass, replace
 from pathlib import Path
+from typing import Any
 
 
 def split_var_files(value: str | None) -> tuple[str, ...]:
@@ -77,24 +78,44 @@ class Settings:
     @classmethod
     def from_env(cls, env: dict[str, str] | None = None) -> Settings:
         """Build settings from ``TFTUI_*`` environment variables."""
-        source = os.environ if env is None else env
-        settings = cls()
+        return replace(cls(), **env_overrides(env))
 
-        executable = source.get("TFTUI_EXECUTABLE")
-        var_files = source.get("TFTUI_VAR_FILE")
-        working_dir = source.get("TFTUI_WORKING_DIR")
 
-        return replace(
-            settings,
-            executable=executable or settings.executable,
-            var_files=split_var_files(var_files) or settings.var_files,
-            working_dir=Path(working_dir) if working_dir else settings.working_dir,
-            run_init=not _flag(source, "TFTUI_NO_INIT", default=False),
-            offline=_flag(source, "TFTUI_OFFLINE", default=False),
-            usage_tracking=not _flag(source, "TFTUI_DISABLE_USAGE_TRACKING", default=False),
-            light_mode=_flag(source, "TFTUI_LIGHT_MODE", default=False),
-            debug_log=_flag(source, "TFTUI_DEBUG_LOG", default=False),
-        )
+def env_overrides(env: dict[str, str] | None = None) -> dict[str, Any]:
+    """The settings the environment actually asks for, and only those.
+
+    Returning just the keys that are present is what lets a config file sit
+    *below* the environment in the precedence order: an unset variable has to be
+    distinguishable from one set to its default, which a fully-populated
+    ``Settings`` cannot express.
+    """
+    source = os.environ if env is None else env
+    values: dict[str, Any] = {}
+
+    executable = source.get("TFTUI_EXECUTABLE")
+    if executable:
+        values["executable"] = executable
+
+    var_files = split_var_files(source.get("TFTUI_VAR_FILE"))
+    if var_files:
+        values["var_files"] = var_files
+
+    working_dir = source.get("TFTUI_WORKING_DIR")
+    if working_dir:
+        values["working_dir"] = Path(working_dir)
+
+    for name, key, negated in (
+        ("TFTUI_NO_INIT", "run_init", True),
+        ("TFTUI_OFFLINE", "offline", False),
+        ("TFTUI_DISABLE_USAGE_TRACKING", "usage_tracking", True),
+        ("TFTUI_LIGHT_MODE", "light_mode", False),
+        ("TFTUI_DEBUG_LOG", "debug_log", False),
+    ):
+        if name in source:
+            flag = _flag(source, name, default=False)
+            values[key] = (not flag) if negated else flag
+
+    return values
 
 
 def _flag(source: dict[str, str] | os._Environ[str], name: str, *, default: bool) -> bool:
